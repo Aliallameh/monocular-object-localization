@@ -1,0 +1,1186 @@
+{
+  "frames": 3500,
+  "overall": {
+    "occluded_frames": 241,
+    "reacquired_frames": 49,
+    "low_confidence_frames_lt_0_35": 126,
+    "max_occlusion_age": 55,
+    "max_frame_step_m": 1.5313326516469241,
+    "p95_frame_step_m": 0.06643405381896757,
+    "mean_confidence": 0.8343057142857142,
+    "state_counts": {
+      "STATIONARY": 381,
+      "CONFIRMED": 2829,
+      "OCCLUDED": 241,
+      "REACQUIRED": 49
+    },
+    "source_counts": {
+      "blue_hsv_shape": 3215,
+      "dark_rect_shape": 25,
+      "tracker_prediction": 78,
+      "lk_optical_flow": 109,
+      "motion_foreground": 24,
+      "edge_shape": 49
+    }
+  },
+  "by_condition": {
+    "target_occluders": {
+      "frames": 1206,
+      "occluded_rate": 0.10696517412935323,
+      "reacquired_rate": 0.019071310116086235,
+      "mean_confidence": 0.8179121061359867,
+      "p10_confidence": 0.618,
+      "max_occlusion_age": 55,
+      "state_counts": {
+        "CONFIRMED": 954,
+        "STATIONARY": 100,
+        "OCCLUDED": 129,
+        "REACQUIRED": 23
+      },
+      "source_counts": {
+        "blue_hsv_shape": 1051,
+        "dark_rect_shape": 22,
+        "lk_optical_flow": 61,
+        "tracker_prediction": 37,
+        "edge_shape": 22,
+        "motion_foreground": 13
+      }
+    },
+    "distractor_people": {
+      "frames": 1634,
+      "occluded_rate": 0.1003671970624235,
+      "reacquired_rate": 0.019583843329253364,
+      "mean_confidence": 0.8124167686658507,
+      "p10_confidence": 0.6186,
+      "max_occlusion_age": 47,
+      "state_counts": {
+        "CONFIRMED": 1321,
+        "STATIONARY": 117,
+        "OCCLUDED": 164,
+        "REACQUIRED": 32
+      },
+      "source_counts": {
+        "blue_hsv_shape": 1422,
+        "dark_rect_shape": 21,
+        "tracker_prediction": 59,
+        "lk_optical_flow": 74,
+        "motion_foreground": 21,
+        "edge_shape": 37
+      }
+    },
+    "blue_distractors": {
+      "frames": 1250,
+      "occluded_rate": 0.136,
+      "reacquired_rate": 0.028,
+      "mean_confidence": 0.7926576,
+      "p10_confidence": 0.4138,
+      "max_occlusion_age": 55,
+      "state_counts": {
+        "CONFIRMED": 958,
+        "STATIONARY": 87,
+        "OCCLUDED": 170,
+        "REACQUIRED": 35
+      },
+      "source_counts": {
+        "blue_hsv_shape": 1050,
+        "tracker_prediction": 59,
+        "lk_optical_flow": 77,
+        "dark_rect_shape": 15,
+        "motion_foreground": 19,
+        "edge_shape": 30
+      }
+    },
+    "gaussian_blur": {
+      "frames": 1150,
+      "occluded_rate": 0.14173913043478262,
+      "reacquired_rate": 0.020869565217391306,
+      "mean_confidence": 0.7953704347826087,
+      "p10_confidence": 0.5979,
+      "max_occlusion_age": 55,
+      "state_counts": {
+        "CONFIRMED": 882,
+        "STATIONARY": 81,
+        "OCCLUDED": 163,
+        "REACQUIRED": 24
+      },
+      "source_counts": {
+        "blue_hsv_shape": 965,
+        "tracker_prediction": 63,
+        "lk_optical_flow": 79,
+        "edge_shape": 18,
+        "motion_foreground": 8,
+        "dark_rect_shape": 17
+      }
+    },
+    "motion_blur": {
+      "frames": 576,
+      "occluded_rate": 0.2482638888888889,
+      "reacquired_rate": 0.03993055555555555,
+      "mean_confidence": 0.7342586805555555,
+      "p10_confidence": 0.3625,
+      "max_occlusion_age": 48,
+      "state_counts": {
+        "CONFIRMED": 360,
+        "STATIONARY": 50,
+        "OCCLUDED": 143,
+        "REACQUIRED": 23
+      },
+      "source_counts": {
+        "blue_hsv_shape": 395,
+        "lk_optical_flow": 92,
+        "edge_shape": 48,
+        "motion_foreground": 7,
+        "dark_rect_shape": 15,
+        "tracker_prediction": 19
+      }
+    },
+    "protected_waypoint_window": {
+      "frames": 51,
+      "occluded_rate": 0.0,
+      "reacquired_rate": 0.0,
+      "mean_confidence": 0.9019411764705881,
+      "p10_confidence": 0.881,
+      "max_occlusion_age": 0,
+      "state_counts": {
+        "CONFIRMED": 34,
+        "STATIONARY": 17
+      },
+      "source_counts": {
+        "blue_hsv_shape": 51
+      }
+    }
+  },
+  "occlusion_runs": {
+    "count": 49,
+    "max_length": 55,
+    "mean_length": 4.918367346938775,
+    "runs": [
+      {
+        "start": 1271,
+        "end": 1272,
+        "length": 2
+      },
+      {
+        "start": 1935,
+        "end": 1935,
+        "length": 1
+      },
+      {
+        "start": 1981,
+        "end": 1981,
+        "length": 1
+      },
+      {
+        "start": 1983,
+        "end": 1983,
+        "length": 1
+      },
+      {
+        "start": 1993,
+        "end": 1993,
+        "length": 1
+      },
+      {
+        "start": 1997,
+        "end": 1997,
+        "length": 1
+      },
+      {
+        "start": 2001,
+        "end": 2001,
+        "length": 1
+      },
+      {
+        "start": 2003,
+        "end": 2003,
+        "length": 1
+      },
+      {
+        "start": 2005,
+        "end": 2005,
+        "length": 1
+      },
+      {
+        "start": 2226,
+        "end": 2226,
+        "length": 1
+      },
+      {
+        "start": 2228,
+        "end": 2229,
+        "length": 2
+      },
+      {
+        "start": 2231,
+        "end": 2231,
+        "length": 1
+      },
+      {
+        "start": 2300,
+        "end": 2300,
+        "length": 1
+      },
+      {
+        "start": 2302,
+        "end": 2306,
+        "length": 5
+      },
+      {
+        "start": 2346,
+        "end": 2346,
+        "length": 1
+      },
+      {
+        "start": 2391,
+        "end": 2391,
+        "length": 1
+      },
+      {
+        "start": 2393,
+        "end": 2396,
+        "length": 4
+      },
+      {
+        "start": 2398,
+        "end": 2398,
+        "length": 1
+      },
+      {
+        "start": 2400,
+        "end": 2402,
+        "length": 3
+      },
+      {
+        "start": 2404,
+        "end": 2404,
+        "length": 1
+      }
+    ]
+  },
+  "reacquisition_runs": {
+    "count": 49,
+    "max_length": 1,
+    "mean_length": 1.0,
+    "runs": [
+      {
+        "start": 1273,
+        "end": 1273,
+        "length": 1
+      },
+      {
+        "start": 1936,
+        "end": 1936,
+        "length": 1
+      },
+      {
+        "start": 1982,
+        "end": 1982,
+        "length": 1
+      },
+      {
+        "start": 1984,
+        "end": 1984,
+        "length": 1
+      },
+      {
+        "start": 1994,
+        "end": 1994,
+        "length": 1
+      },
+      {
+        "start": 1998,
+        "end": 1998,
+        "length": 1
+      },
+      {
+        "start": 2002,
+        "end": 2002,
+        "length": 1
+      },
+      {
+        "start": 2004,
+        "end": 2004,
+        "length": 1
+      },
+      {
+        "start": 2006,
+        "end": 2006,
+        "length": 1
+      },
+      {
+        "start": 2227,
+        "end": 2227,
+        "length": 1
+      },
+      {
+        "start": 2230,
+        "end": 2230,
+        "length": 1
+      },
+      {
+        "start": 2232,
+        "end": 2232,
+        "length": 1
+      },
+      {
+        "start": 2301,
+        "end": 2301,
+        "length": 1
+      },
+      {
+        "start": 2307,
+        "end": 2307,
+        "length": 1
+      },
+      {
+        "start": 2347,
+        "end": 2347,
+        "length": 1
+      },
+      {
+        "start": 2392,
+        "end": 2392,
+        "length": 1
+      },
+      {
+        "start": 2397,
+        "end": 2397,
+        "length": 1
+      },
+      {
+        "start": 2399,
+        "end": 2399,
+        "length": 1
+      },
+      {
+        "start": 2403,
+        "end": 2403,
+        "length": 1
+      },
+      {
+        "start": 2405,
+        "end": 2405,
+        "length": 1
+      }
+    ]
+  },
+  "low_confidence_runs": {
+    "count": 21,
+    "max_length": 36,
+    "mean_length": 6.0,
+    "runs": [
+      {
+        "start": 2227,
+        "end": 2229,
+        "length": 3
+      },
+      {
+        "start": 2231,
+        "end": 2231,
+        "length": 1
+      },
+      {
+        "start": 2300,
+        "end": 2300,
+        "length": 1
+      },
+      {
+        "start": 2302,
+        "end": 2306,
+        "length": 5
+      },
+      {
+        "start": 2388,
+        "end": 2388,
+        "length": 1
+      },
+      {
+        "start": 2390,
+        "end": 2390,
+        "length": 1
+      },
+      {
+        "start": 2392,
+        "end": 2392,
+        "length": 1
+      },
+      {
+        "start": 2402,
+        "end": 2403,
+        "length": 2
+      },
+      {
+        "start": 2405,
+        "end": 2421,
+        "length": 17
+      },
+      {
+        "start": 2428,
+        "end": 2428,
+        "length": 1
+      },
+      {
+        "start": 2645,
+        "end": 2651,
+        "length": 7
+      },
+      {
+        "start": 2656,
+        "end": 2657,
+        "length": 2
+      },
+      {
+        "start": 2702,
+        "end": 2702,
+        "length": 1
+      },
+      {
+        "start": 2822,
+        "end": 2822,
+        "length": 1
+      },
+      {
+        "start": 2831,
+        "end": 2831,
+        "length": 1
+      },
+      {
+        "start": 2833,
+        "end": 2839,
+        "length": 7
+      },
+      {
+        "start": 2841,
+        "end": 2842,
+        "length": 2
+      },
+      {
+        "start": 2845,
+        "end": 2880,
+        "length": 36
+      },
+      {
+        "start": 3056,
+        "end": 3057,
+        "length": 2
+      },
+      {
+        "start": 3064,
+        "end": 3096,
+        "length": 33
+      }
+    ]
+  },
+  "worst_events": [
+    {
+      "frame_id": 2994,
+      "score": 6.196456969337227,
+      "step_m": 0.01858278773489052,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 55,
+      "conditions": [
+        "target_occluders",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9778,
+      "y_world": 1.5917
+    },
+    {
+      "frame_id": 2986,
+      "score": 6.05670452333554,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 47,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9569,
+      "y_world": 1.4441
+    },
+    {
+      "frame_id": 2985,
+      "score": 5.976456969337226,
+      "step_m": 0.01858278773489052,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 46,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9543,
+      "y_world": 1.4256
+    },
+    {
+      "frame_id": 2987,
+      "score": 5.886456969337226,
+      "step_m": 0.01858278773489052,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 48,
+      "conditions": [
+        "target_occluders",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9595,
+      "y_world": 1.4625
+    },
+    {
+      "frame_id": 2993,
+      "score": 5.866704523335541,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 54,
+      "conditions": [
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9752,
+      "y_world": 1.5733
+    },
+    {
+      "frame_id": 2989,
+      "score": 5.796492606939168,
+      "step_m": 0.01859704277566728,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 50,
+      "conditions": [
+        "target_occluders",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9648,
+      "y_world": 1.4994
+    },
+    {
+      "frame_id": 2992,
+      "score": 5.78670452333554,
+      "step_m": 0.01868180933421592,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 53,
+      "conditions": [
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9726,
+      "y_world": 1.5548
+    },
+    {
+      "frame_id": 2988,
+      "score": 5.71670452333554,
+      "step_m": 0.0186818093342162,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 49,
+      "conditions": [
+        "target_occluders",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9621,
+      "y_world": 1.481
+    },
+    {
+      "frame_id": 2991,
+      "score": 5.706456969337227,
+      "step_m": 0.018582787734890582,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 52,
+      "conditions": [
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.97,
+      "y_world": 1.5363
+    },
+    {
+      "frame_id": 2984,
+      "score": 5.64670452333554,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 45,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9517,
+      "y_world": 1.4072
+    },
+    {
+      "frame_id": 2990,
+      "score": 5.62670452333554,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 51,
+      "conditions": [
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9674,
+      "y_world": 1.5179
+    },
+    {
+      "frame_id": 2983,
+      "score": 5.566456969337226,
+      "step_m": 0.018582787734890582,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 44,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9491,
+      "y_world": 1.3887
+    },
+    {
+      "frame_id": 3097,
+      "score": 5.52833162911731,
+      "step_m": 1.5313326516469241,
+      "track_state": "REACQUIRED",
+      "status": "detected",
+      "detector_source": "blue_hsv_shape",
+      "conf": 0.896,
+      "occlusion_age": 0,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 2.7388,
+      "y_world": -0.3781
+    },
+    {
+      "frame_id": 2979,
+      "score": 5.49670452333554,
+      "step_m": 0.01868180933421592,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 40,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9387,
+      "y_world": 1.3149
+    },
+    {
+      "frame_id": 2982,
+      "score": 5.48670452333554,
+      "step_m": 0.018681809334216138,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 43,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9465,
+      "y_world": 1.3703
+    },
+    {
+      "frame_id": 2978,
+      "score": 5.416456969337227,
+      "step_m": 0.018582787734890582,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.612,
+      "occlusion_age": 39,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9361,
+      "y_world": 1.2964
+    },
+    {
+      "frame_id": 2981,
+      "score": 5.40670452333554,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 42,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9439,
+      "y_world": 1.3518
+    },
+    {
+      "frame_id": 2977,
+      "score": 5.3367045233355395,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.617,
+      "occlusion_age": 38,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9335,
+      "y_world": 1.278
+    },
+    {
+      "frame_id": 2980,
+      "score": 5.331456969337227,
+      "step_m": 0.018582787734890582,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.595,
+      "occlusion_age": 41,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9413,
+      "y_world": 1.3333
+    },
+    {
+      "frame_id": 3096,
+      "score": 5.211190764850507,
+      "step_m": 0.028476305940202375,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 35,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.2308,
+      "y_world": -0.6444
+    },
+    {
+      "frame_id": 3089,
+      "score": 5.151190764850506,
+      "step_m": 0.02847630594020221,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 28,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 1.3802,
+      "y_world": -0.5116
+    },
+    {
+      "frame_id": 3092,
+      "score": 5.141543692943543,
+      "step_m": 0.028617477177417208,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 31,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.3161,
+      "y_world": -0.5686
+    },
+    {
+      "frame_id": 3095,
+      "score": 5.131543692943543,
+      "step_m": 0.028617477177417302,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 34,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.2521,
+      "y_world": -0.6255
+    },
+    {
+      "frame_id": 3088,
+      "score": 5.071356937294142,
+      "step_m": 0.028542774917656565,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 27,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 1.4015,
+      "y_world": -0.4927
+    },
+    {
+      "frame_id": 3091,
+      "score": 5.061356937294141,
+      "step_m": 0.028542774917656565,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 30,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.3375,
+      "y_world": -0.5496
+    },
+    {
+      "frame_id": 3094,
+      "score": 5.051356937294141,
+      "step_m": 0.0285427749176564,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 33,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.2735,
+      "y_world": -0.6065
+    },
+    {
+      "frame_id": 2875,
+      "score": 5.037754580932095,
+      "step_m": 0.019101832372838023,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 30,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9113,
+      "y_world": 0.2954
+    },
+    {
+      "frame_id": 2976,
+      "score": 5.006456969337226,
+      "step_m": 0.01858278773489052,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 37,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9309,
+      "y_world": 1.2595
+    },
+    {
+      "frame_id": 3090,
+      "score": 4.981543692943543,
+      "step_m": 0.028617477177417302,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 29,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.3588,
+      "y_world": -0.5306
+    },
+    {
+      "frame_id": 3093,
+      "score": 4.9711907648505065,
+      "step_m": 0.028476305940202375,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 32,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "motion_blur"
+      ],
+      "x_world": 1.2948,
+      "y_world": -0.5875
+    },
+    {
+      "frame_id": 2874,
+      "score": 4.9575933293645225,
+      "step_m": 0.01903733174580935,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 29,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9055,
+      "y_world": 0.2772
+    },
+    {
+      "frame_id": 2877,
+      "score": 4.947831082990039,
+      "step_m": 0.019132433196015607,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 32,
+      "conditions": [
+        "target_occluders",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.923,
+      "y_world": 0.3318
+    },
+    {
+      "frame_id": 2972,
+      "score": 4.941456969337226,
+      "step_m": 0.018582787734890582,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.595,
+      "occlusion_age": 33,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9205,
+      "y_world": 1.1857
+    },
+    {
+      "frame_id": 2880,
+      "score": 4.937754580932095,
+      "step_m": 0.019101832372837888,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 35,
+      "conditions": [
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9404,
+      "y_world": 0.3863
+    },
+    {
+      "frame_id": 2975,
+      "score": 4.92670452333554,
+      "step_m": 0.0186818093342162,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 36,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9283,
+      "y_world": 1.2411
+    },
+    {
+      "frame_id": 2876,
+      "score": 4.867754580932095,
+      "step_m": 0.019101832372837888,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 31,
+      "conditions": [
+        "target_occluders",
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9171,
+      "y_world": 0.3136
+    },
+    {
+      "frame_id": 2879,
+      "score": 4.85751644452187,
+      "step_m": 0.019006577808748294,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "tracker_prediction",
+      "conf": 0.01,
+      "occlusion_age": 34,
+      "conditions": [
+        "blue_distractors",
+        "gaussian_blur"
+      ],
+      "x_world": 2.9346,
+      "y_world": 0.3681
+    },
+    {
+      "frame_id": 2971,
+      "score": 4.85670452333554,
+      "step_m": 0.018681809334215982,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.607,
+      "occlusion_age": 32,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9179,
+      "y_world": 1.1673
+    },
+    {
+      "frame_id": 2974,
+      "score": 4.846456969337227,
+      "step_m": 0.018582787734890582,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.62,
+      "occlusion_age": 35,
+      "conditions": [
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9257,
+      "y_world": 1.2226
+    },
+    {
+      "frame_id": 2970,
+      "score": 4.778456969337226,
+      "step_m": 0.01858278773489052,
+      "track_state": "OCCLUDED",
+      "status": "occluded",
+      "detector_source": "lk_optical_flow",
+      "conf": 0.598,
+      "occlusion_age": 31,
+      "conditions": [
+        "target_occluders",
+        "distractor_people",
+        "blue_distractors",
+        "gaussian_blur",
+        "motion_blur"
+      ],
+      "x_world": 2.9153,
+      "y_world": 1.1488
+    }
+  ],
+  "interpretation": "Stress analysis is conditioned on synthetic perturbation metadata. It measures robustness symptoms, not true object-location accuracy."
+}
