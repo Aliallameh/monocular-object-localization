@@ -132,7 +132,7 @@ def git_dirty_files() -> list[str]:
         return []
     out: list[str] = []
     for line in status.splitlines():
-        if len(line) < 4:
+        if len(line) < 3:
             continue
-        out.append(line[3:].strip())
+        out.append(line[2:].strip())
     return out
