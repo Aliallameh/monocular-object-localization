@@ -13,7 +13,7 @@
     "video_frame_count": 875,
     "processed_frame_count": 875,
     "processed_all_video_frames": true,
-    "first_track_stdout_ms_from_python": 298.6380420043133,
+    "first_track_stdout_ms_from_python": 297.623125006794,
     "first_track_stdout_under_2s": true,
     "detector_hit_rate_over_90pct": true,
     "tracker_output_rate_over_90pct": true,
