@@ -1,10 +1,14 @@
 {
-  "created_unix_s": 1776634955.504719,
+  "created_unix_s": 1776635037.891895,
   "git": {
-    "commit": "10dcd7c2d69a5da96f70472acc74f68030f86483",
+    "code_commit_at_run": "91c62a4e31d258820e5f0d594a55c79292ae1f61",
     "branch": "main",
-    "is_dirty": true,
-    "remote": "https://github.com/Aliallameh/monocular-object-localization.git"
+    "code_dirty_excluding_generated_outputs": true,
+    "code_dirty_files": [
+      "esults/qa_report.json"
+    ],
+    "remote": "https://github.com/Aliallameh/monocular-object-localization.git",
+    "note": "code_commit_at_run is the source commit used to generate the artifacts. The artifact commit itself can be later because generated outputs are committed after the run."
   },
   "python": {
     "executable": "/Users/aliallameh/Documents/TT/.venv/bin/python",
@@ -76,8 +80,8 @@
     "summary_json": {
       "path": "results/summary.json",
       "exists": true,
-      "bytes": 20342,
-      "sha256": "6f351d96ec43fabfc3fd8c8730ceb61ba31b30eb649dcc394a06fc7f9eb7a3f7"
+      "bytes": 20338,
+      "sha256": "5c201e79bd86ac9530139ecd8f8730e34ce4d2c7193833297b7214a067fbabd0"
     }
   },
   "run_metrics": {
@@ -85,7 +89,7 @@
     "detector_hit_rate": 1.0,
     "tracker_output_rate": 1.0,
     "occluded_frames": 0,
-    "p95_processing_ms_per_frame": 35.45987869874807,
+    "p95_processing_ms_per_frame": 35.328095594013575,
     "rmse_xy_m": 0.20678037436273408,
     "strict_rmse_xy_m": 4.409931252644764
   }
