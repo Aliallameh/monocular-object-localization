@@ -12,6 +12,33 @@
     ],
     "notes": "CPU-only multi-cue proposal detector. It avoids the false COCO trash-can-class assumption and is paired with temporal association."
   },
+  "runtime_config": {
+    "detector": {
+      "backend": "hybrid",
+      "device": "auto",
+      "conf": 0.05,
+      "imgsz": 640
+    },
+    "tracker": {
+      "bbox_max_age": 35,
+      "lk_min_points": 8
+    },
+    "kalman": {
+      "enabled": true,
+      "process_var": 3.0,
+      "measurement_var": 0.01
+    },
+    "scene_control": {
+      "auto_for_input_mp4": true,
+      "use_scene_control": false,
+      "strict_geometry": false,
+      "slow_scene_calibrate": false
+    },
+    "stress": {
+      "loops": 4,
+      "seed": 20260418
+    }
+  },
   "frames_processed": 875,
   "fps_reported": 29.97002997002997,
   "detector_hit_rate": 1.0,
@@ -25,10 +52,10 @@
     "STATIONARY": 145,
     "CONFIRMED": 730
   },
-  "mean_processing_ms_per_frame": 33.78436812888166,
-  "p95_processing_ms_per_frame": 35.34720000316156,
-  "max_processing_ms_per_frame": 47.29533300269395,
-  "first_track_stdout_ms_from_python": 300.4462090029847,
+  "mean_processing_ms_per_frame": 33.70816629153809,
+  "p95_processing_ms_per_frame": 35.1227250037482,
+  "max_processing_ms_per_frame": 48.212624998996034,
+  "first_track_stdout_ms_from_python": 297.0993329945486,
   "waypoints": {
     "A": {
       "color": "green",

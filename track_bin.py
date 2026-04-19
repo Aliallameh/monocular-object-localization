@@ -14,6 +14,7 @@ from typing import Any, Dict, List
 import cv2
 import numpy as np
 
+from config_utils import load_runtime_config
 from detector import Detection, load_detector
 from eval_utils import (
     evaluate_bbox_annotations,
@@ -52,16 +53,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--calib", required=True, help="Path to calib.json")
     parser.add_argument("--waypoints", default="waypoints.json", help="Path to waypoints.json")
     parser.add_argument("--output", default="results/output.csv", help="CSV output path")
+    parser.add_argument("--config", default="", help="Optional YAML/JSON runtime config")
     parser.add_argument("--gpu", action="store_true", help="Request GPU detector backend if available")
     parser.add_argument(
         "--backend",
         choices=["hybrid", "auto", "yolo_world"],
-        default="hybrid",
+        default=None,
         help="Detector backend: deterministic hybrid fallback, optional YOLO-World, or cascade auto",
     )
-    parser.add_argument("--device", default="auto", help="Detector device for learned backend: auto, cpu, cuda:0, mps")
-    parser.add_argument("--conf", type=float, default=0.05, help="Learned-detector confidence threshold")
-    parser.add_argument("--imgsz", type=int, default=640, help="Learned-detector inference image size")
+    parser.add_argument("--device", default=None, help="Detector device for learned backend: auto, cpu, cuda:0, mps")
+    parser.add_argument("--conf", type=float, default=None, help="Learned-detector confidence threshold")
+    parser.add_argument("--imgsz", type=int, default=None, help="Learned-detector inference image size")
     parser.add_argument("--no-kalman", action="store_true", help="Disable world-position Kalman smoothing")
     parser.add_argument("--bbox-gt", default="", help="Optional JSON/CSV bbox annotations for local IoU evaluation")
     parser.add_argument(
@@ -87,6 +89,15 @@ def main() -> None:
     start_wall = time.perf_counter()
     first_track_stdout_ms: float | None = None
     args = parse_args()
+    cfg = load_runtime_config(args.config or None)
+    detector_cfg = cfg["detector"]
+    tracker_cfg = cfg["tracker"]
+    kalman_cfg = cfg["kalman"]
+    scene_cfg = cfg["scene_control"]
+    detector_backend = args.backend or str(detector_cfg["backend"])
+    detector_device = args.device or str(detector_cfg["device"])
+    detector_conf = float(args.conf if args.conf is not None else detector_cfg["conf"])
+    detector_imgsz = int(args.imgsz if args.imgsz is not None else detector_cfg["imgsz"])
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -94,18 +105,21 @@ def main() -> None:
     camera = CameraGeometry.from_json_dict(calib_data)
     detector = load_detector(
         use_gpu=args.gpu,
-        backend=args.backend,
-        device=args.device,
-        conf=args.conf,
-        imgsz=args.imgsz,
+        backend=detector_backend,
+        device=detector_device,
+        conf=detector_conf,
+        imgsz=detector_imgsz,
     )
     waypoint_data = load_json(args.waypoints) if Path(args.waypoints).exists() else {"markers": []}
     projected_waypoints = project_waypoints(waypoint_data, camera)
     scene_calibration = None
-    default_scene_control = Path(args.video).name == "input.mp4"
-    if args.strict_geometry:
+    default_scene_control = bool(scene_cfg["auto_for_input_mp4"]) and Path(args.video).name == "input.mp4"
+    strict_geometry = bool(scene_cfg["strict_geometry"]) or args.strict_geometry
+    use_scene_control = bool(scene_cfg["use_scene_control"]) or args.use_scene_control
+    slow_scene_calibrate = bool(scene_cfg["slow_scene_calibrate"]) or args.scene_calibrate
+    if strict_geometry:
         scene_calibration = None
-    elif args.scene_calibrate:
+    elif slow_scene_calibrate:
         scene_calibration = calibrate_from_waypoint_frames(
             args.video,
             detector,
@@ -113,7 +127,7 @@ def main() -> None:
             projected_waypoints,
             use_position_filter=not args.no_kalman,
         )
-    elif args.use_scene_control or default_scene_control:
+    elif use_scene_control or default_scene_control:
         scene_calibration = calibrate_from_waypoint_samples(
             args.video,
             detector,
@@ -132,9 +146,16 @@ def main() -> None:
     else:
         print("[calib] using strict camera geometry; scene-control affine disabled", flush=True)
 
-    bbox_tracker = BBoxKalmanTracker(max_age=35)
-    flow_tracker = LKFlowPropagator(min_points=8)
-    pos_filter = None if args.no_kalman else PositionKalman(process_var=3.0, measurement_var=0.010)
+    bbox_tracker = BBoxKalmanTracker(max_age=int(tracker_cfg["bbox_max_age"]))
+    flow_tracker = LKFlowPropagator(min_points=int(tracker_cfg["lk_min_points"]))
+    pos_filter = (
+        None
+        if args.no_kalman or not bool(kalman_cfg["enabled"])
+        else PositionKalman(
+            process_var=float(kalman_cfg["process_var"]),
+            measurement_var=float(kalman_cfg["measurement_var"]),
+        )
+    )
 
     cap = cv2.VideoCapture(args.video)
     if not cap.isOpened():
@@ -495,6 +516,7 @@ def main() -> None:
     summary = {
         "video": str(args.video),
         "detector_backend": detector_metadata,
+        "runtime_config": cfg,
         "frames_processed": int(frame_id),
         "fps_reported": float(fps),
         "detector_hit_rate": float(detector_hits / max(1, frame_id)),
