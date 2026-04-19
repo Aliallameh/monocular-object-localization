@@ -1,7 +1,7 @@
 {
-  "created_unix_s": 1776634898.169089,
+  "created_unix_s": 1776634955.504719,
   "git": {
-    "commit": "f94c149ab0aa86502b226033a34d09093dc10991",
+    "commit": "10dcd7c2d69a5da96f70472acc74f68030f86483",
     "branch": "main",
     "is_dirty": true,
     "remote": "https://github.com/Aliallameh/monocular-object-localization.git"
@@ -76,8 +76,8 @@
     "summary_json": {
       "path": "results/summary.json",
       "exists": true,
-      "bytes": 20285,
-      "sha256": "e6c2db4b463ffd3848f34dad5d1a35ee98ed6b1655b3c0ffad54df1bce909f29"
+      "bytes": 20342,
+      "sha256": "6f351d96ec43fabfc3fd8c8730ceb61ba31b30eb649dcc394a06fc7f9eb7a3f7"
     }
   },
   "run_metrics": {
@@ -85,7 +85,7 @@
     "detector_hit_rate": 1.0,
     "tracker_output_rate": 1.0,
     "occluded_frames": 0,
-    "p95_processing_ms_per_frame": 35.233649994188454,
+    "p95_processing_ms_per_frame": 35.45987869874807,
     "rmse_xy_m": 0.20678037436273408,
     "strict_rmse_xy_m": 4.409931252644764
   }
