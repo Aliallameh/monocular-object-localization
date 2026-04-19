@@ -375,6 +375,49 @@ Verification environment:
 
 The default detector has no model download, and the first live coordinate line appears at `288.3 ms`. Hidden GT boxes were not provided, so I cannot honestly report a numeric IoU. `results/bbox_eval.json` is therefore marked disabled by default, and `results/bbox_annotation_template.csv` gives 36 sampled draft boxes for human correction. If a real JSON/CSV annotation file is supplied with `--bbox-gt`, the same run computes mean/median/min IoU and the IoU-over-0.6 rate.
 
+## Validation Workflow
+
+Executable checks:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python tools/validate_submission.py
+```
+
+`tools/validate_submission.py` fails if:
+
+- required output files are missing,
+- `results/output.csv` is missing bbox or pose columns,
+- frame count is wrong,
+- invalid boxes or non-finite pose values appear,
+- detector/tracker rates fall below 90%,
+- waypoint RMSE exceeds the configured threshold,
+- private/generated assets such as `input.mp4`, `calib.json`, videos, model weights, or `.venv` are tracked by Git.
+
+True bbox IoU workflow:
+
+```bash
+.venv/bin/python tools/prepare_bbox_annotations.py \
+  --video input.mp4 \
+  --tracks results/output.csv \
+  --out-dir annotations/bbox_review \
+  --samples 60
+```
+
+This writes:
+
+- `annotations/bbox_review/bbox_gt_template.csv`
+- `annotations/bbox_review/bbox_annotator.html`
+- `annotations/bbox_review/frames/*.jpg`
+
+Correct the boxes, mark usable rows as `ok`, then run:
+
+```bash
+bash run.sh --video input.mp4 --calib calib.json --bbox-gt annotations/bbox_review/bbox_gt_corrected.csv
+```
+
+The evaluator in `eval_utils.py` then reports true mean/median/min IoU and IoU-over-0.6 rate in `results/bbox_eval.json` and `results/summary.json`. Until that corrected file exists, the repository deliberately does not claim true GT IoU.
+
 ## Limitations
 
 - The deterministic multi-cue detector is still scene-specific. It is stronger than a single HSV branch and appropriate for this fixed assessment video, but not a universal garbage-bin detector.
