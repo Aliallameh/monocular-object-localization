@@ -52,10 +52,10 @@
     "STATIONARY": 145,
     "CONFIRMED": 730
   },
-  "mean_processing_ms_per_frame": 33.79609052319678,
-  "p95_processing_ms_per_frame": 35.328095594013575,
-  "max_processing_ms_per_frame": 46.93495800893288,
-  "first_track_stdout_ms_from_python": 298.6380420043133,
+  "mean_processing_ms_per_frame": 33.76310417851034,
+  "p95_processing_ms_per_frame": 35.36516268941341,
+  "max_processing_ms_per_frame": 46.629750009742565,
+  "first_track_stdout_ms_from_python": 297.623125006794,
   "waypoints": {
     "A": {
       "color": "green",
