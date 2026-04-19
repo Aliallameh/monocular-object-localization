@@ -451,6 +451,20 @@ The importer accepts CVAT XML, COCO JSON, or ZIP exports and converts them to
 the CSV schema consumed by `--bbox-gt`. External tool choices are summarized in
 `docs/external_tools_assessment.md`.
 
+Detector backend benchmark:
+
+```bash
+.venv/bin/python tools/benchmark_backends.py \
+  --video input.mp4 \
+  --backends hybrid,auto \
+  --samples 90
+```
+
+This writes `results/detector_benchmark.json` and `results/detector_benchmark.csv`.
+On the current machine, `auto` falls back to the hybrid backend because
+`ultralytics`/YOLO-World is not installed. The sampled hybrid detector benchmark
+is about `15.8 ms/frame` mean and `17.5 ms/frame` P95 before tracking/localization.
+
 ## Limitations
 
 - The deterministic multi-cue detector is still scene-specific. It is stronger than a single HSV branch and appropriate for this fixed assessment video, but not a universal garbage-bin detector.
