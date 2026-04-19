@@ -12,6 +12,14 @@ bash run.sh --video input.mp4 --calib calib.json
 
 `run.sh` creates a local Python virtual environment so it does not write into an externally managed system Python.
 
+Runtime parameters can be moved out of the command line into `configs/default.yaml`:
+
+```bash
+bash run.sh --video input.mp4 --calib calib.json --config configs/default.yaml
+```
+
+CLI flags still override config values, so the required command remains stable.
+
 ## Asset Audit
 
 Files inspected: `REQUIREMENT.pdf`, `calib.json`, `waypoints.json`, `track_bin.py`, `run.sh`, and the canonical `input.mp4`. I also used the extra `Input sample.mp4` only as a development sanity check.
@@ -354,6 +362,11 @@ Generated files:
 - `trajectory_raw_vs_filtered.png`
 - `trajectory_strict.png`
 - `results/input_stdout.log` from my verification run
+
+Configuration files:
+
+- `configs/default.yaml`: detector backend/device/thresholds, bbox tracker age,
+  LK feature threshold, Kalman noise, and scene-control policy.
 
 CSV columns:
 

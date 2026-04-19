@@ -3,6 +3,7 @@ set -euo pipefail
 
 VIDEO=""
 CALIB=""
+CONFIG_FLAG=()
 GPU_FLAG=""
 BACKEND_FLAG=()
 DEVICE_FLAG=()
@@ -22,6 +23,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --calib)
       CALIB="$2"
+      shift 2
+      ;;
+    --config)
+      CONFIG_FLAG=(--config "$2")
       shift 2
       ;;
     --gpu)
@@ -72,7 +77,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$VIDEO" || -z "$CALIB" ]]; then
-  echo "Usage: bash run.sh --video <path> --calib <path> [--backend hybrid|auto|yolo_world] [--device cpu|cuda:0|mps|auto] [--conf <float>] [--imgsz <int>] [--gpu] [--no-kalman] [--scene-calibrate] [--use-scene-control] [--strict-geometry] [--bbox-gt <path>]" >&2
+  echo "Usage: bash run.sh --video <path> --calib <path> [--config <path>] [--backend hybrid|auto|yolo_world] [--device cpu|cuda:0|mps|auto] [--conf <float>] [--imgsz <int>] [--gpu] [--no-kalman] [--scene-calibrate] [--use-scene-control] [--strict-geometry] [--bbox-gt <path>]" >&2
   exit 1
 fi
 
@@ -124,6 +129,9 @@ fi
 echo ""
 
 CMD=("$VENV_DIR/bin/python" track_bin.py --video "$VIDEO" --calib "$CALIB")
+if [[ ${#CONFIG_FLAG[@]} -gt 0 ]]; then
+  CMD+=("${CONFIG_FLAG[@]}")
+fi
 if [[ -n "$GPU_FLAG" ]]; then
   CMD+=("$GPU_FLAG")
 fi

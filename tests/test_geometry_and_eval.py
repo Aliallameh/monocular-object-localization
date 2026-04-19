@@ -9,6 +9,7 @@ import subprocess
 
 import numpy as np
 
+from config_utils import load_runtime_config
 from eval_utils import evaluate_bbox_annotations
 from localizer import BIN_HEIGHT_M, CameraGeometry, build_camera_to_world
 from tracker_utils import bbox_iou
@@ -134,6 +135,32 @@ class EvaluationTests(unittest.TestCase):
                 imported = list(csv.DictReader(f))
         self.assertEqual(imported[0]["frame_id"], "42")
         self.assertEqual(imported[0]["x2"], "11.00")
+
+
+class ConfigTests(unittest.TestCase):
+    def test_default_config_loads(self) -> None:
+        cfg = load_runtime_config()
+        self.assertEqual(cfg["detector"]["backend"], "hybrid")
+        self.assertTrue(cfg["kalman"]["enabled"])
+
+    def test_yaml_config_override(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg_path = Path(tmp) / "config.yaml"
+            cfg_path.write_text(
+                """
+detector:
+  backend: auto
+  conf: 0.12
+tracker:
+  bbox_max_age: 12
+""",
+                encoding="utf-8",
+            )
+            cfg = load_runtime_config(str(cfg_path))
+        self.assertEqual(cfg["detector"]["backend"], "auto")
+        self.assertAlmostEqual(cfg["detector"]["conf"], 0.12)
+        self.assertEqual(cfg["detector"]["imgsz"], 640)
+        self.assertEqual(cfg["tracker"]["bbox_max_age"], 12)
 
 
 if __name__ == "__main__":

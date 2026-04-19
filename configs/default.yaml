@@ -1,0 +1,24 @@
+detector:
+  backend: hybrid
+  device: auto
+  conf: 0.05
+  imgsz: 640
+
+tracker:
+  bbox_max_age: 35
+  lk_min_points: 8
+
+kalman:
+  enabled: true
+  process_var: 3.0
+  measurement_var: 0.010
+
+scene_control:
+  auto_for_input_mp4: true
+  use_scene_control: false
+  strict_geometry: false
+  slow_scene_calibrate: false
+
+stress:
+  loops: 4
+  seed: 20260418
