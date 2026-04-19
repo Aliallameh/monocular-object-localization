@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+import subprocess
 
 import numpy as np
 
@@ -70,6 +71,69 @@ class EvaluationTests(unittest.TestCase):
             gt_path.write_text(json.dumps({"frames": [{"frame_id": 7, "x1": 1, "y1": 2, "x2": 11, "y2": 12}]}))
             report = evaluate_bbox_annotations(gt_path, rows)
         self.assertTrue(report["passes_hidden_contract_proxy"])
+
+    def test_import_cvat_xml(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            xml_path = tmp_path / "annotations.xml"
+            out_path = tmp_path / "out.csv"
+            xml_path.write_text(
+                """<annotations>
+                <track id="3" label="object">
+                  <box frame="5" outside="0" xtl="1" ytl="2" xbr="11" ybr="22" occluded="0" />
+                  <box frame="6" outside="1" xtl="1" ytl="2" xbr="11" ybr="22" occluded="0" />
+                </track>
+                </annotations>""",
+                encoding="utf-8",
+            )
+            subprocess.run(
+                [
+                    "python3",
+                    "tools/import_annotations.py",
+                    "--input",
+                    str(xml_path),
+                    "--output",
+                    str(out_path),
+                    "--label",
+                    "object",
+                ],
+                check=True,
+                cwd=Path(__file__).resolve().parents[1],
+                capture_output=True,
+                text=True,
+            )
+            with out_path.open(newline="", encoding="utf-8") as f:
+                imported = list(csv.DictReader(f))
+        self.assertEqual(len(imported), 1)
+        self.assertEqual(imported[0]["frame_id"], "5")
+        self.assertEqual(imported[0]["x2"], "11.00")
+
+    def test_import_coco_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            json_path = tmp_path / "instances_default.json"
+            out_path = tmp_path / "out.csv"
+            json_path.write_text(
+                json.dumps(
+                    {
+                        "images": [{"id": 10, "file_name": "frame_00042.jpg"}],
+                        "categories": [{"id": 1, "name": "object"}],
+                        "annotations": [{"image_id": 10, "category_id": 1, "bbox": [1, 2, 10, 20]}],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(
+                ["python3", "tools/import_annotations.py", "--input", str(json_path), "--output", str(out_path)],
+                check=True,
+                cwd=Path(__file__).resolve().parents[1],
+                capture_output=True,
+                text=True,
+            )
+            with out_path.open(newline="", encoding="utf-8") as f:
+                imported = list(csv.DictReader(f))
+        self.assertEqual(imported[0]["frame_id"], "42")
+        self.assertEqual(imported[0]["x2"], "11.00")
 
 
 if __name__ == "__main__":

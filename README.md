@@ -418,6 +418,18 @@ bash run.sh --video input.mp4 --calib calib.json --bbox-gt annotations/bbox_revi
 
 The evaluator in `eval_utils.py` then reports true mean/median/min IoU and IoU-over-0.6 rate in `results/bbox_eval.json` and `results/summary.json`. Until that corrected file exists, the repository deliberately does not claim true GT IoU.
 
+CVAT/COCO import:
+
+```bash
+.venv/bin/python tools/import_annotations.py \
+  --input annotations/cvat_export.xml \
+  --output annotations/bbox_gt.csv
+```
+
+The importer accepts CVAT XML, COCO JSON, or ZIP exports and converts them to
+the CSV schema consumed by `--bbox-gt`. External tool choices are summarized in
+`docs/external_tools_assessment.md`.
+
 ## Limitations
 
 - The deterministic multi-cue detector is still scene-specific. It is stronger than a single HSV branch and appropriate for this fixed assessment video, but not a universal garbage-bin detector.
