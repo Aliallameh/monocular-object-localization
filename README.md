@@ -316,6 +316,27 @@ Latest stress run:
 
 The first stress run exposed a real bug: the tracker would keep dead-reckoning through a long impossible occlusion and drift tens of metres away. The current tracker caps stale prediction, relaxes world gating after prolonged loss, and allows high-confidence non-flow detections to reacquire the target.
 
+Stress analysis:
+
+```bash
+.venv/bin/python tools/analyze_stress_results.py \
+  --manifest results/stress_long_manifest.csv \
+  --tracks results/stress_output.csv
+```
+
+This writes `results/stress_analysis.json` and `results/stress_events.csv`.
+Latest condition-specific symptoms:
+
+| Condition | Frames | Occluded rate | P10 confidence | Max occlusion age |
+|---|---:|---:|---:|---:|
+| Target occluders | 1206 | 10.7% | 0.618 | 55 |
+| Distractor people | 1634 | 10.0% | 0.619 | 47 |
+| Blue distractors | 1250 | 13.6% | 0.414 | 55 |
+| Gaussian blur | 1150 | 14.2% | 0.598 | 55 |
+| Motion blur | 576 | 24.8% | 0.363 | 48 |
+
+The harshest remaining stress weakness is motion blur plus distractors. This is exactly where a learned detector or segmentation-assisted detector should replace classical proposals.
+
 ## Runtime And Output Files
 
 Generated files:
