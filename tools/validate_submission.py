@@ -44,8 +44,10 @@ def main() -> None:
     results_dir = Path(args.results_dir)
 
     summary = read_json(results_dir / "summary.json", failures)
+    manifest = read_json(results_dir / "run_manifest.json", failures)
     validate_output_csv(results_dir / "output.csv", args.expect_frames, failures)
     validate_summary(summary, args, failures)
+    validate_manifest(manifest, failures)
     validate_files(failures)
     if not args.allow_private_tracked:
         validate_git_tracked_files(failures)
@@ -133,11 +135,25 @@ def validate_files(failures: List[str]) -> None:
         "localizer.py",
         "requirements.txt",
         "results/output.csv",
+        "results/run_manifest.json",
         "trajectory.png",
         "trajectory_raw_vs_filtered.png",
     ]:
         if not Path(path).exists():
             failures.append(f"missing required file: {path}")
+
+
+def validate_manifest(manifest: Dict[str, Any], failures: List[str]) -> None:
+    if not manifest:
+        return
+    for key in ["git", "python", "libraries", "inputs", "outputs", "run_metrics"]:
+        if key not in manifest:
+            failures.append(f"run manifest missing key: {key}")
+    output_csv = manifest.get("outputs", {}).get("output_csv", {})
+    if not output_csv.get("exists"):
+        failures.append("run manifest does not record existing output CSV")
+    if output_csv.get("sha256") and len(str(output_csv["sha256"])) != 64:
+        failures.append("run manifest output CSV sha256 is malformed")
 
 
 def validate_git_tracked_files(failures: List[str]) -> None:

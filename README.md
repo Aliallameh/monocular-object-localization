@@ -352,6 +352,7 @@ Generated files:
 - `results/output.csv`
 - `results/diagnostics.csv`
 - `results/summary.json`
+- `results/run_manifest.json`
 - `results/qa_report.json`
 - `results/robustness_report.json`
 - `results/bbox_eval.json`
@@ -362,6 +363,11 @@ Generated files:
 - `trajectory_raw_vs_filtered.png`
 - `trajectory_strict.png`
 - `results/input_stdout.log` from my verification run
+
+`results/run_manifest.json` records the exact run provenance: command arguments,
+Git commit/dirty state, Python/OpenCV/NumPy versions, input file hashes, output
+hashes, and headline metrics. This is meant to make reruns auditable instead of
+depending on handwritten notes.
 
 Configuration files:
 

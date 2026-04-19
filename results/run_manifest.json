@@ -1,0 +1,92 @@
+{
+  "created_unix_s": 1776634898.169089,
+  "git": {
+    "commit": "f94c149ab0aa86502b226033a34d09093dc10991",
+    "branch": "main",
+    "is_dirty": true,
+    "remote": "https://github.com/Aliallameh/monocular-object-localization.git"
+  },
+  "python": {
+    "executable": "/Users/aliallameh/Documents/TT/.venv/bin/python",
+    "version": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "platform": "macOS-26.4.1-arm64-arm-64bit"
+  },
+  "libraries": {
+    "opencv": "4.13.0",
+    "numpy": "2.4.4"
+  },
+  "inputs": {
+    "video": {
+      "path": "input.mp4",
+      "exists": true,
+      "bytes": 54522713,
+      "sha256": "dae61a8cde161e97ca155a90998a14d0ae7a68777d81abd3a6cd7ba54e7e49aa"
+    },
+    "calibration": {
+      "path": "calib.json",
+      "exists": true,
+      "bytes": 477,
+      "sha256": "5a8e52d9edb3f1788bfbb23c942384c9513dfc466b7329a005e86d61631127b3"
+    }
+  },
+  "command_args": {
+    "video": "input.mp4",
+    "calib": "calib.json",
+    "waypoints": "waypoints.json",
+    "output": "results/output.csv",
+    "config": "configs/default.yaml",
+    "manifest": "results/run_manifest.json",
+    "gpu": false,
+    "backend": null,
+    "device": null,
+    "conf": null,
+    "imgsz": null,
+    "no_kalman": false,
+    "bbox_gt": "",
+    "strict_geometry": false,
+    "use_scene_control": false,
+    "scene_calibrate": false,
+    "max_frames": 0
+  },
+  "outputs": {
+    "output_csv": {
+      "path": "results/output.csv",
+      "exists": true,
+      "bytes": 177141,
+      "sha256": "c7492f045eb66d8ce10c3feb5cf01b1e579ef3ad811f9622371e5398e8bdb689"
+    },
+    "trajectory_png": {
+      "path": "trajectory.png",
+      "exists": true,
+      "bytes": 278964,
+      "sha256": "e210024be9332187ac2c57371c4b417b3649591b407ead5d192f79285ee64b03"
+    },
+    "trajectory_raw_vs_filtered_png": {
+      "path": "trajectory_raw_vs_filtered.png",
+      "exists": true,
+      "bytes": 223469,
+      "sha256": "ec305e811ef3bf636b5b1e91130f541cea1403268aaf969f667b1469e2f86051"
+    },
+    "trajectory_strict_png": {
+      "path": "trajectory_strict.png",
+      "exists": true,
+      "bytes": 223594,
+      "sha256": "b4c68f3eecb41ac24d54e5bf29663d3c8ba93c653199564fc52204c48041874f"
+    },
+    "summary_json": {
+      "path": "results/summary.json",
+      "exists": true,
+      "bytes": 20285,
+      "sha256": "e6c2db4b463ffd3848f34dad5d1a35ee98ed6b1655b3c0ffad54df1bce909f29"
+    }
+  },
+  "run_metrics": {
+    "frames_processed": 875,
+    "detector_hit_rate": 1.0,
+    "tracker_output_rate": 1.0,
+    "occluded_frames": 0,
+    "p95_processing_ms_per_frame": 35.233649994188454,
+    "rmse_xy_m": 0.20678037436273408,
+    "strict_rmse_xy_m": 4.409931252644764
+  }
+}
