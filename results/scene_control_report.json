@@ -1,0 +1,150 @@
+{
+  "enabled": true,
+  "controls": [
+    "A",
+    "B",
+    "C"
+  ],
+  "affine_in_sample_rmse_m": 6.027749212234753e-15,
+  "similarity_in_sample_rmse_m": 1.7225523002936263,
+  "affine_matrix_xy": [
+    [
+      3.884256505338818,
+      0.7924534353841988
+    ],
+    [
+      -1.8996998636908022,
+      -1.9350974826489218
+    ],
+    [
+      -4.287945397289632,
+      -2.0001283442631217
+    ]
+  ],
+  "similarity": {
+    "scale": 0.29496698428501683,
+    "rotation": [
+      [
+        0.977551867835508,
+        0.2106949114034552
+      ],
+      [
+        -0.2106949114034552,
+        0.9775518678355081
+      ]
+    ],
+    "translation": [
+      6.170636531795147,
+      0.012668092779925297
+    ]
+  },
+  "affine_leave_one_out_errors_m": {
+    "0": null,
+    "1": null,
+    "2": null
+  },
+  "similarity_leave_one_out_errors_m": {
+    "0": 5.323111272501716,
+    "1": 6.824055945420604,
+    "2": 4.241922348013616
+  },
+  "interpretation": "With only three controls, a full affine fit can interpolate exactly. Leave-one-out errors are the better warning about generalization.",
+  "active_calibration": {
+    "method": "fast_waypoint_prior_frame_samples",
+    "affine_matrix_xy": [
+      [
+        3.6197697401991302,
+        0.7178084210976727
+      ],
+      [
+        -1.5918560286976662,
+        -1.8832681460227956
+      ],
+      [
+        -3.6630891071003955,
+        -1.7947212415559568
+      ]
+    ],
+    "controls": [
+      {
+        "name": "A",
+        "approx_frame": 45,
+        "bbox": [
+          724.0,
+          478.0,
+          1220.0,
+          883.0
+        ],
+        "confidence": 0.9270841765004058,
+        "detector_source": "blue_hsv_shape",
+        "strict_world_xy": [
+          2.438466577505181,
+          -0.023559770123669648
+        ],
+        "target_waypoint_xy": [
+          5.201102184745891,
+          -3.3055991699485594e-08
+        ],
+        "pre_calibration_error_m": 2.7627360640504453,
+        "post_calibration_xy": [
+          5.20110218474589,
+          -3.305599038938567e-08
+        ],
+        "post_calibration_error_m": 1.5827895359843477e-15
+      },
+      {
+        "name": "B",
+        "approx_frame": 195,
+        "bbox": [
+          449.0,
+          477.0,
+          725.0,
+          697.0
+        ],
+        "confidence": 0.9437163273810651,
+        "detector_source": "blue_hsv_shape",
+        "strict_world_xy": [
+          3.4200354467787215,
+          0.9952540248830133
+        ],
+        "target_waypoint_xy": [
+          7.132350593961992,
+          -1.2141211996688075
+        ],
+        "pre_calibration_error_m": 4.32002576784789,
+        "post_calibration_xy": [
+          7.132350593961991,
+          -1.2141211996688064
+        ],
+        "post_calibration_error_m": 1.4217791915866692e-15
+      },
+      {
+        "name": "C",
+        "approx_frame": 345,
+        "bbox": [
+          875.0,
+          479.0,
+          1155.0,
+          703.0
+        ],
+        "confidence": 0.9181429156454111,
+        "detector_source": "blue_hsv_shape",
+        "strict_world_xy": [
+          3.399894280116999,
+          -0.14309295546019965
+        ],
+        "target_waypoint_xy": [
+          8.871528711756712,
+          0.9152339084922867
+        ],
+        "pre_calibration_error_m": 5.573045765509982,
+        "post_calibration_xy": [
+          8.871528711756708,
+          0.9152339084922876
+        ],
+        "post_calibration_error_m": 3.66205343881779e-15
+      }
+    ],
+    "control_rmse_m": 2.445220792594375e-15
+  }
+}

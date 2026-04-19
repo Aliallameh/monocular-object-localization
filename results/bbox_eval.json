@@ -1,0 +1,5 @@
+{
+  "enabled": false,
+  "reason": "no_gt_file_provided",
+  "interpretation": "Hidden GT boxes are unavailable locally; no IoU is claimed."
+}

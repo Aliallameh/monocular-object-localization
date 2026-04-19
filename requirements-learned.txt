@@ -1,0 +1,12 @@
+# Optional learned detector stack.
+# The required assessment command does not install this file; use it when you
+# want to run the open-vocabulary YOLO-World backend on broader videos:
+#
+#   .venv/bin/python -m pip install -r requirements-learned.txt
+#   bash run.sh --video <video.mp4> --calib calib.json --backend auto --device cpu
+#
+# For CUDA Jetson/x86 deployment, install the torch build that matches the
+# target CUDA/TensorRT stack instead of blindly using the generic wheel below.
+ultralytics>=8.2.0
+torch>=2.2
+torchvision>=0.17

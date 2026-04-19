@@ -1,0 +1,19 @@
+.venv/
+.venv_audit/
+.audit_frames/
+.audit_sample/
+.qa_frames/
+.DS_Store
+__pycache__/
+*.pyc
+*.mp4
+calib.json
+input.mp4
+Input sample.mp4
+ProjectA/
+projectA/
+*.pt
+results/*.log
+results/_quick_output.csv
+results/stress_sample_*.jpg
+results/qa_frames/
