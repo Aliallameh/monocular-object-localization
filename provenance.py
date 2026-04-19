@@ -90,11 +90,29 @@ def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
 
 
 def git_info() -> Dict[str, Any]:
+    dirty_files = git_dirty_files()
+    generated_prefixes = (
+        "results/",
+        "trajectory.png",
+        "trajectory_raw_vs_filtered.png",
+        "trajectory_strict.png",
+        "trajectory_waypoint_calibrated.png",
+    )
+    code_dirty_files = [
+        name
+        for name in dirty_files
+        if not any(name == prefix.rstrip("/") or name.startswith(prefix) for prefix in generated_prefixes)
+    ]
     return {
-        "commit": run_git(["rev-parse", "HEAD"]),
+        "code_commit_at_run": run_git(["rev-parse", "HEAD"]),
         "branch": run_git(["branch", "--show-current"]),
-        "is_dirty": bool(run_git(["status", "--short"])),
+        "code_dirty_excluding_generated_outputs": bool(code_dirty_files),
+        "code_dirty_files": code_dirty_files,
         "remote": run_git(["remote", "get-url", "origin"]),
+        "note": (
+            "code_commit_at_run is the source commit used to generate the artifacts. "
+            "The artifact commit itself can be later because generated outputs are committed after the run."
+        ),
     }
 
 
@@ -106,3 +124,15 @@ def run_git(args: list[str]) -> str | None:
     if proc.returncode != 0:
         return None
     return proc.stdout.strip()
+
+
+def git_dirty_files() -> list[str]:
+    status = run_git(["status", "--porcelain"])
+    if not status:
+        return []
+    out: list[str] = []
+    for line in status.splitlines():
+        if len(line) < 4:
+            continue
+        out.append(line[3:].strip())
+    return out
