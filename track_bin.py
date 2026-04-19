@@ -31,6 +31,7 @@ from plots import (
     save_trajectory_plot,
     write_waypoint_calibrated_csv,
 )
+from provenance import build_run_manifest, write_run_manifest
 from qa_utils import build_qa_report, save_qa_frames, write_diagnostics_csv, write_json
 from robustness_eval import run_dropout_stress_test
 from scene_calibration import (
@@ -54,6 +55,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--waypoints", default="waypoints.json", help="Path to waypoints.json")
     parser.add_argument("--output", default="results/output.csv", help="CSV output path")
     parser.add_argument("--config", default="", help="Optional YAML/JSON runtime config")
+    parser.add_argument("--manifest", default="results/run_manifest.json", help="Run provenance manifest path")
     parser.add_argument("--gpu", action="store_true", help="Request GPU detector backend if available")
     parser.add_argument(
         "--backend",
@@ -607,6 +609,17 @@ def main() -> None:
         "strict_trajectory": "trajectory_strict.png",
         "raw_vs_filtered_trajectory": "trajectory_raw_vs_filtered.png",
     }
+    manifest_path = write_run_manifest(
+        args.manifest,
+        build_run_manifest(
+            command_args=vars(args),
+            video_path=args.video,
+            calib_path=args.calib,
+            output_path=str(output_path),
+            summary=summary,
+        ),
+    )
+    summary["qa_artifacts"]["run_manifest_json"] = manifest_path
     with open("results/summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
@@ -632,6 +645,7 @@ def main() -> None:
     )
     print(f"[summary] wrote {output_path}, trajectory.png, and trajectory_strict.png", flush=True)
     print(f"[summary] wrote {diagnostics_path}, {qa_report_path}, and {qa_frame_dir}/", flush=True)
+    print(f"[summary] wrote run manifest {manifest_path}", flush=True)
 
 
 def _measurement_var_for_track(track: Any) -> float:
