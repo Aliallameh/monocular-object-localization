@@ -17,3 +17,4 @@ results/*.log
 results/_quick_output.csv
 results/stress_sample_*.jpg
 results/qa_frames/
+annotations/
