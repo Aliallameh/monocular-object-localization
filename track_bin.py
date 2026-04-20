@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 
 from config_utils import load_runtime_config
-from detector import Detection, load_detector
+from detector import Detection, detect_compute, load_detector
 from eval_utils import (
     asset_alignment_diagnostics,
     evaluate_bbox_annotations,
@@ -40,6 +40,68 @@ from tracker_utils import BBoxKalmanTracker, LKFlowPropagator
 def load_json(path: str | Path) -> Dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def _banner(video: str, calib: str, backend: str, kalman_on: bool) -> None:
+    """Print a visible startup header that won't get lost in frame logs."""
+    device_str, device_label = detect_compute()
+    w = 68
+    sep = "─" * w
+    def brow(label: str, value: str) -> str:
+        content = f"  {label:<10}: {value}"
+        return f"│{content:<{w}}│"
+
+    gpu_value = device_label
+    if device_str != "cpu" and backend == "hybrid":
+        gpu_value += "  ← pass --backend auto to accelerate"
+    lines = [
+        f"┌{sep}┐",
+        f"│{'  Bin Tracker — Monocular 3-D Localization':^{w}}│",
+        f"├{sep}┤",
+        brow("Video",    video),
+        brow("Calib",    calib),
+        brow("Detector", backend),
+        brow("Compute",  gpu_value),
+        brow("Kalman",   "ON" if kalman_on else "OFF"),
+        f"└{sep}┘",
+    ]
+    print("\n" + "\n".join(lines) + "\n", flush=True)
+
+
+def _summary_box(summary: dict, metrics: dict, strict_metrics: dict) -> None:
+    """Print a framed summary that stands out after 800+ frame lines."""
+    W = 68
+    sep = "─" * W
+
+    def row(label: str, value: str) -> str:
+        content = f"  {label:<22}: {value}"
+        return f"│{content:<{W}}│"
+
+    det      = summary["detector_hit_rate"] * 100
+    trk      = summary["tracker_output_rate"] * 100
+    mean     = summary["mean_processing_ms_per_frame"]
+    p95      = summary["p95_processing_ms_per_frame"]
+    rmse     = metrics.get("rmse_xy_m", float("nan"))
+    occ      = summary["occluded_frames"]
+    step_red = metrics.get("smoothness", {}).get("frame_step_std_reduction_pct", float("nan"))
+
+    lines = [
+        f"\n┌{sep}┐",
+        f"│{'  RESULTS':^{W}}│",
+        f"├{sep}┤",
+        row("Frames processed",    str(summary["frames_processed"])),
+        row("Detector hit rate",   f"{det:.1f}%"),
+        row("Tracker output rate", f"{trk:.1f}%"),
+        row("Occluded frames",     str(occ)),
+        f"├{sep}┤",
+        row("Mean latency",        f"{mean:.1f} ms / frame"),
+        row("p95 latency",         f"{p95:.1f} ms / frame"),
+        f"├{sep}┤",
+        row("Waypoint RMSE XY",    f"{rmse:.3f} m  (residual — see README)"),
+        row("Kalman smoothing",    f"{step_red:.1f}% frame-step σ reduction" if not __import__('math').isnan(step_red) else "N/A (Kalman off)"),
+        f"└{sep}┘",
+    ]
+    print("\n".join(lines) + "\n", flush=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -104,7 +166,9 @@ def main() -> None:
     )
     waypoint_data = load_json(args.waypoints) if Path(args.waypoints).exists() else {"markers": []}
     projected_waypoints = project_waypoints(waypoint_data, camera)
-    print("[calib] using strict camera/bin geometry; waypoints are evaluation-only", flush=True)
+
+    kalman_on = not (args.no_kalman or not bool(kalman_cfg["enabled"]))
+    _banner(args.video, args.calib, detector_backend, kalman_on)
 
     bbox_tracker = BBoxKalmanTracker(max_age=int(tracker_cfg["bbox_max_age"]))
     flow_tracker = LKFlowPropagator(min_points=int(tracker_cfg["lk_min_points"]))
@@ -590,26 +654,12 @@ def main() -> None:
     with open("results/summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
 
-    print(
-        "[summary] frames={frames} detector_hits={det:.1f}% tracker_outputs={trk:.1f}% "
-        "occluded={occ} mean_dt={mean:.1f}ms p95_dt={p95:.1f}ms "
-        "output_RMSE_XY={rmse:.3f}m strict_RMSE_XY={strict_rmse:.3f}m".format(
-            frames=summary["frames_processed"],
-            det=100.0 * summary["detector_hit_rate"],
-            trk=100.0 * summary["tracker_output_rate"],
-            occ=summary["occluded_frames"],
-            mean=summary["mean_processing_ms_per_frame"],
-            p95=summary["p95_processing_ms_per_frame"],
-            rmse=metrics.get("rmse_xy_m", float("nan")),
-            strict_rmse=strict_metrics.get("rmse_xy_m", float("nan")),
-        ),
-        flush=True,
-    )
-    print(f"[summary] wrote {output_path}, trajectory.png, and trajectory_strict.png", flush=True)
+    _summary_box(summary, metrics, strict_metrics)
+    print(f"[output] {output_path}", flush=True)
+    print(f"[output] trajectory.png  trajectory_strict.png  trajectory_raw_vs_filtered.png", flush=True)
     if observer_report is not None:
-        print(f"[summary] wrote {args.observer_video} and {args.observer_json}", flush=True)
-    print(f"[summary] wrote {diagnostics_path}, {qa_report_path}, and {qa_frame_dir}/", flush=True)
-    print(f"[summary] wrote run manifest {manifest_path}", flush=True)
+        print(f"[output] {args.observer_video}  {args.observer_json}", flush=True)
+    print(f"[output] {diagnostics_path}  {qa_report_path}  {manifest_path}", flush=True)
 
 
 def _measurement_var_for_track(track: Any) -> float:

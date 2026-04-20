@@ -15,6 +15,34 @@ import cv2
 import numpy as np
 
 
+def detect_compute() -> tuple[str, str]:
+    """Return (device_str, human_label) for the best available compute.
+
+    Priority: CUDA → Apple Metal (MPS) → CPU.
+    Returns a string suitable for torch/ultralytics device argument.
+    """
+    # CUDA via OpenCV
+    try:
+        if cv2.cuda.getCudaEnabledDeviceCount() > 0:
+            name = cv2.cuda.DeviceInfo(0).name() if hasattr(cv2.cuda, "DeviceInfo") else "CUDA GPU"
+            return "cuda:0", f"NVIDIA CUDA  ({name})"
+    except (cv2.error, AttributeError):
+        pass
+
+    # CUDA or MPS via torch (optional dep)
+    try:
+        import torch  # type: ignore
+        if torch.cuda.is_available():
+            name = torch.cuda.get_device_name(0)
+            return "cuda:0", f"NVIDIA CUDA  ({name})"
+        if torch.backends.mps.is_available():
+            return "mps", "Apple Metal  (MPS)"
+    except ImportError:
+        pass
+
+    return "cpu", "CPU  (no GPU detected)"
+
+
 BBox = Tuple[float, float, float, float]
 
 
@@ -497,28 +525,39 @@ def load_detector(
     imgsz: int = 640,
 ) -> object:
     backend = backend.lower()
-    requested_device = device.lower()
-    if requested_device == "auto":
-        requested_device = "cuda:0" if use_gpu else "cpu"
+
+    # Always resolve hardware so we can report it honestly
+    detected_device, detected_label = detect_compute()
+    if device.lower() == "auto":
+        requested_device = detected_device if use_gpu else "cpu"
+    else:
+        requested_device = device.lower()
+
+    gpu_available = detected_device != "cpu"
 
     if backend == "hybrid":
-        if use_gpu:
-            print(
-                "[detector] --gpu requested, but hybrid backend is CPU-only; no CUDA device is used.",
-                flush=True,
-            )
-        print("[detector] using hybrid classical proposal backend", flush=True)
+        gpu_note = (
+            f"  → GPU available ({detected_label}); pass --backend auto to use it"
+            if gpu_available else ""
+        )
+        print(
+            f"[detector] backend=hybrid  compute=CPU (classical, no weights){gpu_note}",
+            flush=True,
+        )
         return HybridBinDetector()
 
     fallback = HybridBinDetector()
     try:
         learned = YoloWorldBinDetector(device=requested_device, conf=conf, imgsz=imgsz)
         if backend == "yolo_world":
-            print(f"[detector] using YOLO-World open-vocabulary backend on device={requested_device}", flush=True)
+            print(
+                f"[detector] backend=yolo_world  device={requested_device}  ({detected_label})",
+                flush=True,
+            )
             return learned
         if backend == "auto":
             print(
-                f"[detector] using YOLO-World + hybrid cascade on device={requested_device}",
+                f"[detector] backend=auto (YOLO-World + hybrid cascade)  device={requested_device}  ({detected_label})",
                 flush=True,
             )
             return DetectorCascade(learned, fallback)
@@ -526,16 +565,18 @@ def load_detector(
         if backend == "yolo_world":
             raise
         print(
-            f"[detector] YOLO-World unavailable ({exc!r}); falling back to hybrid classical backend",
+            f"[detector] YOLO-World unavailable ({exc!r}); falling back to hybrid  compute=CPU",
             flush=True,
         )
 
-    if use_gpu:
-        print(
-            "[detector] --gpu requested, but active fallback backend is CPU-only; no CUDA device is used.",
-            flush=True,
-        )
-    print("[detector] using hybrid classical proposal backend", flush=True)
+    gpu_note = (
+        f"  → GPU available ({detected_label}); pass --backend auto to use it"
+        if gpu_available else ""
+    )
+    print(
+        f"[detector] backend=hybrid  compute=CPU (classical, no weights){gpu_note}",
+        flush=True,
+    )
     return HybridBinDetector()
 
 
