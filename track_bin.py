@@ -24,6 +24,7 @@ from eval_utils import (
 )
 from frame_quality import assess_frame_quality
 from localizer import CameraGeometry, PositionKalman, localize_bbox
+from observer import VideoObserver
 from plots import (
     estimate_stops,
     project_waypoints,
@@ -61,6 +62,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=None, help="Learned-detector inference image size")
     parser.add_argument("--no-kalman", action="store_true", help="Disable world-position Kalman smoothing")
     parser.add_argument("--bbox-gt", default="", help="Optional JSON/CSV bbox annotations for local IoU evaluation")
+    parser.add_argument(
+        "--observer-video",
+        default="results/observer_overlay.mp4",
+        help="Visualization-only annotated observer video path",
+    )
+    parser.add_argument(
+        "--observer-json",
+        default="results/observer_events.json",
+        help="Visualization-only observer event report path",
+    )
+    parser.add_argument("--no-observer", action="store_true", help="Disable annotated observer video generation")
+    parser.add_argument("--display", action="store_true", help="Show live observer window while processing")
     parser.add_argument("--max-frames", type=int, default=0, help=argparse.SUPPRESS)
     return parser.parse_args()
 
@@ -112,6 +125,7 @@ def main() -> None:
     if not np.isfinite(fps) or fps <= 0:
         fps = camera.fps
     dt = 1.0 / max(1e-6, fps)
+    observer = None if args.no_observer else VideoObserver(args.observer_video, args.observer_json, fps, args.display)
 
     rows: List[Dict[str, Any]] = []
     frame_ids: List[int] = []
@@ -209,6 +223,23 @@ def main() -> None:
                 if first_track_stdout_ms is None:
                     first_track_stdout_ms = (time.perf_counter() - start_wall) * 1000.0
                 frame_states.append("SEARCHING")
+                if observer is not None:
+                    observer.process(
+                        frame,
+                        {
+                            "frame_id": frame_id,
+                            "timestamp_ms": timestamp_ms,
+                            "status": "searching",
+                            "track_state": "SEARCHING",
+                            "detector_source": "",
+                            "conf": 0.0,
+                            "occlusion_age": 0,
+                            "world": None,
+                            "cam": None,
+                            "sigma": None,
+                            "bbox": None,
+                        },
+                    )
                 writer.writerow(
                     [
                         frame_id,
@@ -304,6 +335,24 @@ def main() -> None:
             if first_track_stdout_ms is None:
                 first_track_stdout_ms = (time.perf_counter() - start_wall) * 1000.0
 
+            if observer is not None:
+                observer.process(
+                    frame,
+                    {
+                        "frame_id": frame_id,
+                        "timestamp_ms": timestamp_ms,
+                        "status": track.status,
+                        "track_state": track_state,
+                        "detector_source": detector_source,
+                        "conf": float(track.confidence),
+                        "occlusion_age": int(track.age),
+                        "world": out_xyz_world.tolist(),
+                        "cam": out_xyz_cam.tolist(),
+                        "sigma": sigma_xyz.tolist(),
+                        "bbox": [float(v) for v in track.bbox],
+                    },
+                )
+
             writer.writerow(
                 [
                     frame_id,
@@ -379,6 +428,7 @@ def main() -> None:
             frame_id += 1
 
     cap.release()
+    observer_report: Dict[str, Any] | None = observer.close() if observer is not None else None
 
     if not frame_ids:
         raise RuntimeError("No frames were processed into a valid track")
@@ -468,6 +518,17 @@ def main() -> None:
         "asset_alignment_diagnostics": asset_alignment_report,
         "robustness_stress_test": robustness_report,
         "occlusion_stress_suite": occlusion_stress_suite,
+        "observer": (
+            {
+                "enabled": True,
+                "video": str(args.observer_video),
+                "events_json": str(args.observer_json),
+                "frames_rendered": observer_report.get("frames_rendered") if observer_report else None,
+                "state_counts": observer_report.get("state_counts") if observer_report else {},
+            }
+            if observer_report is not None
+            else {"enabled": False}
+        ),
     }
 
     os.makedirs("results", exist_ok=True)
@@ -477,6 +538,8 @@ def main() -> None:
     occlusion_suite_path = "results/occlusion_stress_suite.json"
     bbox_eval_path = "results/bbox_eval.json"
     asset_alignment_path = "results/asset_alignment_report.json"
+    observer_json_path = str(args.observer_json) if observer_report is not None else None
+    observer_video_path = str(args.observer_video) if observer_report is not None else None
     qa_frame_dir = "results/qa_frames"
     write_diagnostics_csv(diagnostics_path, rows)
     write_json(robustness_path, robustness_report)
@@ -506,6 +569,8 @@ def main() -> None:
         "occlusion_stress_suite_json": occlusion_suite_path,
         "bbox_eval_json": bbox_eval_path,
         "asset_alignment_report_json": asset_alignment_path,
+        "observer_events_json": observer_json_path,
+        "observer_overlay_video": observer_video_path,
         "bbox_annotation_template_csv": annotation_template_path,
         "annotated_frames": qa_frames,
         "strict_trajectory": "trajectory_strict.png",
@@ -541,6 +606,8 @@ def main() -> None:
         flush=True,
     )
     print(f"[summary] wrote {output_path}, trajectory.png, and trajectory_strict.png", flush=True)
+    if observer_report is not None:
+        print(f"[summary] wrote {args.observer_video} and {args.observer_json}", flush=True)
     print(f"[summary] wrote {diagnostics_path}, {qa_report_path}, and {qa_frame_dir}/", flush=True)
     print(f"[summary] wrote run manifest {manifest_path}", flush=True)
 

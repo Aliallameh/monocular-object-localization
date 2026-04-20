@@ -144,10 +144,12 @@ def validate_files(failures: List[str]) -> None:
         "results/output.csv",
         "results/run_manifest.json",
         "results/occlusion_stress_suite.json",
+        "results/observer_events.json",
         "results/review_readiness.json",
         "results/review_readiness.md",
         "trajectory.png",
         "trajectory_raw_vs_filtered.png",
+        "results/observer_overlay.mp4",
     ]
     for path in required:
         if not Path(path).exists():

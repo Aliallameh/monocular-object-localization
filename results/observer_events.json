@@ -1,0 +1,1146 @@
+{
+  "schema_version": 1,
+  "video": "results/observer_overlay.mp4",
+  "frames_rendered": 875,
+  "fps": 29.97002997002997,
+  "state_counts": {
+    "STATIONARY": 167,
+    "SETTLING": 231,
+    "MOVING": 444,
+    "CHANGING_DIRECTION": 33
+  },
+  "events": [
+    {
+      "label": "STATIONARY",
+      "start_frame": 0,
+      "end_frame": 2,
+      "start_timestamp_ms": 0,
+      "end_timestamp_ms": 67,
+      "max_speed_mps": 0.05274931790771186,
+      "start_world": [
+        1.291136796147541,
+        0.025942059171154098,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 3,
+      "end_frame": 31,
+      "start_timestamp_ms": 100,
+      "end_timestamp_ms": 1034,
+      "max_speed_mps": 0.1396774327772257,
+      "start_world": [
+        1.284642288148538,
+        0.017668173853656377,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 32,
+      "end_frame": 36,
+      "start_timestamp_ms": 1068,
+      "end_timestamp_ms": 1201,
+      "max_speed_mps": 0.049360950139073406,
+      "start_world": [
+        1.2020376226260958,
+        -0.020243807991042546,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 37,
+      "end_frame": 41,
+      "start_timestamp_ms": 1235,
+      "end_timestamp_ms": 1368,
+      "max_speed_mps": 0.1184303233224048,
+      "start_world": [
+        1.1970425109385536,
+        -0.014188971843689913,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 42,
+      "end_frame": 50,
+      "start_timestamp_ms": 1401,
+      "end_timestamp_ms": 1668,
+      "max_speed_mps": 0.20043500480103404,
+      "start_world": [
+        1.1741654510743997,
+        -0.007190685616772085,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 51,
+      "end_frame": 67,
+      "start_timestamp_ms": 1702,
+      "end_timestamp_ms": 2236,
+      "max_speed_mps": 0.12653650765477187,
+      "start_world": [
+        1.1257131794301294,
+        -0.014774383756541071,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 68,
+      "end_frame": 68,
+      "start_timestamp_ms": 2269,
+      "end_timestamp_ms": 2269,
+      "max_speed_mps": 0.1522661421602522,
+      "start_world": [
+        1.1016224011363533,
+        -0.045122413233643625,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 69,
+      "end_frame": 77,
+      "start_timestamp_ms": 2302,
+      "end_timestamp_ms": 2569,
+      "max_speed_mps": 0.13540705222004196,
+      "start_world": [
+        1.0986822351069077,
+        -0.04529765580951466,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 78,
+      "end_frame": 115,
+      "start_timestamp_ms": 2603,
+      "end_timestamp_ms": 3837,
+      "max_speed_mps": 0.38017486093902536,
+      "start_world": [
+        1.0939652381350504,
+        -0.033270793008860385,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 116,
+      "end_frame": 116,
+      "start_timestamp_ms": 3871,
+      "end_timestamp_ms": 3871,
+      "max_speed_mps": 0.22479515157745888,
+      "start_world": [
+        1.2702575848375612,
+        0.235506420393408,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 117,
+      "end_frame": 157,
+      "start_timestamp_ms": 3904,
+      "end_timestamp_ms": 5239,
+      "max_speed_mps": 0.30968328186589494,
+      "start_world": [
+        1.2758288720201978,
+        0.2424049883764785,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 158,
+      "end_frame": 165,
+      "start_timestamp_ms": 5272,
+      "end_timestamp_ms": 5506,
+      "max_speed_mps": 0.129899372764036,
+      "start_world": [
+        1.4455559544949985,
+        0.5202492503168179,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 166,
+      "end_frame": 177,
+      "start_timestamp_ms": 5539,
+      "end_timestamp_ms": 5906,
+      "max_speed_mps": 0.04854313078917241,
+      "start_world": [
+        1.4449244582865235,
+        0.5348193216937775,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 178,
+      "end_frame": 188,
+      "start_timestamp_ms": 5939,
+      "end_timestamp_ms": 6273,
+      "max_speed_mps": 0.09127293659800195,
+      "start_world": [
+        1.4469739267927895,
+        0.5329692254086468,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 189,
+      "end_frame": 224,
+      "start_timestamp_ms": 6306,
+      "end_timestamp_ms": 7474,
+      "max_speed_mps": 0.04807255422863542,
+      "start_world": [
+        1.4729605904480838,
+        0.5324775957810295,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 225,
+      "end_frame": 240,
+      "start_timestamp_ms": 7508,
+      "end_timestamp_ms": 8008,
+      "max_speed_mps": 0.11442998667346879,
+      "start_world": [
+        1.4752290540984874,
+        0.5338999023959116,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 241,
+      "end_frame": 252,
+      "start_timestamp_ms": 8041,
+      "end_timestamp_ms": 8408,
+      "max_speed_mps": 0.05386513621599134,
+      "start_world": [
+        1.4718196535789174,
+        0.534369287402593,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 253,
+      "end_frame": 255,
+      "start_timestamp_ms": 8442,
+      "end_timestamp_ms": 8508,
+      "max_speed_mps": 0.11579328609540551,
+      "start_world": [
+        1.4846702155993543,
+        0.5345434375323778,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 256,
+      "end_frame": 259,
+      "start_timestamp_ms": 8542,
+      "end_timestamp_ms": 8642,
+      "max_speed_mps": 0.17685437599354753,
+      "start_world": [
+        1.4666483249319626,
+        0.5286992646340216,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 260,
+      "end_frame": 260,
+      "start_timestamp_ms": 8675,
+      "end_timestamp_ms": 8675,
+      "max_speed_mps": 0.14377813785554971,
+      "start_world": [
+        1.4472370628666447,
+        0.5195635039815729,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 261,
+      "end_frame": 264,
+      "start_timestamp_ms": 8709,
+      "end_timestamp_ms": 8809,
+      "max_speed_mps": 0.13019405863948003,
+      "start_world": [
+        1.4495578062231267,
+        0.5183284122828712,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 265,
+      "end_frame": 267,
+      "start_timestamp_ms": 8842,
+      "end_timestamp_ms": 8909,
+      "max_speed_mps": 0.14919083865381189,
+      "start_world": [
+        1.4630698559048159,
+        0.5060940784658916,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 268,
+      "end_frame": 283,
+      "start_timestamp_ms": 8942,
+      "end_timestamp_ms": 9443,
+      "max_speed_mps": 0.13679531903223874,
+      "start_world": [
+        1.4713978923826165,
+        0.49541312329305615,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 284,
+      "end_frame": 298,
+      "start_timestamp_ms": 9476,
+      "end_timestamp_ms": 9943,
+      "max_speed_mps": 0.2779988744591625,
+      "start_world": [
+        1.4640163192333662,
+        0.4355907360370943,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 299,
+      "end_frame": 300,
+      "start_timestamp_ms": 9977,
+      "end_timestamp_ms": 10010,
+      "max_speed_mps": 0.17276126586075133,
+      "start_world": [
+        1.4250464584691878,
+        0.3301718078915785,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 301,
+      "end_frame": 303,
+      "start_timestamp_ms": 10043,
+      "end_timestamp_ms": 10110,
+      "max_speed_mps": 0.17190855976082964,
+      "start_world": [
+        1.4214824984682006,
+        0.3230995713225214,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 304,
+      "end_frame": 304,
+      "start_timestamp_ms": 10143,
+      "end_timestamp_ms": 10143,
+      "max_speed_mps": 0.17485840962639718,
+      "start_world": [
+        1.4196852551134056,
+        0.3071054570504717,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 305,
+      "end_frame": 310,
+      "start_timestamp_ms": 10177,
+      "end_timestamp_ms": 10344,
+      "max_speed_mps": 0.24532744630724818,
+      "start_world": [
+        1.4270306586505455,
+        0.3039817820820652,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 311,
+      "end_frame": 311,
+      "start_timestamp_ms": 10377,
+      "end_timestamp_ms": 10377,
+      "max_speed_mps": 0.17169517983417754,
+      "start_world": [
+        1.4647965994040772,
+        0.2933921574718113,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 312,
+      "end_frame": 312,
+      "start_timestamp_ms": 10410,
+      "end_timestamp_ms": 10410,
+      "max_speed_mps": 0.1497846081506337,
+      "start_world": [
+        1.464721508521204,
+        0.2902751758024457,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 313,
+      "end_frame": 317,
+      "start_timestamp_ms": 10444,
+      "end_timestamp_ms": 10577,
+      "max_speed_mps": 0.13772679401057664,
+      "start_world": [
+        1.4662199375198544,
+        0.287044868195879,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 318,
+      "end_frame": 318,
+      "start_timestamp_ms": 10611,
+      "end_timestamp_ms": 10611,
+      "max_speed_mps": 0.24514805772403866,
+      "start_world": [
+        1.4713063980427028,
+        0.25579986237229085,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 319,
+      "end_frame": 376,
+      "start_timestamp_ms": 10644,
+      "end_timestamp_ms": 12546,
+      "max_speed_mps": 0.5922169835346784,
+      "start_world": [
+        1.4640735920695158,
+        0.2345590164512109,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 377,
+      "end_frame": 385,
+      "start_timestamp_ms": 12579,
+      "end_timestamp_ms": 12846,
+      "max_speed_mps": 0.13667239953582677,
+      "start_world": [
+        1.3526319174605292,
+        -0.22954919083959502,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 386,
+      "end_frame": 395,
+      "start_timestamp_ms": 12880,
+      "end_timestamp_ms": 13180,
+      "max_speed_mps": 0.05231065576778726,
+      "start_world": [
+        1.3525123164662867,
+        -0.24615746806529826,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 396,
+      "end_frame": 398,
+      "start_timestamp_ms": 13213,
+      "end_timestamp_ms": 13280,
+      "max_speed_mps": 0.13952401230373973,
+      "start_world": [
+        1.3491278283607744,
+        -0.24405099758926635,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 399,
+      "end_frame": 404,
+      "start_timestamp_ms": 13313,
+      "end_timestamp_ms": 13480,
+      "max_speed_mps": 0.1613021803536263,
+      "start_world": [
+        1.3301030829661178,
+        -0.23793565076738601,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 405,
+      "end_frame": 423,
+      "start_timestamp_ms": 13514,
+      "end_timestamp_ms": 14114,
+      "max_speed_mps": 0.1397285527542638,
+      "start_world": [
+        1.3086075248604565,
+        -0.22042435303423483,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 424,
+      "end_frame": 424,
+      "start_timestamp_ms": 14147,
+      "end_timestamp_ms": 14147,
+      "max_speed_mps": 0.1530608476181472,
+      "start_world": [
+        1.3095129427710899,
+        -0.14212531231512512,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 425,
+      "end_frame": 425,
+      "start_timestamp_ms": 14181,
+      "end_timestamp_ms": 14181,
+      "max_speed_mps": 0.16340960477607552,
+      "start_world": [
+        1.3112633812587078,
+        -0.13603137317602637,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 426,
+      "end_frame": 446,
+      "start_timestamp_ms": 14214,
+      "end_timestamp_ms": 14882,
+      "max_speed_mps": 0.46869563374393597,
+      "start_world": [
+        1.3162604961604563,
+        -0.130439130710822,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 447,
+      "end_frame": 447,
+      "start_timestamp_ms": 14915,
+      "end_timestamp_ms": 14915,
+      "max_speed_mps": 0.36287746368965007,
+      "start_world": [
+        1.2719596807185705,
+        0.07411889602234521,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 448,
+      "end_frame": 498,
+      "start_timestamp_ms": 14948,
+      "end_timestamp_ms": 16617,
+      "max_speed_mps": 0.5158160683412769,
+      "start_world": [
+        1.273736928154866,
+        0.08706589065012021,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 499,
+      "end_frame": 503,
+      "start_timestamp_ms": 16650,
+      "end_timestamp_ms": 16783,
+      "max_speed_mps": 0.1273362198068736,
+      "start_world": [
+        1.199220323381198,
+        0.6557499749278953,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 504,
+      "end_frame": 515,
+      "start_timestamp_ms": 16817,
+      "end_timestamp_ms": 17184,
+      "max_speed_mps": 0.05462409252603155,
+      "start_world": [
+        1.202253285434963,
+        0.6611744027476546,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 516,
+      "end_frame": 527,
+      "start_timestamp_ms": 17217,
+      "end_timestamp_ms": 17584,
+      "max_speed_mps": 0.13404991569856572,
+      "start_world": [
+        1.206415953885036,
+        0.6438617287254785,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 528,
+      "end_frame": 603,
+      "start_timestamp_ms": 17618,
+      "end_timestamp_ms": 20120,
+      "max_speed_mps": 0.4748096859311701,
+      "start_world": [
+        1.209368478720045,
+        0.5967199337261868,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 604,
+      "end_frame": 604,
+      "start_timestamp_ms": 20153,
+      "end_timestamp_ms": 20153,
+      "max_speed_mps": 0.2397125377553491,
+      "start_world": [
+        1.3058489603461307,
+        -0.09395073784828191,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 605,
+      "end_frame": 609,
+      "start_timestamp_ms": 20187,
+      "end_timestamp_ms": 20320,
+      "max_speed_mps": 0.47424860416625847,
+      "start_world": [
+        1.291481714552164,
+        -0.10071036418685875,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 610,
+      "end_frame": 611,
+      "start_timestamp_ms": 20354,
+      "end_timestamp_ms": 20387,
+      "max_speed_mps": 0.4250239392048589,
+      "start_world": [
+        1.225240548121,
+        -0.14432256016946607,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 612,
+      "end_frame": 628,
+      "start_timestamp_ms": 20420,
+      "end_timestamp_ms": 20954,
+      "max_speed_mps": 0.4526342207054286,
+      "start_world": [
+        1.2399502283687753,
+        -0.16089946538064895,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 629,
+      "end_frame": 633,
+      "start_timestamp_ms": 20988,
+      "end_timestamp_ms": 21121,
+      "max_speed_mps": 0.11809791673575709,
+      "start_world": [
+        1.3905217103558047,
+        -0.2180994339471291,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 634,
+      "end_frame": 652,
+      "start_timestamp_ms": 21154,
+      "end_timestamp_ms": 21755,
+      "max_speed_mps": 0.052085841790117854,
+      "start_world": [
+        1.3880176307102992,
+        -0.22365482002424064,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 653,
+      "end_frame": 660,
+      "start_timestamp_ms": 21788,
+      "end_timestamp_ms": 22022,
+      "max_speed_mps": 0.1250298041843125,
+      "start_world": [
+        1.4132042480805298,
+        -0.2289145816280894,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 661,
+      "end_frame": 666,
+      "start_timestamp_ms": 22055,
+      "end_timestamp_ms": 22222,
+      "max_speed_mps": 0.2420063160616227,
+      "start_world": [
+        1.4483256913196285,
+        -0.23663360679497802,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 667,
+      "end_frame": 667,
+      "start_timestamp_ms": 22256,
+      "end_timestamp_ms": 22256,
+      "max_speed_mps": 0.15593454679087412,
+      "start_world": [
+        1.484070675108755,
+        -0.2402923648769943,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 668,
+      "end_frame": 682,
+      "start_timestamp_ms": 22289,
+      "end_timestamp_ms": 22756,
+      "max_speed_mps": 0.29995018330276135,
+      "start_world": [
+        1.4796982661943885,
+        -0.24029915551084313,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 683,
+      "end_frame": 683,
+      "start_timestamp_ms": 22789,
+      "end_timestamp_ms": 22789,
+      "max_speed_mps": 0.1582447300055667,
+      "start_world": [
+        1.3786330803556253,
+        -0.21957759639120347,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 684,
+      "end_frame": 690,
+      "start_timestamp_ms": 22823,
+      "end_timestamp_ms": 23023,
+      "max_speed_mps": 0.13428555566913705,
+      "start_world": [
+        1.3806991386968233,
+        -0.21830800811931955,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 691,
+      "end_frame": 695,
+      "start_timestamp_ms": 23056,
+      "end_timestamp_ms": 23190,
+      "max_speed_mps": 0.04756878139504864,
+      "start_world": [
+        1.3882826428660426,
+        -0.21131609922157935,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 696,
+      "end_frame": 696,
+      "start_timestamp_ms": 23223,
+      "end_timestamp_ms": 23223,
+      "max_speed_mps": 0.12853130352021902,
+      "start_world": [
+        1.3770824945187552,
+        -0.2214133217117139,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 697,
+      "end_frame": 703,
+      "start_timestamp_ms": 23257,
+      "end_timestamp_ms": 23457,
+      "max_speed_mps": 0.4017333947877213,
+      "start_world": [
+        1.3685168946777309,
+        -0.23552526828082307,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 704,
+      "end_frame": 704,
+      "start_timestamp_ms": 23490,
+      "end_timestamp_ms": 23490,
+      "max_speed_mps": 0.2876495436194674,
+      "start_world": [
+        1.3167313374519245,
+        -0.30131909181755095,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 705,
+      "end_frame": 711,
+      "start_timestamp_ms": 23524,
+      "end_timestamp_ms": 23724,
+      "max_speed_mps": 0.34648613798526373,
+      "start_world": [
+        1.3055056279117843,
+        -0.3006911756398412,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 712,
+      "end_frame": 713,
+      "start_timestamp_ms": 23757,
+      "end_timestamp_ms": 23790,
+      "max_speed_mps": 0.27523352037835047,
+      "start_world": [
+        1.2464602970354235,
+        -0.2672853469289721,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 714,
+      "end_frame": 719,
+      "start_timestamp_ms": 23824,
+      "end_timestamp_ms": 23991,
+      "max_speed_mps": 0.29341652595040796,
+      "start_world": [
+        1.2564472136874232,
+        -0.25856938934026424,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 720,
+      "end_frame": 722,
+      "start_timestamp_ms": 24024,
+      "end_timestamp_ms": 24091,
+      "max_speed_mps": 0.24990370469536846,
+      "start_world": [
+        1.3071940959860118,
+        -0.23874951187749957,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 723,
+      "end_frame": 723,
+      "start_timestamp_ms": 24124,
+      "end_timestamp_ms": 24124,
+      "max_speed_mps": 0.20058610197874494,
+      "start_world": [
+        1.2990488200560508,
+        -0.2256091750601085,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 724,
+      "end_frame": 727,
+      "start_timestamp_ms": 24157,
+      "end_timestamp_ms": 24258,
+      "max_speed_mps": 0.17992294176252255,
+      "start_world": [
+        1.2993397249353678,
+        -0.2213886590136366,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 728,
+      "end_frame": 734,
+      "start_timestamp_ms": 24291,
+      "end_timestamp_ms": 24491,
+      "max_speed_mps": 0.26414176993435967,
+      "start_world": [
+        1.3148517141188871,
+        -0.20508390458482015,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 735,
+      "end_frame": 735,
+      "start_timestamp_ms": 24524,
+      "end_timestamp_ms": 24524,
+      "max_speed_mps": 0.22251495131146035,
+      "start_world": [
+        1.3600212302836576,
+        -0.17518650632078167,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 736,
+      "end_frame": 740,
+      "start_timestamp_ms": 24558,
+      "end_timestamp_ms": 24691,
+      "max_speed_mps": 0.3179261582418011,
+      "start_world": [
+        1.352116797306766,
+        -0.16915497759072307,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 741,
+      "end_frame": 741,
+      "start_timestamp_ms": 24725,
+      "end_timestamp_ms": 24725,
+      "max_speed_mps": 0.23727518359812128,
+      "start_world": [
+        1.3262896208153958,
+        -0.13984137336701796,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 742,
+      "end_frame": 746,
+      "start_timestamp_ms": 24758,
+      "end_timestamp_ms": 24892,
+      "max_speed_mps": 0.2511540129377192,
+      "start_world": [
+        1.33176819171619,
+        -0.13393494963929944,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 747,
+      "end_frame": 750,
+      "start_timestamp_ms": 24925,
+      "end_timestamp_ms": 25025,
+      "max_speed_mps": 0.24403088468649947,
+      "start_world": [
+        1.3559002026330573,
+        -0.10556259565407741,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 751,
+      "end_frame": 762,
+      "start_timestamp_ms": 25058,
+      "end_timestamp_ms": 25425,
+      "max_speed_mps": 0.32612870471352096,
+      "start_world": [
+        1.3323071684879169,
+        -0.08440322328277912,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 763,
+      "end_frame": 769,
+      "start_timestamp_ms": 25459,
+      "end_timestamp_ms": 25659,
+      "max_speed_mps": 0.1371831957180079,
+      "start_world": [
+        1.2510370962228536,
+        -0.0408051212019876,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 770,
+      "end_frame": 798,
+      "start_timestamp_ms": 25692,
+      "end_timestamp_ms": 26627,
+      "max_speed_mps": 0.05474035270373614,
+      "start_world": [
+        1.2535081525310592,
+        -0.03140402125551504,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 799,
+      "end_frame": 799,
+      "start_timestamp_ms": 26660,
+      "end_timestamp_ms": 26660,
+      "max_speed_mps": 0.05930766710136907,
+      "start_world": [
+        1.2746509679955482,
+        -0.03756138336600248,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 800,
+      "end_frame": 800,
+      "start_timestamp_ms": 26693,
+      "end_timestamp_ms": 26693,
+      "max_speed_mps": 0.1974732601284373,
+      "start_world": [
+        1.2929879163034241,
+        -0.039542267058960676,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 801,
+      "end_frame": 804,
+      "start_timestamp_ms": 26727,
+      "end_timestamp_ms": 26827,
+      "max_speed_mps": 0.38608542813357005,
+      "start_world": [
+        1.319507203655114,
+        -0.041506513491196814,
+        0.325
+      ]
+    },
+    {
+      "label": "CHANGING_DIRECTION",
+      "start_frame": 805,
+      "end_frame": 806,
+      "start_timestamp_ms": 26860,
+      "end_timestamp_ms": 26894,
+      "max_speed_mps": 0.2374046722083168,
+      "start_world": [
+        1.3405754038801296,
+        -0.046668454064962596,
+        0.325
+      ]
+    },
+    {
+      "label": "MOVING",
+      "start_frame": 807,
+      "end_frame": 819,
+      "start_timestamp_ms": 26927,
+      "end_timestamp_ms": 27327,
+      "max_speed_mps": 0.5386547560980927,
+      "start_world": [
+        1.3691541177356126,
+        -0.049505737218614766,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 820,
+      "end_frame": 840,
+      "start_timestamp_ms": 27361,
+      "end_timestamp_ms": 28028,
+      "max_speed_mps": 0.13364044878071074,
+      "start_world": [
+        1.5194862805862612,
+        -0.0583245423642811,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 841,
+      "end_frame": 861,
+      "start_timestamp_ms": 28061,
+      "end_timestamp_ms": 28729,
+      "max_speed_mps": 0.054090776639886096,
+      "start_world": [
+        1.4838585830841182,
+        -0.0764604994551888,
+        0.325
+      ]
+    },
+    {
+      "label": "SETTLING",
+      "start_frame": 862,
+      "end_frame": 871,
+      "start_timestamp_ms": 28762,
+      "end_timestamp_ms": 29062,
+      "max_speed_mps": 0.13949131293092146,
+      "start_world": [
+        1.4769096300412625,
+        -0.08104571929616389,
+        0.325
+      ]
+    },
+    {
+      "label": "STATIONARY",
+      "start_frame": 872,
+      "end_frame": 874,
+      "start_timestamp_ms": 29096,
+      "end_timestamp_ms": 29162,
+      "max_speed_mps": 0.04535432574929952,
+      "start_world": [
+        1.484377655310688,
+        -0.050666764679931406,
+        0.325
+      ]
+    }
+  ],
+  "integrity": "Visualization-only observer. Labels are derived from tracker/Kalman outputs and are never fed back into the pipeline."
+}

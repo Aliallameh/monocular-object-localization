@@ -43,8 +43,8 @@
     "occlusion_runtime_realism": {
       "score": 10.0,
       "evidence": {
-        "first_stdout_ms": 72.97404200653546,
-        "p95_processing_ms": 35.77371250430588,
+        "first_stdout_ms": 74.44837500224821,
+        "p95_processing_ms": 35.702633908658754,
         "stress_suite_enabled": true,
         "min_dropout_continuity_rate": 1.0,
         "min_dropout_iou_vs_baseline": 0.5775550860943924

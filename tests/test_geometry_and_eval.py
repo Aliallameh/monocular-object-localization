@@ -12,6 +12,7 @@ import numpy as np
 from config_utils import load_runtime_config
 from eval_utils import asset_alignment_diagnostics, evaluate_bbox_annotations
 from localizer import BIN_HEIGHT_M, CameraGeometry, build_camera_to_world
+from observer import MotionStateEstimator
 from tracker_utils import bbox_iou
 
 
@@ -188,6 +189,38 @@ tracker:
         self.assertAlmostEqual(cfg["detector"]["conf"], 0.12)
         self.assertEqual(cfg["detector"]["imgsz"], 640)
         self.assertEqual(cfg["tracker"]["bbox_max_age"], 12)
+
+
+class ObserverTests(unittest.TestCase):
+    def test_motion_state_estimator_labels_stationary_and_moving(self) -> None:
+        estimator = MotionStateEstimator(stationary_speed_mps=0.05, moving_speed_mps=0.12)
+        first = estimator.update(
+            {"status": "detected", "track_state": "CONFIRMED", "world": [0.0, 0.0, 0.325], "conf": 0.9},
+            1.0,
+        )
+        second = estimator.update(
+            {"status": "detected", "track_state": "CONFIRMED", "world": [0.01, 0.0, 0.325], "conf": 0.9},
+            1.0,
+        )
+        moving = estimator.update(
+            {"status": "detected", "track_state": "CONFIRMED", "world": [1.0, 0.0, 0.325], "conf": 0.9},
+            1.0,
+        )
+        self.assertEqual(first.label, "STATIONARY")
+        self.assertEqual(second.label, "STATIONARY")
+        self.assertIn(moving.label, {"MOVING", "CHANGING_DIRECTION"})
+
+    def test_motion_state_estimator_preserves_occlusion_label(self) -> None:
+        estimator = MotionStateEstimator()
+        estimator.update(
+            {"status": "detected", "track_state": "CONFIRMED", "world": [0.0, 0.0, 0.325], "conf": 0.9},
+            1.0,
+        )
+        out = estimator.update(
+            {"status": "occluded", "track_state": "OCCLUDED", "world": [0.1, 0.0, 0.325], "conf": 0.2},
+            1.0,
+        )
+        self.assertEqual(out.label, "OCCLUDED")
 
 
 if __name__ == "__main__":

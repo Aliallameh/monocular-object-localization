@@ -1,25 +1,16 @@
 {
-  "created_unix_s": 1776654663.363879,
+  "created_unix_s": 1776655341.910762,
   "git": {
-    "code_commit_at_run": "47add3faf635dfca61ad21d36dd1efd27d9d0c3d",
+    "code_commit_at_run": "8be2f6e7333a91160bdcfa4f01fb527b3ddfd138",
     "branch": "temp1",
     "code_dirty_excluding_generated_outputs": true,
     "code_dirty_files": [
-      "README.md",
-      "config_utils.py",
-      "configs/default.yaml",
-      "eval_utils.py",
-      "forai/FOLLOWUP_PLAN.md",
-      "plots.py",
       "provenance.py",
-      "qa_utils.py",
-      "robustness_eval.py",
       "run.sh",
-      "scene_calibration.py",
       "tests/test_geometry_and_eval.py",
       "tools/validate_submission.py",
       "track_bin.py",
-      "tools/review_readiness.py"
+      "observer.py"
     ],
     "remote": "https://github.com/Aliallameh/monocular-object-localization.git",
     "note": "code_commit_at_run is the source commit used to generate the artifacts. The artifact commit itself can be later because generated outputs are committed after the run."
@@ -61,6 +52,10 @@
     "imgsz": null,
     "no_kalman": false,
     "bbox_gt": "",
+    "observer_video": "results/observer_overlay.mp4",
+    "observer_json": "results/observer_events.json",
+    "no_observer": false,
+    "display": false,
     "max_frames": 0
   },
   "outputs": {
@@ -88,11 +83,23 @@
       "bytes": 233270,
       "sha256": "8fcb9dd3620e7b3d55b426c2bf47f43c444067401355a51943d9f20239ae6401"
     },
+    "observer_overlay_video": {
+      "path": "results/observer_overlay.mp4",
+      "exists": true,
+      "bytes": 32034210,
+      "sha256": "114b4ddd2842fbb75086eca64fe5380faaa741a61d2073c3c93214576cce071b"
+    },
+    "observer_events_json": {
+      "path": "results/observer_events.json",
+      "exists": true,
+      "bytes": 26922,
+      "sha256": "dbc22c58549993a15a8943d9be3cfe1e02a380fa12c892c885c645ff38568488"
+    },
     "summary_json": {
       "path": "results/summary.json",
       "exists": true,
-      "bytes": 14301,
-      "sha256": "37463fd698966b3a8a7b20afbcf1cf70be4bb7ca61ae95bccaf15f39d6165f80"
+      "bytes": 14425,
+      "sha256": "b56db558d6b234641762463dee12f24b7735c67e1269b27120d92b04b1516237"
     }
   },
   "run_metrics": {
@@ -100,7 +107,7 @@
     "detector_hit_rate": 1.0,
     "tracker_output_rate": 1.0,
     "occluded_frames": 0,
-    "p95_processing_ms_per_frame": 35.77371250430588,
+    "p95_processing_ms_per_frame": 35.702633908658754,
     "rmse_xy_m": 1.0036710386515393,
     "strict_rmse_xy_m": 1.0036710386515393
   }

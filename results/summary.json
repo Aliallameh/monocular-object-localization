@@ -46,10 +46,10 @@
     "STATIONARY": 354,
     "CONFIRMED": 521
   },
-  "mean_processing_ms_per_frame": 33.900311042321846,
-  "p95_processing_ms_per_frame": 35.77371250430588,
-  "max_processing_ms_per_frame": 57.299125008285046,
-  "first_track_stdout_ms_from_python": 72.97404200653546,
+  "mean_processing_ms_per_frame": 34.0324032652591,
+  "p95_processing_ms_per_frame": 35.702633908658754,
+  "max_processing_ms_per_frame": 58.47541699768044,
+  "first_track_stdout_ms_from_python": 74.44837500224821,
   "waypoints": {
     "A": {
       "color": "green",
@@ -478,6 +478,18 @@
     "max_dropout_center_error_px": 93.59573842527873,
     "interpretation": "Detections are artificially suppressed and blurred; continuity is compared against the normal pipeline output, not hidden ground truth."
   },
+  "observer": {
+    "enabled": true,
+    "video": "results/observer_overlay.mp4",
+    "events_json": "results/observer_events.json",
+    "frames_rendered": 875,
+    "state_counts": {
+      "STATIONARY": 167,
+      "SETTLING": 231,
+      "MOVING": 444,
+      "CHANGING_DIRECTION": 33
+    }
+  },
   "qa_artifacts": {
     "diagnostics_csv": "results/diagnostics.csv",
     "qa_report_json": "results/qa_report.json",
@@ -485,6 +497,8 @@
     "occlusion_stress_suite_json": "results/occlusion_stress_suite.json",
     "bbox_eval_json": "results/bbox_eval.json",
     "asset_alignment_report_json": "results/asset_alignment_report.json",
+    "observer_events_json": "results/observer_events.json",
+    "observer_overlay_video": "results/observer_overlay.mp4",
     "bbox_annotation_template_csv": "results/bbox_annotation_template.csv",
     "annotated_frames": [
       "results/qa_frames/waypoint_A_frame_0045.jpg",

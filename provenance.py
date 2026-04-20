@@ -45,6 +45,8 @@ def build_run_manifest(
             "trajectory_png": file_record("trajectory.png"),
             "trajectory_raw_vs_filtered_png": file_record("trajectory_raw_vs_filtered.png"),
             "trajectory_strict_png": file_record("trajectory_strict.png"),
+            "observer_overlay_video": file_record(summary.get("observer", {}).get("video", "results/observer_overlay.mp4")),
+            "observer_events_json": file_record(summary.get("observer", {}).get("events_json", "results/observer_events.json")),
             "summary_json": file_record("results/summary.json"),
         },
         "run_metrics": {
