@@ -1,13 +1,31 @@
 """
-Kalman filter hyperparameter grid search with cross-validation.
+Kalman filter hyperparameter analysis.
 
-Purpose: Replace magic constants (process_var=3.0, measurement_var=0.01) with
-empirically-tuned values. Use train/test split to avoid overfitting.
+WHY THIS WAS REWRITTEN
+----------------------
+The original version loaded results/output.csv and used the pipeline's own
+x_world/y_world/z_world values as ``gt_positions``.  That is circular: the
+"ground truth" is the same detector output the filter is smoothing, so the
+RMSE is just measuring how tightly the filter tracks itself.  Every reasonable
+config produces the same answer (~0.001 m) because z_world is constant by
+construction (ground-plane contact + H/2), and x/y barely vary on a
+stationary bin.  The numbers look impressive but prove nothing.
+
+REPLACEMENT APPROACH
+--------------------
+We use jitter analysis instead:
+  - Run the detector on the full clip for each hyperparameter config.
+  - Find windows where the tracker reports STATIONARY state (bin not moving).
+  - Compute frame-to-frame std-dev of raw positions (jitter) and filtered
+    positions for each config.
+  - Better configs reduce jitter on stationary windows without lagging badly
+    when the bin actually moves.
+
+This is a genuine, independent quality signal — not circular.
 """
 
 from __future__ import annotations
 
-import csv
 import json
 import sys
 from pathlib import Path
@@ -22,156 +40,195 @@ from localizer import CameraGeometry, PositionKalman, localize_bbox
 from tracker_utils import BBoxKalmanTracker, LKFlowPropagator
 
 
-def kalman_gridsearch(
+def _run_pipeline(
+    cap: cv2.VideoCapture,
+    detector: Any,
+    camera: CameraGeometry,
+    process_var: float,
+    measurement_var: float,
+    max_frames: int = 875,
+) -> Dict[str, Any]:
+    """Run detection + localization + Kalman for one hyperparameter config.
+
+    Returns per-frame records with raw and filtered world positions and tracker
+    state so the caller can compute jitter on stationary windows.
+    """
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    bbox_tracker = BBoxKalmanTracker(max_age=35)
+    flow_tracker = LKFlowPropagator(min_points=8)
+    kf = PositionKalman(process_var=process_var, measurement_var=measurement_var)
+
+    dt = 1.0 / 30.0
+    records: List[Dict[str, Any]] = []
+    frame_id = 0
+
+    while frame_id < max_frames:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        detections = detector.detect(frame)
+        flow_bbox, flow_q, _ = flow_tracker.predict(gray)
+        if flow_bbox is not None and not detections:
+            from detector import Detection
+            detections.append(Detection(
+                bbox=flow_bbox,
+                confidence=float(np.clip(0.22 + 0.45 * flow_q, 0.05, 0.62)),
+                area_px=max(1.0, (flow_bbox[2] - flow_bbox[0]) * (flow_bbox[3] - flow_bbox[1])),
+                source="lk_optical_flow",
+            ))
+
+        track = bbox_tracker.update(detections, dt_frames=1.0, frame=frame)
+        if track is None:
+            frame_id += 1
+            continue
+
+        if track.status == "detected":
+            flow_tracker.update_reference(gray, track.bbox)
+        else:
+            flow_tracker.accept_prediction(gray, track.bbox)
+
+        try:
+            loc = localize_bbox(track.bbox, camera)
+        except Exception:
+            frame_id += 1
+            continue
+
+        raw_xyz = loc.xyz_world
+        if kf.initialized:
+            filt_xyz = kf.update(raw_xyz, dt, measurement_var)
+        else:
+            filt_xyz = kf.initialize(raw_xyz)
+
+        # Use a simple speed heuristic to label stationary windows
+        speed = float(np.linalg.norm(kf.x[3:5])) if kf.x is not None else 0.0
+        is_stationary = speed < 0.05  # m/s threshold
+
+        records.append({
+            "frame_id": frame_id,
+            "status": track.status,
+            "is_stationary": is_stationary,
+            "raw_xy": raw_xyz[:2].tolist(),
+            "filt_xy": filt_xyz[:2].tolist(),
+        })
+        frame_id += 1
+
+    return {"records": records}
+
+
+def _jitter_metrics(records: List[Dict], min_window: int = 30) -> Dict[str, float]:
+    """Compute frame-to-frame jitter on stationary windows.
+
+    Returns raw and filtered std-dev of frame-step displacement.
+    """
+    raw_steps: List[float] = []
+    filt_steps: List[float] = []
+    stationary_streak = 0
+    streak_raw: List[np.ndarray] = []
+    streak_filt: List[np.ndarray] = []
+
+    def flush_streak() -> None:
+        nonlocal streak_raw, streak_filt
+        if len(streak_raw) < min_window:
+            streak_raw, streak_filt = [], []
+            return
+        r = np.array(streak_raw)
+        f = np.array(streak_filt)
+        for i in range(1, len(r)):
+            raw_steps.append(float(np.linalg.norm(r[i] - r[i - 1])))
+            filt_steps.append(float(np.linalg.norm(f[i] - f[i - 1])))
+        streak_raw, streak_filt = [], []
+
+    for rec in records:
+        if rec["is_stationary"] and rec["status"] == "detected":
+            stationary_streak += 1
+            streak_raw.append(np.array(rec["raw_xy"]))
+            streak_filt.append(np.array(rec["filt_xy"]))
+        else:
+            flush_streak()
+            stationary_streak = 0
+
+    flush_streak()
+
+    if not raw_steps:
+        return {"raw_step_std": float("nan"), "filt_step_std": float("nan"), "reduction_pct": float("nan"), "n_steps": 0}
+
+    raw_std = float(np.std(raw_steps))
+    filt_std = float(np.std(filt_steps))
+    reduction = float(100.0 * (1.0 - filt_std / max(raw_std, 1e-9)))
+    return {"raw_step_std": raw_std, "filt_step_std": filt_std, "reduction_pct": reduction, "n_steps": len(raw_steps)}
+
+
+def kalman_jitter_analysis(
     video_path: str,
     calib_path: str,
-    train_frame_end: int = 600,
-    test_frame_end: int = 875,
+    max_frames: int = 875,
 ) -> Dict[str, Any]:
-    """Grid search Kalman hyperparameters; evaluate on train/test split.
+    """Grid search using jitter reduction on stationary windows as the metric.
 
-    Returns: {
-        'best_hyperparameters': {'process_var': float, 'measurement_var': float},
-        'best_test_rmse_m': float,
-        'gridsearch_results': list of {process_var, measurement_var, train_rmse, test_rmse}
-    }
+    Returns a dict with per-config results and the config that minimises
+    filtered jitter on stationary windows.
     """
-
-    calib_data = json.loads(Path(calib_path).read_text())
+    import json as _json
+    calib_data = _json.loads(Path(calib_path).read_text())
     camera = CameraGeometry.from_json_dict(calib_data)
 
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
-        return {"status": "failed"}
+        return {"status": "failed", "reason": f"Cannot open {video_path}"}
 
-    # Load detector and tracker
     detector = load_detector(use_gpu=False, backend="hybrid", device="auto", conf=0.05, imgsz=640)
-    bbox_tracker = BBoxKalmanTracker(max_age=35)
-    flow_tracker = LKFlowPropagator(min_points=8)
 
-    # Extract ground truth positions (from output.csv if available)
-    output_csv = Path("results/output.csv")
-    gt_positions: Dict[int, List[float]] = {}
-    if output_csv.exists():
-        with open(output_csv) as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                frame_id = int(row["frame_id"])
-                try:
-                    x_world = float(row["x_world"])
-                    y_world = float(row["y_world"])
-                    z_world = float(row["z_world"])
-                    gt_positions[frame_id] = [x_world, y_world, z_world]
-                except (ValueError, KeyError):
-                    pass
-
-    # Grid search ranges
     process_vars = [0.3, 0.5, 1.0, 2.0, 3.0, 5.0]
     measurement_vars = [0.001, 0.01, 0.05, 0.1]
 
     results: List[Dict[str, Any]] = []
-
-    for process_var in process_vars:
-        for measurement_var in measurement_vars:
-            print(f"Testing: process_var={process_var}, measurement_var={measurement_var}")
-
-            # Reset for this hyperparameter combination
-            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            bbox_tracker = BBoxKalmanTracker(max_age=35)
-            flow_tracker = LKFlowPropagator(min_points=8)
-            kalman_filter = PositionKalman(process_var=process_var, measurement_var=measurement_var)
-
-            train_residuals: List[float] = []
-            test_residuals: List[float] = []
-
-            frame_id = 0
-            while True:
-                ret, frame = cap.read()
-                if not ret or frame_id >= test_frame_end:
-                    break
-
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                detections = detector.detect(frame)
-                track = bbox_tracker.update(detections, dt_frames=1.0, frame=frame)
-
-                if track is not None and frame_id in gt_positions:
-                    try:
-                        loc = localize_bbox(track.bbox, camera)
-                        xyz_world = loc.xyz_world
-
-                        # Kalman update
-                        if kalman_filter.initialized:
-                            kalman_filter.update(xyz_world, 1.0 / 30.0, measurement_var)
-                        else:
-                            kalman_filter.initialize(xyz_world)
-
-                        # Residual
-                        gt_xyz = np.array(gt_positions[frame_id])
-                        filtered_xyz = kalman_filter.x[:3] if kalman_filter.initialized else xyz_world
-                        residual = float(np.linalg.norm(filtered_xyz - gt_xyz))
-
-                        if frame_id < train_frame_end:
-                            train_residuals.append(residual)
-                        else:
-                            test_residuals.append(residual)
-                    except (ValueError, RuntimeError):
-                        pass
-
-                frame_id += 1
-
-            # Compute metrics
-            train_rmse = float(np.sqrt(np.mean(np.array(train_residuals) ** 2))) if train_residuals else np.nan
-            test_rmse = float(np.sqrt(np.mean(np.array(test_residuals) ** 2))) if test_residuals else np.nan
-
-            results.append(
-                {
-                    "process_var": process_var,
-                    "measurement_var": measurement_var,
-                    "train_rmse_m": train_rmse,
-                    "test_rmse_m": test_rmse,
-                    "train_samples": len(train_residuals),
-                    "test_samples": len(test_residuals),
-                }
-            )
+    for pv in process_vars:
+        for mv in measurement_vars:
+            print(f"Testing: process_var={pv}, measurement_var={mv}")
+            run = _run_pipeline(cap, detector, camera, pv, mv, max_frames)
+            jitter = _jitter_metrics(run["records"])
+            results.append({
+                "process_var": pv,
+                "measurement_var": mv,
+                **jitter,
+            })
 
     cap.release()
 
-    # Find best hyperparameters (lowest test RMSE)
-    valid_results = [r for r in results if not np.isnan(r["test_rmse_m"])]
-    if not valid_results:
-        return {
-            "status": "no_valid_results",
-            "reason": "No frames with valid ground truth for evaluation",
-        }
+    valid = [r for r in results if not np.isnan(r["filt_step_std"])]
+    if not valid:
+        return {"status": "no_stationary_windows", "results": results}
 
-    best_result = min(valid_results, key=lambda r: r["test_rmse_m"])
-
-    output = {
-        "total_hyperparameter_combinations": len(results),
-        "best_hyperparameters": {
-            "process_var": best_result["process_var"],
-            "measurement_var": best_result["measurement_var"],
-        },
-        "best_test_rmse_m": best_result["test_rmse_m"],
-        "best_train_rmse_m": best_result["train_rmse_m"],
-        "gridsearch_results": results,
-        "interpretation": (
-            f"Best hyperparameters: process_var={best_result['process_var']}, "
-            f"measurement_var={best_result['measurement_var']}. "
-            f"Test RMSE: {best_result['test_rmse_m']:.3f} m. "
-            f"Compare to default (process_var=3.0, measurement_var=0.01): "
-            f"improvement = {(1.004 - best_result['test_rmse_m']) / 1.004 * 100:.1f}%"
+    best = min(valid, key=lambda r: r["filt_step_std"])
+    return {
+        "method": "jitter_on_stationary_windows",
+        "note": (
+            "RMSE vs output.csv was removed — that was circular (self-referential GT). "
+            "This analysis measures frame-step jitter on stationary windows, "
+            "an independent signal."
         ),
+        "best_config": {"process_var": best["process_var"], "measurement_var": best["measurement_var"]},
+        "best_filt_step_std_m": best["filt_step_std"],
+        "best_reduction_pct": best["reduction_pct"],
+        "total_configs_tested": len(results),
+        "results": results,
     }
-
-    output_path = "results/kalman_gridsearch_results.json"
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, "w") as f:
-        json.dump(output, f, indent=2)
-
-    return output
 
 
 if __name__ == "__main__":
-    result = kalman_gridsearch("input.mp4", "calib.json")
-    print(json.dumps(result, indent=2))
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--video", required=True)
+    ap.add_argument("--calib", required=True)
+    ap.add_argument("--output", default="results/kalman_gridsearch_results.json")
+    ap.add_argument("--max-frames", type=int, default=875)
+    args = ap.parse_args()
+
+    result = kalman_jitter_analysis(args.video, args.calib, args.max_frames)
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+    Path(args.output).write_text(json.dumps(result, indent=2))
+    print(f"\nSaved to {args.output}")
+    if "best_config" in result:
+        print(f"Best config: {result['best_config']}")
+        print(f"Jitter reduction: {result.get('best_reduction_pct', float('nan')):.1f}%")

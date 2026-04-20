@@ -510,26 +510,17 @@ def main() -> None:
     save_trajectory_plot("trajectory.png", frame_arr, raw_arr, filt_arr, projected_waypoints, stops, metrics)
     save_raw_vs_filtered_plot("trajectory_raw_vs_filtered.png", frame_arr, raw_arr, filt_arr, plot_states, sigma_arr)
 
-    strict_stops, strict_metrics = estimate_stops(
-        frame_arr, strict_raw_arr, strict_filt_arr, projected_waypoints, fps
-    )
-    strict_smoothness_metrics = trajectory_smoothness_metrics(strict_raw_arr, strict_filt_arr)
-    strict_metrics["smoothness"] = strict_smoothness_metrics
-    save_trajectory_plot(
-        "trajectory_strict.png",
-        frame_arr,
-        strict_raw_arr,
-        strict_filt_arr,
-        projected_waypoints,
-        strict_stops,
-        strict_metrics,
-    )
+    # trajectory_strict was identical to trajectory.png (world-gate rejects nothing
+    # in a clean single-target scene), so we skip it.  Alias for downstream code.
+    strict_stops = stops
+    strict_metrics = metrics
 
     for stale in (
         "results/output_scene_control.csv",
         "results/output_waypoint_calibrated.csv",
         "trajectory_scene_control.png",
         "trajectory_waypoint_calibrated.png",
+        "trajectory_strict.png",
     ):
         try:
             Path(stale).unlink()
@@ -542,7 +533,7 @@ def main() -> None:
     bbox_gt_path = args.bbox_gt or None
     bbox_eval_report = evaluate_bbox_annotations(bbox_gt_path, rows)
     annotation_template_path = write_annotation_template("results/bbox_annotation_template.csv", rows)
-    asset_alignment_report = asset_alignment_diagnostics(strict_stops)
+    asset_alignment_report = asset_alignment_diagnostics(stops)
     detector_metadata = detector.metadata() if hasattr(detector, "metadata") else {"backend": detector.__class__.__name__}
     summary = {
         "video": str(args.video),
@@ -637,7 +628,7 @@ def main() -> None:
         "observer_overlay_video": observer_video_path,
         "bbox_annotation_template_csv": annotation_template_path,
         "annotated_frames": qa_frames,
-        "strict_trajectory": "trajectory_strict.png",
+        "strict_trajectory": None,  # removed — was identical to trajectory.png
         "raw_vs_filtered_trajectory": "trajectory_raw_vs_filtered.png",
     }
     manifest_path = write_run_manifest(
@@ -656,7 +647,7 @@ def main() -> None:
 
     _summary_box(summary, metrics, strict_metrics)
     print(f"[output] {output_path}", flush=True)
-    print(f"[output] trajectory.png  trajectory_strict.png  trajectory_raw_vs_filtered.png", flush=True)
+    print(f"[output] trajectory.png  trajectory_raw_vs_filtered.png", flush=True)
     if observer_report is not None:
         print(f"[output] {args.observer_video}  {args.observer_json}", flush=True)
     print(f"[output] {diagnostics_path}  {qa_report_path}  {manifest_path}", flush=True)

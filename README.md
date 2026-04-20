@@ -1,60 +1,51 @@
-# 📦 Monocular Bin Tracking & 3-D Localization
+# Monocular Bin Tracking & 3-D Localization
 
-> Real-time single-camera pipeline that tracks a wheeled garbage bin and estimates its world-frame position at **~34 ms/frame** on CPU — no GPU, no pre-trained weights, no COCO shortcuts.
+Real-time single-camera pipeline that detects a garbage bin, estimates its
+world-frame position via ground-plane ray casting, and streams per-frame
+coordinates to stdout — no GPU, no pre-trained model weights.
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
-![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green?logo=opencv&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-CPU%20%7C%20Jetson%20Orin-lightgrey?logo=nvidia)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Status](https://img.shields.io/badge/Pipeline-100%25%20detection-brightgreen)
-
----
-
-## ✨ What it does
-
-One command. One video. One calibration file. The pipeline streams a pose estimate for every frame and writes a full set of review artifacts:
-
-```bash
+```
 bash run.sh --video input.mp4 --calib calib.json
 ```
 
 ```
-[frame 0001] bin @ world (1.29,  0.03, 0.33) m  conf=0.92  state=STATIONARY  dt=33ms
-[frame 0002] bin @ world (1.29,  0.02, 0.33) m  conf=0.92  state=STATIONARY  dt=33ms
+[frame 0001] bin @ world (2.44, -0.04, 0.33) m  conf=0.92  state=STATIONARY  dt=58ms
+[frame 0002] bin @ world (2.44, -0.04, 0.33) m  conf=0.92  state=STATIONARY  dt=31ms
 ...
-[summary] frames=875  detector_hits=100.0%  tracker_outputs=100.0%  mean_dt=33.3ms
+[summary] frames=875  detector_hits=100.0%  tracker_outputs=100.0%  mean_dt=33.9ms
 ```
 
 ---
 
-## 🗂 Table of Contents
+## Table of Contents
 
-- [Quick start](#-quick-start)
-- [How it works](#-how-it-works)
-- [Detection](#-detection)
-- [Localization](#-localization)
-- [Tracking & Kalman filter](#-tracking--kalman-filter)
-- [Occlusion handling](#-occlusion-handling)
-- [Results & benchmarks](#-results--benchmarks)
-- [Output format](#-output-format)
-- [Jetson deployment notes](#-jetson-deployment-notes)
-- [Known limitations](#-known-limitations)
+- [Quick start](#quick-start)
+- [How it works](#how-it-works)
+- [Detection](#detection)
+- [Localization](#localization)
+- [Tracking and Kalman filter](#tracking-and-kalman-filter)
+- [Occlusion handling](#occlusion-handling)
+- [Results and benchmarks](#results-and-benchmarks)
+- [Output format](#output-format)
+- [Waypoint evaluation](#waypoint-evaluation)
+- [Jetson deployment notes](#jetson-deployment-notes)
+- [Known limitations](#known-limitations)
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
-**Requirements:** Python 3.10+, OpenCV, NumPy (auto-installed)
+Requirements: Python 3.10+, OpenCV, NumPy (auto-installed by `run.sh`).
+
+`calib.json` and `input.mp4` are **not committed** — provide them at runtime:
 
 ```bash
-# Clone and run — the script sets up a venv and installs deps automatically
 git clone https://github.com/Aliallameh/monocular-object-localization.git
 cd monocular-object-localization
-
 bash run.sh --video input.mp4 --calib calib.json
 ```
 
-Verify the output:
+Validate:
 
 ```bash
 .venv/bin/python tools/validate_submission.py
@@ -63,14 +54,12 @@ Verify the output:
 
 ---
 
-## 🏗 How it works
-
-The pipeline has four stages that run sequentially per frame, keeping latency flat and memory bounded — the full video is **never** preloaded.
+## How it works
 
 ```
-Frame ──▶ Detector ──▶ Tracker ──▶ Localizer ──▶ Kalman smoother ──▶ stdout + CSV
-           (4 cues)    (IoU +      (ground-plane    (constant-vel.
-                        flow)       ray-cast)         6-DOF state)
+Frame -> Detector -> Tracker -> Localizer -> Kalman smoother -> stdout + CSV
+          (4 cues)   (IoU +     (ground-       (constant-vel.
+                      flow)      plane ray)      6-DOF state)
 ```
 
 | Module | File | Role |
@@ -82,229 +71,399 @@ Frame ──▶ Detector ──▶ Tracker ──▶ Localizer ──▶ Kalman 
 
 ---
 
-## 🔍 Detection
+## Detection
 
-Rather than leaning on a COCO `trash can` class (which isn't reliable for this bin type), I built a four-channel classical detector that's fully inspectable and runs in pure CPU NumPy/OpenCV:
+A four-channel classical detector, no learned model weights:
 
-| Channel | What it catches | Confidence range |
-|---|---|---|
-| 🔵 Blue HSV segmentation | Canonical input — saturated blue body | 0.45 – 0.99 |
-| ⬛ Dark rectangular shape | Gray/dark bin on light floor | 0.46 – 0.96 |
-| 🔲 Edge/Canny shape | Blurred or desaturated frames | 0.05 – 0.52 |
-| 🌊 MOG2 motion foreground | Any moving object as safety net | 0.05 – 0.50 |
+| Channel | What it catches |
+|---|---|
+| Blue HSV segmentation | Saturated blue body |
+| Dark rectangular shape | Gray/dark bin on light floor |
+| Edge/Canny shape | Blurred or desaturated frames |
+| MOG2 motion foreground | Any moving object as safety net |
 
-Candidates from all four channels are merged with **non-maximum suppression** (IoU threshold 0.45).
+Candidates from all four channels are merged with NMS (IoU threshold 0.45).
 
-**Ablation results** — each channel tested independently on the 875-frame clip:
-
-| Disabled channel | Detection rate | Drop |
-|---|---:|---:|
-| *(baseline — all channels)* | **100.0%** | — |
-| Blue HSV only disabled | 100.0% | 0% |
-| Dark rect only disabled | 100.0% | 0% |
-| Edge shape only disabled | 100.0% | 0% |
-| Motion foreground only disabled | 100.0% | 0% |
-
-Every channel independently achieves 100% recall on this clip. The blue channel is the primary driver; the others are genuine fallbacks for different lighting/deployment conditions — not dead weight.
-
-**Why not YOLOv8?** Benchmarked directly:
+**Why not YOLOv8?** Benchmarked on the supplied clip:
 
 | | Hybrid (ours) | YOLOv8-n (off-shelf) |
 |---|---:|---:|
-| Detection rate | **100.0%** | 92.2% |
+| Detection rate | 100.0% | 92.2% |
 | Mean latency | 34 ms | 16.7 ms |
-| p95 latency | 35.7 ms | 17.8 ms |
 
-The 7.8% recall deficit of YOLOv8-n means ~68 missed frames per clip. That's not a trade-off worth making for a 2× speedup that still sits well within the latency budget.
+YOLOv8-n misses ~68 frames. The 2× speedup does not justify a 7.8% miss rate
+when the 250 ms CPU budget is already met by a wide margin.
 
-**Threshold sensitivity** — the chosen defaults are in a wide plateau, not on a cliff:
+**Ablation results:**
 
-| Parameter | Default | Plateau range (no detection loss) |
+| Disabled channel | Detection rate |
+|---|---:|
+| *(all channels — baseline)* | 100.0% |
+| Blue HSV only disabled | 100.0% |
+| Dark rect only disabled | 100.0% |
+| Edge shape only disabled | 100.0% |
+| Motion foreground only disabled | 100.0% |
+
+In the delivered clip the blue channel is the sole active driver —
+all 875 frames are detected via `blue_hsv_shape`. The other channels are
+genuine fallbacks for different bin colours or lighting, not exercised here.
+
+**Threshold plateau** (no detection loss across this range):
+
+| Parameter | Default | Plateau |
 |---|---|---|
-| `min_area_px` | 550 px | 300 – 1200 px |
-| `aspect_min` | 0.45 | 0.25 – 0.80 |
-| `aspect_max` | 3.25 | 2.0 – 4.5 |
+| `min_area_px` | 550 px | 300–1200 px |
+| `aspect_min` | 0.45 | 0.25–0.80 |
+| `aspect_max` | 3.25 | 2.0–4.5 |
+
+**Limitation:** The detector is tuned to this scene. A different bin colour
+or outdoor lighting requires retuning — all thresholds are exposed as
+`__init__` kwargs in `detector.py`.
 
 ---
 
-## 📐 Localization
+## Localization
 
 ### Coordinate frames
 
 ```
 OpenCV camera frame          World frame (origin: pole base)
-  +X → right                   +X → away from pole (forward)
-  +Y ↓ down                    +Y → left
-  +Z → forward (optical)       +Z ↑ up
+  +X -> right                  +X -> away from pole (forward)
+  +Y -> down                   +Y -> left
+  +Z -> forward (optical)      +Z -> up
 ```
 
-### Ground-contact model (primary)
+### Camera-to-world transform derivation
 
-The bottom-center bbox pixel is unprojected through the camera model onto the ground plane, then shifted up by half the bin height:
+Camera at height `h = camera_height_m`, pitched down `|tilt|` degrees
+(calib.json stores downward as a negative number).
+
+**Step 1 — Axis swap (level camera):**
+
+When the camera is level, its optical axis (+Z_cam) points along +X_world:
 
 ```
-p         = undistort([u_bottom, v_bottom])
+R_axis_swap = [[0,  0,  1],
+               [-1, 0,  0],
+               [0, -1,  0]]
+```
+
+**Step 2 — Pitch about world Y:**
+
+Let `theta = -tilt_rad` (positive for downward tilt):
+
+```
+R_pitch = [[cos(theta),  0,  sin(theta)],
+           [0,           1,  0         ],
+           [-sin(theta), 0,  cos(theta)]]
+```
+
+**Step 3 — Compose and translate:**
+
+```
+R_cw = R_pitch @ R_axis_swap
+t_cw = [0, 0, h]
+
+P_world = R_cw @ P_cam + t_cw
+```
+
+A runtime sign check (`optical_world[0] > 0, optical_world[2] < 0`) guards
+against sign errors. See `localizer.py:build_camera_to_world`.
+
+### Ground-contact model (primary estimator)
+
+The bottom-centre pixel of the bounding box is unprojected onto the ground
+plane (Z_world = 0), then the centroid is lifted by half the bin height:
+
+```
+p         = undistort_normalize([u_bottom, v_bottom])
 r_cam     = normalize([p_x, p_y, 1])
-r_world   = R_cw · r_cam
-λ         = −camera_height_m / r_world_z
-P_ground  = t_cw + λ · r_world
-P_centroid = P_ground + [0, 0, H/2]     # H = 0.65 m
+r_world   = R_cw @ r_cam
+lambda    = -h / r_world_z
+P_ground  = t_cw + lambda * r_world
+P_centroid = P_ground + [0, 0, H/2]    # H = 0.65 m
 ```
 
-A height-based monocular depth estimate runs in parallel as a diagnostic fallback:
+**Note on z_world:** z_world is construction-imposed as `H/2 = 0.325 m`
+(ground contact + half bin height). It is not freely estimated. Full vertical
+localization would require stereo or a depth sensor.
+
+### Height-based depth estimate (diagnostic fallback)
 
 ```
-Z = fy · H / h_px
-X = (u_center − cx) / fx · Z
-Y = (v_center − cy) / fy · Z
+Z = fy * H / h_px
+X = (u_c - cx) / fx * Z
+Y = (v_c - cy) / fy * Z
 ```
 
-### Geometry validation
-
-Re-projecting every recorded bbox pixel through `ground_intersection_from_pixel(u, v)` reproduces the stored world coordinates to **0.000 m** error. The implementation is geometrically exact.
-
-### About the 1 m waypoint residual
-
-The pipeline reports a ~1 m RMSE against the supplied waypoint pixels. This is documented and intentional — it is **not hidden or post-corrected**.
-
-The supplied waypoints are pixel annotations placed on visual markers, not surveyed floor-contact positions. Automated validation (`results/centroid_validation.json`) confirmed all three show a consistent ~0.7–1.0 m offset in the same camera-axis direction — the signature of reference-frame mismatch, not a localization bug. Fitting a 3-point affine transform to make the numbers look good would be an in-sample calibration shortcut, not validation.
+Both estimates are logged to `results/diagnostics.csv` per frame.
 
 ---
 
-## 📡 Tracking & Kalman filter
+## Tracking and Kalman filter
 
-### Tracker
+### BBox tracker
 
 Single-target `BBoxKalmanTracker` with multi-cue association:
 
-- **IoU** + center distance + area ratio + confidence + HSV appearance histogram
+- IoU + centre distance + area ratio + confidence + HSV histogram
 - States: `STATIONARY`, `CONFIRMED`, `OCCLUDED`
 - Max age before drop: 35 frames
 
-### Kalman smoother (`PositionKalman`)
+### Position Kalman smoother
 
-Constant-velocity 6-DOF state: `[x, y, z, vẋ, ẏ, ż]`
+**State vector:**
 
-Measurement variance is adapted per-frame based on detector source and confidence — high-confidence blue-HSV detections get tighter measurement noise than edge-fallback detections.
+```
+x = [x, y, z, vx, vy, vz]    (metres, metres/second)
+```
 
-**Hyperparameter validation** — 24-combination grid search over `process_var × measurement_var` with a 600/275-frame train/test split:
+**Transition matrix** (dt = frame interval, 1/fps):
 
-| Config | Train RMSE | Test RMSE |
-|---|---:|---:|
-| Defaults (`3.0 / 0.01`) | 0.000960 m | **0.001068 m** |
-| Best found (`0.3 / 0.001`) | 0.000980 m | **0.001068 m** |
+```
+F = I + dt * coupling block [[0_3, I_3], [0_3, 0_3]]
+```
 
-The defaults match the grid-search optimum to 7 significant figures. No further tuning is possible.
+**Process noise Q** (white-noise-acceleration discretization):
 
-Smoothing effect on the measured trajectory:
+```
+Q_pos   = dt^4 / 4 * q
+Q_cross = dt^3 / 2 * q
+Q_vel   = dt^2 * q
+```
 
-- Frame-step std reduction: **53.1%**
-- Second-difference std reduction: **84.2%**
+Measurement model H selects position only (3 of 6 states).
+Covariance update uses the Joseph form to maintain positive semi-definiteness.
+Measurement variance R is adapted per frame — tighter for high-confidence
+blue-HSV detections, looser for edge-fallback detections.
+
+**Runtime config** (`configs/default.yaml`):
+
+```yaml
+kalman:
+  process_var: 3.0
+  measurement_var: 0.01
+```
+
+**On hyperparameter validation:** A grid search was originally run using
+`results/output.csv` as ground truth — circular evaluation. The filter was
+scored against the same detector output it smooths. All configs produced
+~0.001 m RMSE because z_world is construction-imposed constant and x/y
+barely vary. Those results have been invalidated. The grid search script
+(`experiments/kalman_gridsearch.py`) has been rewritten to use jitter on
+stationary windows — an independent signal. Re-run it to tune empirically:
+
+```
+python experiments/kalman_gridsearch.py --video input.mp4 --calib calib.json
+```
+
+**Measured smoothing** (raw vs filtered, no external GT needed):
+
+| Metric | Value |
+|---|---|
+| Frame-step std reduction | 59.9% |
+| Second-difference std reduction | 84.4% |
 
 ---
 
-## 🫥 Occlusion handling
+## Occlusion handling
 
-When the detector misses a frame, the tracker doesn't drop immediately. Recovery chain:
+When the detector misses a frame:
 
-1. **Bbox Kalman prediction** — extrapolates position based on last known velocity
-2. **Lucas-Kanade sparse optical flow** — propagates the bounding box using tracked feature points
-3. **`OCCLUDED` stdout** — explicit per-frame flag with `occlusion_age` counter so downstream systems know the track is predicted, not observed
+1. **BBox Kalman prediction** — extrapolates position from last known velocity
+2. **LK optical flow** — propagates the bounding box via tracked feature points
+3. **OCCLUDED stdout line** — explicit flag with `occlusion_age` counter
 
-Synthetic stress test (three random 20-frame dropout windows):
+**What the delivered run shows:** 0 occluded frames. The bin is detected in
+every frame via the blue HSV channel; the fallback chain is not triggered.
+No real person-occlusion event occurs in the delivered sequence.
+
+Occlusion handling is verified through **synthetic stress tests only** —
+three random 20-frame dropout windows injected programmatically:
 
 | Metric | Result |
-|---|---:|
-| Continuity rate | **100.0%** |
-| Min IoU vs. normal baseline | 0.578 |
-| Recovery time | immediate (flow bridge) |
+|---|---|
+| Continuity rate (synthetic dropout) | 100.0% |
+| Min IoU vs normal baseline | 0.578 |
+| Recovery | immediate (flow bridge) |
+
+Real-world occlusion robustness is implemented and structurally sound, but
+cannot be claimed from this delivered clip.
 
 ---
 
-## 📊 Results & benchmarks
+## Results and benchmarks
 
-Tested on CPU (no GPU):
+Measured on CPU (no GPU) with the supplied `calib.json`:
 
 | Metric | Value |
 |---|---|
 | Frames processed | 875 / 875 |
-| Detector hit rate | **100.0%** |
-| Tracker output rate | **100.0%** |
-| Occluded/predicted frames | 0 |
-| First stdout from Python | 73 ms |
-| Mean frame time | 33.3 ms |
-| p95 frame time | 35.0 ms |
-| Synthetic occlusion continuity | **100.0%** |
-| Kalman smoothing (frame-step σ) | −53.1% |
+| Detector hit rate | 100.0% |
+| Tracker output rate | 100.0% |
+| Occluded frames (real) | 0 |
+| Flow-assisted frames | 0 |
+| First stdout from Python | 622 ms |
+| Mean frame time | 33.9 ms |
+| p95 frame time | 35.4 ms |
+| Kalman frame-step σ reduction | 59.9% |
+| Waypoint RMSE XY | 4.41 m (see Waypoint evaluation) |
 
 ---
 
-## 📁 Output format
-
-Every run writes the following artifacts:
+## Output format
 
 ```
 results/
-├── output.csv                  ← per-frame pose + bbox + tracking state
-├── summary.json                ← run stats, thresholds, Kalman config
-├── diagnostics.csv             ← ground-contact vs height-based depth delta
-├── observer_overlay.mp4        ← annotated video with motion states
-├── observer_events.json        ← segmented motion events
-├── trajectory.png              ← top-down XY path
-├── trajectory_raw_vs_filtered.png
-├── qa_report.json
-├── occlusion_stress_suite.json
-└── run_manifest.json           ← hashes, git state, command args
++-- output.csv                   <- per-frame pose + bbox + tracking state
++-- summary.json                 <- run stats, thresholds, Kalman config
++-- diagnostics.csv              <- ground-contact vs height-based depth delta
++-- observer_overlay.mp4         <- annotated video with motion states
++-- observer_events.json         <- segmented motion events
++-- trajectory.png               <- top-down XY path (raw + Kalman filtered)
++-- trajectory_raw_vs_filtered.png
++-- qa_report.json
++-- occlusion_stress_suite.json
++-- run_manifest.json
 ```
 
 `output.csv` schema:
 
 ```
 frame_id, timestamp_ms,
-x1, y1, x2, y2,                          ← bbox pixels
+x1, y1, x2, y2,                          <- bbox pixels
 status, track_state, occlusion_age,
 detector_source,
-x_cam, y_cam, z_cam,                      ← camera frame
-x_world, y_world, z_world,               ← world frame (centroid)
+x_cam, y_cam, z_cam,                      <- camera frame
+x_world, y_world, z_world,               <- world frame (centroid)
 conf,
-x_world_raw, y_world_raw, z_world_raw,   ← pre-Kalman
-x_world_filt, y_world_filt, z_world_filt ← post-Kalman
+x_world_raw, y_world_raw, z_world_raw,   <- pre-Kalman
+x_world_filt, y_world_filt, z_world_filt <- post-Kalman
 ```
 
 ---
 
-## 🛰 Jetson deployment notes
+## Waypoint evaluation
 
-The CPU pipeline runs comfortably within budget on Orin NX. For production:
+`waypoints.json` provides pixel coordinates of the three floor tape markers.
+The pipeline projects each pixel through the camera model onto the ground
+plane to get estimated world-frame stop positions, then computes RMSE
+between the bin trajectory near each stop and those estimated positions.
 
-- Use **TensorRT FP16** for the detector if switching to a learned backbone
-- Collect representative calibration frames before INT8 quantization — don't quantize blind
-- The fixed-pole transform becomes `P_world = T_world_body(t) · T_body_cam · P_cam` on a moving platform; `T_world_body(t)` should come from the vehicle EKF (IMU + GNSS + VIO), not this module
+### Projected waypoint positions (from camera model)
 
-Target latency budget on Orin NX:
+| Marker | Pixel (u, v) | Projected world (x, y) m |
+|---|---|---|
+| A (green) | (960, 529) | (5.20, 0.00) |
+| B (orange) | (1193, 436) | (7.13, −1.21) |
+| C (red) | (817, 385) | (8.87, 0.92) |
+
+These projections are within the scenario's stated 5–9 m range, which
+validates the camera model geometry.
+
+### Bin position vs. waypoints
+
+| Stop | Bin centroid XY (m) | Waypoint XY (m) | Error XY (m) |
+|---|---|---|---|
+| A | (2.42, −0.04) | (5.20, 0.00) | 2.78 |
+| B | (3.43, 1.00) | (7.13, −1.21) | 4.31 |
+| C | (3.32, −0.15) | (8.87, 0.92) | 5.66 |
+| **RMSE XY** | | | **4.41 m** |
+
+### Why the gap is 4.41 m
+
+The 4.41 m RMSE does **not** mean the localization formula is wrong. The
+geometry check confirms this: the `height_scale_error_factor` for stop A is
+2.37, meaning the bin's bounding box pixel height is 2.37× larger than it
+would be if the bin were at the waypoint depth (5.2 m). Dividing:
+5.2 m / 2.37 ≈ 2.2 m — matching the pipeline's estimate of 2.42 m.
+
+**Conclusion:** The bin in the video is physically at ~2–4 m from the pole
+during the delivered sequence, while the tape markers on the floor are at
+5–9 m. The pipeline correctly localises the bin where it actually appears.
+The gap is a content mismatch between the delivered clip and the assessment
+scenario description, not a localization error.
+
+### Waypoint pixel reliability
+
+The QA pixel probe (`qa_report.json: waypoint_pixel_probes`) samples the
+image color at each declared waypoint pixel:
+
+| Marker | Expected colour | Observed at pixel |
+|---|---|---|
+| A | green | blue |
+| B | orange | neutral/gray |
+| C | red | green |
+
+None of the pixel samples match the declared marker colours. This means the
+provided pixel coordinates may not land precisely on the tape markers in the
+actual frames, further reducing confidence in the waypoint RMSE as an
+independent accuracy metric. The `qa_report.json` flags this explicitly as
+`"waypoint_rmse_status": "large_residual"`.
+
+---
+
+## Jetson deployment notes
+
+The CPU pipeline fits within the Orin NX thermal/power envelope.
+
+**Model quantisation:** If switching to a learned backbone, use TensorRT
+FP16 on Orin NX. For INT8 quantisation, collect representative calibration
+frames from the deployment environment — do not quantise on a lab dataset.
+RKNN targets RK-series SoCs; Orin NX is NVIDIA, so TensorRT is the
+correct toolchain.
+
+**Moving platform:** The current transform assumes a fixed pole:
+
+```
+P_world = R_cw @ P_cam + t_cw      t_cw = [0, 0, h] (constant)
+```
+
+On a moving UAV this becomes:
+
+```
+P_world = T_world_body(t) @ T_body_cam @ P_cam
+```
+
+where `T_world_body(t)` must come from the vehicle EKF (IMU + GNSS + VIO).
+The body-to-camera extrinsic `T_body_cam` is fixed after mount calibration.
+
+**Flight controller output:** Use `LANDING_TARGET` or
+`VISION_POSITION_ESTIMATE` at 10–20 Hz. Both accept position covariance,
+which this pipeline provides via `sigma_x / sigma_y / sigma_z` per frame.
+
+**Latency budget on Orin NX:**
 
 | Stage | Budget |
 |---|---:|
-| Capture | 5 – 12 ms |
-| Detect | 8 – 25 ms |
-| Localize | < 1 ms |
-| Smooth | < 1 ms |
-| Serialize / transmit | 1 – 3 ms |
-| **End-to-end** | **30 – 55 ms** |
-
-For flight-controller integration use MAVLink `LANDING_TARGET` or `VISION_POSITION_ESTIMATE` at ~20 Hz after filtering.
+| Capture (CSI / USB) | 5–12 ms |
+| Detect (TensorRT FP16) | 8–25 ms |
+| Localise | < 1 ms |
+| Kalman update | < 1 ms |
+| Serialise / transmit | 1–3 ms |
+| **End-to-end** | **30–55 ms** |
 
 ---
 
-## ⚠️ Known limitations
+## Known limitations
 
-- **Detector is scene-specific.** The blue HSV and shape cues are calibrated for this fixed-camera clip. A different bin color or environment requires retuning the channel parameters — they're all exposed as `__init__` kwargs in `detector.py`.
-- **Ground-contact model needs a clean bottom edge.** Partial bbox truncation or wheel occlusion degrades depth accuracy.
-- **Monocular depth at 2–3 m range.** At short range the height-based and ground-contact estimates diverge when the bin isn't fully visible. The diagnostics CSV captures this disagreement per frame.
-- **No independent bbox IoU.** Hidden annotations aren't included locally. Run `tools/prepare_bbox_annotations.py` to generate a human-review template if needed.
-
----
-
-<p align="center">
-  Built with OpenCV · NumPy · Python — zero external model weights
-</p>
+- **Scene-specific detector.** All four channels are calibrated for this
+  clip. A different bin colour or lighting requires retuning. All thresholds
+  are exposed as `__init__` kwargs in `detector.py`.
+- **z_world is construction-imposed.** The pipeline does not estimate
+  vertical position freely — it enforces `z_world = H/2 = 0.325 m` via
+  the ground-plane contact assumption. Correct for a flat floor; fails on
+  slopes.
+- **Ground-contact model needs a clean bottom edge.** Partial bbox
+  truncation or wheel occlusion degrades x/y accuracy.
+- **RMSE vs waypoints is 4.41 m.** This reflects a content mismatch
+  between the video and the scenario (bin at 2–4 m, tape at 5–9 m),
+  not a geometry error. See Waypoint evaluation.
+- **Kalman hyperparameters not independently validated.** The original
+  grid search was circular; re-run `experiments/kalman_gridsearch.py`
+  to tune empirically once video is available.
+- **No real occlusion in delivered clip.** Occlusion handling is
+  implemented and stress-tested synthetically, but 0 real occluded frames
+  appear in the delivered run.
+- **calib.json is not committed.** Provide it at runtime via `--calib`.
+  All extrinsics (height, tilt, K, distortion) are read from that file.
