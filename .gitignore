@@ -1,20 +1,56 @@
+# ── Private assets (never commit) ──────────────────────────────────
+input.mp4
+Input sample.mp4
+calib.json
+waypoints.json
+*.pt
+*.mp4
+
+# ── Python / tooling ────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
 .venv/
 .venv_audit/
+.pytest_cache/
+*.egg-info/
+
+# ── OS / IDE ────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+
+# ── Claude internal ─────────────────────────────────────────────────
+.claude/
+
+# ── Generated pipeline outputs (run bash run.sh to reproduce) ───────
+trajectory*.png
+results/output.csv
+results/summary.json
+results/run_manifest.json
+results/diagnostics.csv
+results/qa_report.json
+results/qa_frames/
+results/observer_overlay.mp4
+results/observer_events.json
+results/occlusion_stress_suite.json
+results/asset_alignment_report.json
+results/bbox_annotation_template.csv
+results/bbox_eval.json
+results/robustness_report.json
+results/review_readiness.json
+results/review_readiness.md
+results/input_stdout.log
+results/detector_benchmark.csv
+results/detector_benchmark.json
+results/*.log
+
+# ── Scratch / internal ──────────────────────────────────────────────
+annotations/
 .audit_frames/
 .audit_sample/
 .qa_frames/
-.DS_Store
-__pycache__/
-*.pyc
-*.mp4
-calib.json
-input.mp4
-Input sample.mp4
 ProjectA/
 projectA/
-*.pt
-results/*.log
-results/_quick_output.csv
-results/stress_sample_*.jpg
-results/qa_frames/
-annotations/
+stress_test.mp4
+forai/
