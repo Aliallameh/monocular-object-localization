@@ -328,12 +328,16 @@ def main() -> None:
                     sigma_xyz = np.array([np.nan, np.nan, np.nan], dtype=np.float64)
                 mu_stationary = pos_filter.stationary_probability()
 
+            # Main output always uses strict geometry (never hard-code ground truth via calibration).
+            # Calibration is for analysis only, not for published coordinates.
             raw_xyz_world = strict_raw_xyz_world
             out_xyz_world = strict_filtered_xyz_world
+            raw_xyz_cam = loc.xyz_cam
+            out_xyz_cam = loc.xyz_cam
+            
+            # Compute calibrated coords for analysis (summary.json only), but don't use in published output
             calibrated_raw_xyz_world = apply_xy_affine_point(strict_raw_xyz_world, scene_matrix)
             calibrated_out_xyz_world = apply_xy_affine_point(strict_filtered_xyz_world, scene_matrix)
-            raw_xyz_cam = camera.world_to_cam(raw_xyz_world)
-            out_xyz_cam = camera.world_to_cam(out_xyz_world)
             xw, yw, zw = out_xyz_world
             xc, yc, zc = out_xyz_cam
             elapsed_ms = float((time.perf_counter() - t0) * 1000.0)

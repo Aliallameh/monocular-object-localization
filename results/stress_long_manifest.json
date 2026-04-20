@@ -1,6 +1,6 @@
 {
   "source_video": "input.mp4",
-  "output_video": "stress_long_harsh.mp4",
+  "output_video": "stress_test.mp4",
   "manifest": "results/stress_long_manifest.csv",
   "source_frames": 875,
   "output_frames": 3500,

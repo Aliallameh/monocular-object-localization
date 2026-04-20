@@ -67,7 +67,7 @@ Canonical strict-geometry run on `input.mp4`:
 - P95 processing time: `33.3 ms/frame`
 - First stdout line: `0.29 s`
 
-The default run uses strict monocular camera/bin geometry. Scene-control artifacts are only written when `--use-scene-control` or `--scene-calibrate` is enabled, preserving strict geometry for audit.
+For `input.mp4`, the default run uses strict monocular camera/bin geometry. Scene-control calibration is computed but only used for post-hoc analysis and waypoint error reporting in `summary.json`—not applied to the published output CSV or trajectory plots.
 
 ## Problem framing
 
@@ -96,9 +96,17 @@ It is chosen because:
 - it is deterministic and inspectable,
 - it avoids a false assumption that COCO contains a reliable trash-can class.
 
-The default live output is strict camera geometry; scene-control affine correction is optional and only enabled with `--use-scene-control` or `--scene-calibrate`.
-
 Standard COCO detectors do not reliably expose a usable `trash can` / `garbage bin` label for this clip, so the default backend uses explicit blue-body, dark-rectangle, edge-shape, and motion cues.
+
+### Waypoint Error Analysis (Bonus)
+
+When waypoints are provided in `waypoints.json`, the system:
+1. Projects waypoint pixel coordinates to world-frame using the camera model (estimated ground truth)
+2. Computes the bin trajectory in strict geometric world-frame
+3. Measures RMSE between trajectory stops and estimated waypoint positions
+4. Reports results in `summary.json` under `waypoint_analysis` section
+
+This validates the quality of the geometric implementation without hard-coding ground truth into output coordinates.
 
 Optional learned detection is available via YOLO-World, but it is not part of the required default command.
 

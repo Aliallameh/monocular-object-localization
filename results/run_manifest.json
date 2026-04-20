@@ -1,14 +1,14 @@
 {
-  "created_unix_s": 1776636281.106303,
+  "created_unix_s": 1776649641.568251,
   "git": {
-    "code_commit_at_run": "f0cb04f09ce28f8bc901535dd9676792ff8f0747",
-    "branch": "main",
+    "code_commit_at_run": "10b196560b5c4801fcbf53725a721ef62ab09f2d",
+    "branch": "temp1",
     "code_dirty_excluding_generated_outputs": true,
     "code_dirty_files": [
       "README.md",
-      "REQUIREMENT.pdf -> forai/REQUIREMENT.pdf",
-      "docs/external_tools_assessment.md -> forai/external_tools_assessment.md",
-      "forai/FOLLOWUP_PLAN.md"
+      "tests/test_geometry_and_eval.py",
+      "track_bin.py",
+      ".claude/"
     ],
     "remote": "https://github.com/Aliallameh/monocular-object-localization.git",
     "note": "code_commit_at_run is the source commit used to generate the artifacts. The artifact commit itself can be later because generated outputs are committed after the run."
@@ -59,20 +59,20 @@
     "output_csv": {
       "path": "results/output.csv",
       "exists": true,
-      "bytes": 177141,
-      "sha256": "c7492f045eb66d8ce10c3feb5cf01b1e579ef3ad811f9622371e5398e8bdb689"
+      "bytes": 176430,
+      "sha256": "715c8fec192743c740fbe6204a1c60ef7e592dcba0a23bdec6d0abef76eb4b2f"
     },
     "trajectory_png": {
       "path": "trajectory.png",
       "exists": true,
-      "bytes": 278964,
-      "sha256": "e210024be9332187ac2c57371c4b417b3649591b407ead5d192f79285ee64b03"
+      "bytes": 223594,
+      "sha256": "b4c68f3eecb41ac24d54e5bf29663d3c8ba93c653199564fc52204c48041874f"
     },
     "trajectory_raw_vs_filtered_png": {
       "path": "trajectory_raw_vs_filtered.png",
       "exists": true,
-      "bytes": 223469,
-      "sha256": "ec305e811ef3bf636b5b1e91130f541cea1403268aaf969f667b1469e2f86051"
+      "bytes": 263020,
+      "sha256": "e22a2cffc3c86ca3fdb460ac5d6668ac5c44f1afe1c9016eb8083ba28c9a3adf"
     },
     "trajectory_strict_png": {
       "path": "trajectory_strict.png",
@@ -83,8 +83,8 @@
     "summary_json": {
       "path": "results/summary.json",
       "exists": true,
-      "bytes": 20340,
-      "sha256": "6bd363d9f84b837c1941e3dc265f1f1112ac9c0a140ae3d1fee4ed34771870d4"
+      "bytes": 11833,
+      "sha256": "2975cfb94a2ecbbf3c2c3c4246ac462eda1833c012788f0a6bca1041e2558383"
     }
   },
   "run_metrics": {
@@ -92,8 +92,8 @@
     "detector_hit_rate": 1.0,
     "tracker_output_rate": 1.0,
     "occluded_frames": 0,
-    "p95_processing_ms_per_frame": 35.76946680113906,
-    "rmse_xy_m": 0.20678037436273408,
+    "p95_processing_ms_per_frame": 32.67716600530548,
+    "rmse_xy_m": 4.409931252644764,
     "strict_rmse_xy_m": 4.409931252644764
   }
 }

@@ -29,7 +29,7 @@
       "measurement_var": 0.01
     },
     "scene_control": {
-      "auto_for_input_mp4": true,
+      "auto_for_input_mp4": false,
       "use_scene_control": false,
       "strict_geometry": false,
       "slow_scene_calibrate": false
@@ -44,7 +44,7 @@
   "detector_hit_rate": 1.0,
   "detector_strong_hit_rate": 1.0,
   "flow_assisted_frames": 0,
-  "world_gate_rejections": 4620,
+  "world_gate_rejections": 4641,
   "tracker_output_rate": 1.0,
   "occluded_frames": 0,
   "blurry_frames": 0,
@@ -52,10 +52,10 @@
     "STATIONARY": 145,
     "CONFIRMED": 730
   },
-  "mean_processing_ms_per_frame": 34.05466331799315,
-  "p95_processing_ms_per_frame": 35.76946680113906,
-  "max_processing_ms_per_frame": 50.78879099164624,
-  "first_track_stdout_ms_from_python": 304.608874997939,
+  "mean_processing_ms_per_frame": 31.167792468780785,
+  "p95_processing_ms_per_frame": 32.67716600530548,
+  "max_processing_ms_per_frame": 53.80562499340158,
+  "first_track_stdout_ms_from_python": 68.05391600937583,
   "waypoints": {
     "A": {
       "color": "green",
@@ -104,9 +104,9 @@
     {
       "name": "A",
       "approx_frame": 45,
-      "frame_start": 33,
-      "frame_end": 57,
-      "num_frames": 25,
+      "frame_start": 22,
+      "frame_end": 65,
+      "num_frames": 15,
       "gt_world_ground": [
         5.201102184745891,
         -3.3055991699485594e-08,
@@ -118,26 +118,26 @@
         0.325
       ],
       "estimated_raw_centroid": [
-        5.327188043194248,
-        0.03658890227039535,
+        2.4391882252971624,
+        -0.041223747783183606,
         0.325
       ],
       "estimated_filtered_centroid": [
-        5.379445716839195,
-        0.01600427391639725,
+        2.4226600699098606,
+        -0.04148784066890474,
         0.325
       ],
-      "error_xy_m": 0.17906019457484584,
-      "error_3d_centroid_m": 0.17906019457484584,
-      "raw_jitter_std_m": 0.2759904180990427,
-      "filtered_jitter_std_m": 0.29877152794038353
+      "error_xy_m": 2.778751846364666,
+      "error_3d_centroid_m": 2.778751846364666,
+      "raw_jitter_std_m": 0.10991723362875404,
+      "filtered_jitter_std_m": 0.1116167498503976
     },
     {
       "name": "B",
       "approx_frame": 195,
-      "frame_start": 175,
+      "frame_start": 172,
       "frame_end": 220,
-      "num_frames": 22,
+      "num_frames": 28,
       "gt_world_ground": [
         7.132350593961992,
         -1.2141211996688075,
@@ -149,19 +149,19 @@
         0.325
       ],
       "estimated_raw_centroid": [
-        7.133210485676455,
-        -1.2151147564147675,
+        3.421026981097991,
+        0.9964820570979436,
         0.325
       ],
       "estimated_filtered_centroid": [
-        7.148150870080543,
-        -1.2150940583557512,
+        3.4280882007885127,
+        0.9976722848493527,
         0.325
       ],
-      "error_xy_m": 0.015830198338846115,
-      "error_3d_centroid_m": 0.015830198338846115,
-      "raw_jitter_std_m": 0.07447026677331466,
-      "filtered_jitter_std_m": 0.0846795330563057
+      "error_xy_m": 4.314347030042471,
+      "error_3d_centroid_m": 4.314347030042471,
+      "raw_jitter_std_m": 0.034575658565475474,
+      "filtered_jitter_std_m": 0.03377610325975377
     },
     {
       "name": "C",
@@ -180,36 +180,36 @@
         0.325
       ],
       "estimated_raw_centroid": [
-        8.387125962731586,
-        0.8698608066161884,
+        3.3065587053663914,
+        -0.14875958969227882,
         0.325
       ],
       "estimated_filtered_centroid": [
-        8.566549089866426,
-        0.8609324219950782,
+        3.315019261419993,
+        -0.14901773851909964,
         0.325
       ],
-      "error_xy_m": 0.3097760823629683,
-      "error_3d_centroid_m": 0.3097760823629683,
-      "raw_jitter_std_m": 0.20813426525196707,
-      "filtered_jitter_std_m": 0.16542495557150136
+      "error_xy_m": 5.657510834266932,
+      "error_3d_centroid_m": 5.657510834266932,
+      "raw_jitter_std_m": 0.11855385815239494,
+      "filtered_jitter_std_m": 0.11526570532908251
     }
   ],
   "metrics": {
-    "rmse_xy_m": 0.20678037436273408,
-    "rmse_3d_centroid_m": 0.20678037436273408,
-    "raw_jitter_std_m": 0.18619831670810813,
-    "filtered_jitter_std_m": 0.18295867218939688,
-    "jitter_reduction_pct": 1.7398892621515172,
+    "rmse_xy_m": 4.409931252644764,
+    "rmse_3d_centroid_m": 4.409931252644764,
+    "raw_jitter_std_m": 0.08768225011554148,
+    "filtered_jitter_std_m": 0.0868861861464113,
+    "jitter_reduction_pct": 0.9078963736459555,
     "smoothness": {
-      "raw_frame_step_std_m": 0.1081796697287549,
-      "filtered_frame_step_std_m": 0.04313005708204493,
-      "frame_step_std_reduction_pct": 60.13108822555346,
-      "raw_second_difference_std_m": 0.13180254653710374,
-      "filtered_second_difference_std_m": 0.020224925269022347,
-      "second_difference_std_reduction_pct": 84.6551331515216,
-      "raw_median_frame_step_m": 0.033277501496835234,
-      "filtered_median_frame_step_m": 0.02905241688830589
+      "raw_frame_step_std_m": 0.029647605336926137,
+      "filtered_frame_step_std_m": 0.01188896751610755,
+      "frame_step_std_reduction_pct": 59.89906307441356,
+      "raw_second_difference_std_m": 0.03575786953660631,
+      "filtered_second_difference_std_m": 0.005579567149488032,
+      "second_difference_std_reduction_pct": 84.396253966484,
+      "raw_median_frame_step_m": 0.012394771778125056,
+      "filtered_median_frame_step_m": 0.011260675065375736
     }
   },
   "strict_stops": [
@@ -380,335 +380,22 @@
       "1": 6.824055945420604,
       "2": 4.241922348013616
     },
-    "interpretation": "With only three controls, a full affine fit can interpolate exactly. Leave-one-out errors are the better warning about generalization.",
-    "active_calibration": {
-      "method": "fast_waypoint_prior_frame_samples",
-      "affine_matrix_xy": [
-        [
-          3.6197697401991302,
-          0.7178084210976727
-        ],
-        [
-          -1.5918560286976662,
-          -1.8832681460227956
-        ],
-        [
-          -3.6630891071003955,
-          -1.7947212415559568
-        ]
-      ],
-      "controls": [
-        {
-          "name": "A",
-          "approx_frame": 45,
-          "bbox": [
-            724.0,
-            478.0,
-            1220.0,
-            883.0
-          ],
-          "confidence": 0.9270841765004058,
-          "detector_source": "blue_hsv_shape",
-          "strict_world_xy": [
-            2.438466577505181,
-            -0.023559770123669648
-          ],
-          "target_waypoint_xy": [
-            5.201102184745891,
-            -3.3055991699485594e-08
-          ],
-          "pre_calibration_error_m": 2.7627360640504453,
-          "post_calibration_xy": [
-            5.20110218474589,
-            -3.305599038938567e-08
-          ],
-          "post_calibration_error_m": 1.5827895359843477e-15
-        },
-        {
-          "name": "B",
-          "approx_frame": 195,
-          "bbox": [
-            449.0,
-            477.0,
-            725.0,
-            697.0
-          ],
-          "confidence": 0.9437163273810651,
-          "detector_source": "blue_hsv_shape",
-          "strict_world_xy": [
-            3.4200354467787215,
-            0.9952540248830133
-          ],
-          "target_waypoint_xy": [
-            7.132350593961992,
-            -1.2141211996688075
-          ],
-          "pre_calibration_error_m": 4.32002576784789,
-          "post_calibration_xy": [
-            7.132350593961991,
-            -1.2141211996688064
-          ],
-          "post_calibration_error_m": 1.4217791915866692e-15
-        },
-        {
-          "name": "C",
-          "approx_frame": 345,
-          "bbox": [
-            875.0,
-            479.0,
-            1155.0,
-            703.0
-          ],
-          "confidence": 0.9181429156454111,
-          "detector_source": "blue_hsv_shape",
-          "strict_world_xy": [
-            3.399894280116999,
-            -0.14309295546019965
-          ],
-          "target_waypoint_xy": [
-            8.871528711756712,
-            0.9152339084922867
-          ],
-          "pre_calibration_error_m": 5.573045765509982,
-          "post_calibration_xy": [
-            8.871528711756708,
-            0.9152339084922876
-          ],
-          "post_calibration_error_m": 3.66205343881779e-15
-        }
-      ],
-      "control_rmse_m": 2.445220792594375e-15
-    }
+    "interpretation": "With only three controls, a full affine fit can interpolate exactly. Leave-one-out errors are the better warning about generalization."
   },
   "scene_calibration": {
-    "enabled": true,
-    "method": "fast_waypoint_prior_frame_samples",
-    "affine_matrix_xy": [
-      [
-        3.6197697401991302,
-        0.7178084210976727
-      ],
-      [
-        -1.5918560286976662,
-        -1.8832681460227956
-      ],
-      [
-        -3.6630891071003955,
-        -1.7947212415559568
-      ]
-    ],
-    "controls": [
-      {
-        "name": "A",
-        "approx_frame": 45,
-        "bbox": [
-          724.0,
-          478.0,
-          1220.0,
-          883.0
-        ],
-        "confidence": 0.9270841765004058,
-        "detector_source": "blue_hsv_shape",
-        "strict_world_xy": [
-          2.438466577505181,
-          -0.023559770123669648
-        ],
-        "target_waypoint_xy": [
-          5.201102184745891,
-          -3.3055991699485594e-08
-        ],
-        "pre_calibration_error_m": 2.7627360640504453,
-        "post_calibration_xy": [
-          5.20110218474589,
-          -3.305599038938567e-08
-        ],
-        "post_calibration_error_m": 1.5827895359843477e-15
-      },
-      {
-        "name": "B",
-        "approx_frame": 195,
-        "bbox": [
-          449.0,
-          477.0,
-          725.0,
-          697.0
-        ],
-        "confidence": 0.9437163273810651,
-        "detector_source": "blue_hsv_shape",
-        "strict_world_xy": [
-          3.4200354467787215,
-          0.9952540248830133
-        ],
-        "target_waypoint_xy": [
-          7.132350593961992,
-          -1.2141211996688075
-        ],
-        "pre_calibration_error_m": 4.32002576784789,
-        "post_calibration_xy": [
-          7.132350593961991,
-          -1.2141211996688064
-        ],
-        "post_calibration_error_m": 1.4217791915866692e-15
-      },
-      {
-        "name": "C",
-        "approx_frame": 345,
-        "bbox": [
-          875.0,
-          479.0,
-          1155.0,
-          703.0
-        ],
-        "confidence": 0.9181429156454111,
-        "detector_source": "blue_hsv_shape",
-        "strict_world_xy": [
-          3.399894280116999,
-          -0.14309295546019965
-        ],
-        "target_waypoint_xy": [
-          8.871528711756712,
-          0.9152339084922867
-        ],
-        "pre_calibration_error_m": 5.573045765509982,
-        "post_calibration_xy": [
-          8.871528711756708,
-          0.9152339084922876
-        ],
-        "post_calibration_error_m": 3.66205343881779e-15
-      }
-    ]
+    "enabled": false,
+    "method": null,
+    "affine_matrix_xy": null,
+    "controls": []
   },
   "waypoint_calibrated": {
-    "enabled": true,
-    "method": "same scene-control affine used by live output.csv",
-    "affine_matrix_xy": [
-      [
-        3.6197697401991302,
-        0.7178084210976727
-      ],
-      [
-        -1.5918560286976662,
-        -1.8832681460227956
-      ],
-      [
-        -3.6630891071003955,
-        -1.7947212415559568
-      ]
-    ],
-    "output_csv": "results/output_waypoint_calibrated.csv",
-    "trajectory_png": "trajectory_waypoint_calibrated.png",
-    "stops": [
-      {
-        "name": "A",
-        "approx_frame": 45,
-        "frame_start": 33,
-        "frame_end": 57,
-        "num_frames": 25,
-        "gt_world_ground": [
-          5.201102184745891,
-          -3.3055991699485594e-08,
-          0.0
-        ],
-        "gt_world_centroid": [
-          5.201102184745891,
-          -3.3055991699485594e-08,
-          0.325
-        ],
-        "estimated_raw_centroid": [
-          5.327188043194248,
-          0.03658890227039535,
-          0.325
-        ],
-        "estimated_filtered_centroid": [
-          5.379445716839195,
-          0.01600427391639725,
-          0.325
-        ],
-        "error_xy_m": 0.17906019457484584,
-        "error_3d_centroid_m": 0.17906019457484584,
-        "raw_jitter_std_m": 0.2759904180990427,
-        "filtered_jitter_std_m": 0.29877152794038353
-      },
-      {
-        "name": "B",
-        "approx_frame": 195,
-        "frame_start": 175,
-        "frame_end": 220,
-        "num_frames": 22,
-        "gt_world_ground": [
-          7.132350593961992,
-          -1.2141211996688075,
-          0.0
-        ],
-        "gt_world_centroid": [
-          7.132350593961992,
-          -1.2141211996688075,
-          0.325
-        ],
-        "estimated_raw_centroid": [
-          7.133210485676455,
-          -1.2151147564147675,
-          0.325
-        ],
-        "estimated_filtered_centroid": [
-          7.148150870080543,
-          -1.2150940583557512,
-          0.325
-        ],
-        "error_xy_m": 0.015830198338846115,
-        "error_3d_centroid_m": 0.015830198338846115,
-        "raw_jitter_std_m": 0.07447026677331466,
-        "filtered_jitter_std_m": 0.0846795330563057
-      },
-      {
-        "name": "C",
-        "approx_frame": 345,
-        "frame_start": 333,
-        "frame_end": 357,
-        "num_frames": 25,
-        "gt_world_ground": [
-          8.871528711756712,
-          0.9152339084922867,
-          0.0
-        ],
-        "gt_world_centroid": [
-          8.871528711756712,
-          0.9152339084922867,
-          0.325
-        ],
-        "estimated_raw_centroid": [
-          8.387125962731586,
-          0.8698608066161884,
-          0.325
-        ],
-        "estimated_filtered_centroid": [
-          8.566549089866426,
-          0.8609324219950782,
-          0.325
-        ],
-        "error_xy_m": 0.3097760823629683,
-        "error_3d_centroid_m": 0.3097760823629683,
-        "raw_jitter_std_m": 0.20813426525196707,
-        "filtered_jitter_std_m": 0.16542495557150136
-      }
-    ],
-    "metrics": {
-      "rmse_xy_m": 0.20678037436273408,
-      "rmse_3d_centroid_m": 0.20678037436273408,
-      "raw_jitter_std_m": 0.18619831670810813,
-      "filtered_jitter_std_m": 0.18295867218939688,
-      "jitter_reduction_pct": 1.7398892621515172,
-      "smoothness": {
-        "raw_frame_step_std_m": 0.1081796697287549,
-        "filtered_frame_step_std_m": 0.04313005708204493,
-        "frame_step_std_reduction_pct": 60.13108822555346,
-        "raw_second_difference_std_m": 0.13180254653710374,
-        "filtered_second_difference_std_m": 0.020224925269022347,
-        "second_difference_std_reduction_pct": 84.6551331515216,
-        "raw_median_frame_step_m": 0.033277501496835234,
-        "filtered_median_frame_step_m": 0.02905241688830589
-      }
-    }
+    "enabled": false,
+    "method": null,
+    "affine_matrix_xy": null,
+    "output_csv": null,
+    "trajectory_png": null,
+    "stops": [],
+    "metrics": {}
   },
   "robustness_stress_test": {
     "enabled": true,
@@ -745,8 +432,8 @@
       "results/qa_frames/waypoint_C_frame_0345.jpg",
       "results/qa_frames/largest_height_ground_delta_frame_0529.jpg"
     ],
-    "waypoint_calibrated_csv": "results/output_waypoint_calibrated.csv",
-    "waypoint_calibrated_trajectory": "trajectory_waypoint_calibrated.png",
+    "waypoint_calibrated_csv": null,
+    "waypoint_calibrated_trajectory": null,
     "strict_trajectory": "trajectory_strict.png",
     "raw_vs_filtered_trajectory": "trajectory_raw_vs_filtered.png",
     "run_manifest_json": "results/run_manifest.json"
