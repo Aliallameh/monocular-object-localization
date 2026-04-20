@@ -38,7 +38,7 @@
   "detector_hit_rate": 1.0,
   "detector_strong_hit_rate": 1.0,
   "flow_assisted_frames": 0,
-  "world_gate_rejections": 3151,
+  "world_gate_rejections": 3149,
   "tracker_output_rate": 1.0,
   "occluded_frames": 0,
   "blurry_frames": 0,
@@ -46,10 +46,10 @@
     "STATIONARY": 354,
     "CONFIRMED": 521
   },
-  "mean_processing_ms_per_frame": 34.0324032652591,
-  "p95_processing_ms_per_frame": 35.702633908658754,
-  "max_processing_ms_per_frame": 58.47541699768044,
-  "first_track_stdout_ms_from_python": 74.44837500224821,
+  "mean_processing_ms_per_frame": 33.32753921133865,
+  "p95_processing_ms_per_frame": 35.002883699780796,
+  "max_processing_ms_per_frame": 57.34300000767689,
+  "first_track_stdout_ms_from_python": 73.45904200337827,
   "waypoints": {
     "A": {
       "color": "green",
