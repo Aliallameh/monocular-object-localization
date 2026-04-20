@@ -1,0 +1,12 @@
+{
+  "backend": "yolov8n",
+  "model": "yolov8n.pt",
+  "frames_processed": 875,
+  "fps": 29.97002997002997,
+  "detection_rate": 0.9222857142857143,
+  "mean_latency_ms": 16.740841954397702,
+  "p95_latency_ms": 17.847487604012713,
+  "max_latency_ms": 32.14845800539479,
+  "detections_per_frame_mean": 1.0011428571428571,
+  "notes": "Off-the-shelf YOLOv8n (no fine-tuning). Detections counted as any objects found (not filtered by class). Nano model chosen for speed. Larger models (s, m, l) would have higher accuracy."
+}
