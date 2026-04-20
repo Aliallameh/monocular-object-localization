@@ -45,6 +45,21 @@ results/detector_benchmark.csv
 results/detector_benchmark.json
 results/*.log
 
+# ── Internal planning / AI docs (not for submission) ────────────────
+CI_TESTING_ANALYSIS.md
+EXECUTION_SUMMARY.md
+EXPERIMENTAL_FINDINGS.md
+FINDINGS_SUMMARY.md
+FRAMEWORK_STATUS.md
+IMPROVEMENTS_SUMMARY.md
+IMPROVEMENT_PLAN.md
+MANUAL_VALIDATION_GUIDE.md
+NEXT_STEPS.md
+SESSION_SUMMARY.md
+make_stress_video.py
+tools/analyze_stress_results.py
+tools/review_readiness.py
+
 # ── Scratch / internal ──────────────────────────────────────────────
 annotations/
 .audit_frames/
