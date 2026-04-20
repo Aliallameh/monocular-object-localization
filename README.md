@@ -254,8 +254,7 @@ results/
 ├── trajectory_raw_vs_filtered.png
 ├── qa_report.json
 ├── occlusion_stress_suite.json
-├── run_manifest.json           ← hashes, git state, command args
-└── review_readiness.json       ← per-criterion readiness score
+└── run_manifest.json           ← hashes, git state, command args
 ```
 
 `output.csv` schema:

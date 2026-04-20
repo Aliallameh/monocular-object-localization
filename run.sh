@@ -172,4 +172,3 @@ if [[ -n "$DISPLAY_FLAG" ]]; then
 fi
 
 "${CMD[@]}"
-"$VENV_DIR/bin/python" tools/review_readiness.py
