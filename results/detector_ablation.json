@@ -1,0 +1,14 @@
+{
+  "video": "input.mp4",
+  "total_frames": 875,
+  "full_detection_rate": 1.0,
+  "channel_contributions": {},
+  "interpretation": "Ablation measures detection rate with each channel disabled. Large drop indicates critical contribution.",
+  "channels_tested": [
+    "blue_hsv_shape",
+    "dark_rect_shape",
+    "edge_shape",
+    "motion_foreground"
+  ],
+  "note": "Full ablation requires refactoring detector.py to disable channels individually. This is a TODO for the full implementation. For now, baseline is: full hybrid detection works at 100.0% recall."
+}

@@ -1,0 +1,32 @@
+{
+  "nominal_rmse_from_waypoints_m": 1.004,
+  "error_decomposition": {
+    "bbox_uncertainty": {
+      "sigma_bbox_width_px": 15.0,
+      "sigma_bbox_height_px": 10.0,
+      "sigma_bbox_center_x_px": 8.0,
+      "sigma_bbox_center_y_px": 6.0,
+      "sigma_depth_m": 0.02808172219936926,
+      "sigma_x_world_m": 0.009126559714795009,
+      "sigma_y_world_m": 0.006844919786096257,
+      "note": "Estimated from typical detector variance. Should be validated on synthetic ground truth."
+    },
+    "calibration_uncertainty": {
+      "sigma_focal_length_sensitivity_m": 0.0,
+      "sigma_tilt_deg_sensitivity_m": 0.08432173049576108,
+      "sigma_height_m_sensitivity_m": 0.04470556288112193
+    }
+  },
+  "combined_error_budget": {
+    "sigma_xyz_m": 0.1001372644279145,
+    "confidence_68pct_m": 0.1001372644279145,
+    "confidence_95pct_m": 0.200274528855829,
+    "interpretation": "Estimated localization \u03c3 = 0.100 m. 68% confidence: \u00b10.100 m. 95% confidence: \u00b10.200 m. Measured RMSE (1.004 m) is larger, suggesting either (1) our error model is underestimating, or (2) additional sources like centroid approximation (bin != point), dynamic motion, or detector bias."
+  },
+  "next_steps": [
+    "1. Validate bbox noise estimate against synthetic ground truth frames",
+    "2. Measure centroid offset: does bottom-center pixel equal floor contact?",
+    "3. Compare ground-contact vs height-based estimate scatter to identify major source",
+    "4. Perturb calibration on synthetic frames; verify sensitivity matches model"
+  ]
+}
