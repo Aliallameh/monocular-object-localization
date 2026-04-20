@@ -94,19 +94,22 @@ Candidates from all four channels are merged with NMS (IoU threshold 0.45).
 YOLOv8-n misses ~68 frames. The 2× speedup does not justify a 7.8% miss rate
 when the 250 ms CPU budget is already met by a wide margin.
 
-**Ablation results:**
+**Ablation results** (two runs per channel: disable-one and solo):
 
-| Disabled channel | Detection rate |
-|---|---:|
-| *(all channels — baseline)* | 100.0% |
-| Blue HSV only disabled | 100.0% |
-| Dark rect only disabled | 100.0% |
-| Edge shape only disabled | 100.0% |
-| Motion foreground only disabled | 100.0% |
+| Channel | Disable-one rate | Drop | Solo rate | Solo notes |
+|---|---:|---:|---:|---|
+| Blue HSV | 100.0% | 0.0% | 100.0% | Wins NMS on every frame in the full run |
+| Dark rect | 100.0% | 0.0% | 100.0% | Independently finds the bin every frame |
+| Edge shape | 100.0% | 0.0% | 100.0% | Independently finds the bin every frame |
+| Motion foreground | 100.0% | 0.0% | 96.8% | Misses first ~9 frames (MOG2 needs warm-up) |
 
-In the delivered clip the blue channel is the sole active driver —
-all 875 frames are detected via `blue_hsv_shape`. The other channels are
-genuine fallbacks for different bin colours or lighting, not exercised here.
+`solo_first_5_frames` from `results/detector_ablation.json` confirms each channel
+fires on real frames, not hypothetical coverage.
+
+**Why the delivered run shows `blue_hsv_shape` every frame:** In the full pipeline,
+blue HSV produces the highest-confidence candidate on this scene and wins NMS.
+The other channels also fire and find the bin, but their proposals are suppressed
+by NMS. Solo ablation verifies they are genuine fallbacks — not dead code.
 
 **Threshold plateau** (no detection loss across this range):
 
@@ -278,17 +281,23 @@ When the detector misses a frame:
 every frame via the blue HSV channel; the fallback chain is not triggered.
 No real person-occlusion event occurs in the delivered sequence.
 
-Occlusion handling is verified through **synthetic stress tests only** —
-three random 20-frame dropout windows injected programmatically:
+Occlusion handling is verified through **three synthetic stress scenarios**
+(detection suppressed + frames blurred on a different video segment):
 
-| Metric | Result |
-|---|---|
-| Continuity rate (synthetic dropout) | 100.0% |
-| Min IoU vs normal baseline | 0.578 |
-| Recovery | immediate (flow bridge) |
+| Scenario | Dropout frames | Continuity | Mean IoU vs baseline | Min IoU |
+|---|---:|---:|---:|---:|
+| mid_stop_dropout (frames 185–210) | 26 | 100.0% | 0.766 | 0.600 |
+| moving_crossing_dropout (frames 432–445) | 14 | 100.0% | 0.675 | 0.578 |
+| late_low_confidence_dropout (frames 748–762) | 15 | 100.0% | 0.909 | 0.890 |
+| **All three combined** | **55** | **100.0%** | — | **0.578** |
 
-Real-world occlusion robustness is implemented and structurally sound, but
-cannot be claimed from this delivered clip.
+All 55 OCCLUDED frames appear with the `occlusion_age` counter in
+`results/occlusion_stress_suite.json`. Recovery is immediate via the
+LK flow bridge — zero missed tracker outputs across all dropout windows.
+
+Real-world occlusion robustness is implemented and stress-tested on
+independent video segments, but 0 real occluded frames appear in the
+primary delivered run.
 
 ---
 

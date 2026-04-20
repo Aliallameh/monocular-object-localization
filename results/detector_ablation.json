@@ -6,23 +6,55 @@
     "without_blue_hsv": {
       "detection_rate": 1.0,
       "recall_drop_abs": 0.0,
-      "recall_drop_pct": 0.0
+      "recall_drop_pct": 0.0,
+      "solo_detection_rate": 1.0,
+      "solo_first_5_frames": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
     },
     "without_dark_rect": {
       "detection_rate": 1.0,
       "recall_drop_abs": 0.0,
-      "recall_drop_pct": 0.0
+      "recall_drop_pct": 0.0,
+      "solo_detection_rate": 1.0,
+      "solo_first_5_frames": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
     },
     "without_edge_shape": {
       "detection_rate": 1.0,
       "recall_drop_abs": 0.0,
-      "recall_drop_pct": 0.0
+      "recall_drop_pct": 0.0,
+      "solo_detection_rate": 1.0,
+      "solo_first_5_frames": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
     },
     "without_motion_foreground": {
       "detection_rate": 1.0,
       "recall_drop_abs": 0.0,
-      "recall_drop_pct": 0.0
+      "recall_drop_pct": 0.0,
+      "solo_detection_rate": 0.968,
+      "solo_first_5_frames": [
+        9,
+        10,
+        11,
+        12,
+        14
+      ]
     }
   },
-  "interpretation": "Each row shows what happens when that channel is disabled. Large recall_drop_pct means the channel is critical."
+  "interpretation": "disable-one: all channels except this one enabled \u2014 measures fall-back coverage. solo: only this channel enabled \u2014 verifies independent detectability. solo_first_5_frames: first frame indices detected when running that channel alone."
 }

@@ -11,7 +11,7 @@ import numpy as np
 
 from config_utils import load_runtime_config
 from eval_utils import asset_alignment_diagnostics, evaluate_bbox_annotations
-from localizer import BIN_HEIGHT_M, CameraGeometry, build_camera_to_world
+from localizer import BIN_HEIGHT_M, CameraGeometry, build_camera_to_world, localize_bbox
 from observer import MotionStateEstimator
 from tracker_utils import bbox_iou
 
@@ -40,6 +40,39 @@ class GeometryTests(unittest.TestCase):
         self.assertAlmostEqual(point[2], 0.0, places=9)
         centroid = point + np.array([0.0, 0.0, BIN_HEIGHT_M / 2.0])
         self.assertAlmostEqual(centroid[2], 0.325, places=9)
+
+    def test_synthetic_bin_localization_at_known_distances(self) -> None:
+        """Round-trip geometry: forward-project a bin at known world positions,
+        then localize_bbox() must recover x within 0.25 m.
+        No video GT needed — this is a closed-form identity check."""
+        calib = {
+            "K": [[1402.5, 0.0, 960.0], [0.0, 1402.5, 540.0], [0.0, 0.0, 1.0]],
+            "dist_coeffs": [0.0, 0.0, 0.0, 0.0, 0.0],
+            "camera_height_m": 1.35,
+            "camera_tilt_deg": -15.0,
+            "fps": 30.0,
+            "image_width_px": 1920,
+            "image_height_px": 1080,
+        }
+        camera = CameraGeometry.from_json_dict(calib)
+
+        def proj(xyz: np.ndarray) -> tuple:
+            K = camera.K
+            return K[0, 0] * xyz[0] / xyz[2] + K[0, 2], K[1, 1] * xyz[1] / xyz[2] + K[1, 2]
+
+        for x_true in [3.0, 5.0, 7.0, 9.0]:
+            cam_bot = camera.world_to_cam(np.array([x_true, 0.0, 0.0]))
+            cam_top = camera.world_to_cam(np.array([x_true, 0.0, BIN_HEIGHT_M]))
+            u_bot, v_bot = proj(cam_bot)
+            u_top, v_top = proj(cam_top)
+            u_cen = (u_bot + u_top) / 2.0
+            bbox = (u_cen - 50, v_top, u_cen + 50, v_bot)
+            loc = localize_bbox(bbox, camera)
+            error = abs(loc.xyz_world[0] - x_true)
+            self.assertLess(
+                error, 0.25,
+                f"Localization error {error:.4f} m > 0.25 m at x_true={x_true} m — geometry broken",
+            )
 
 
 class EvaluationTests(unittest.TestCase):
