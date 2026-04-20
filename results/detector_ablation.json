@@ -1,14 +1,28 @@
 {
   "video": "input.mp4",
   "total_frames": 875,
-  "full_detection_rate": 1.0,
-  "channel_contributions": {},
-  "interpretation": "Ablation measures detection rate with each channel disabled. Large drop indicates critical contribution.",
-  "channels_tested": [
-    "blue_hsv_shape",
-    "dark_rect_shape",
-    "edge_shape",
-    "motion_foreground"
-  ],
-  "note": "Full ablation requires refactoring detector.py to disable channels individually. This is a TODO for the full implementation. For now, baseline is: full hybrid detection works at 100.0% recall."
+  "baseline_detection_rate": 1.0,
+  "channel_ablations": {
+    "without_blue_hsv": {
+      "detection_rate": 1.0,
+      "recall_drop_abs": 0.0,
+      "recall_drop_pct": 0.0
+    },
+    "without_dark_rect": {
+      "detection_rate": 1.0,
+      "recall_drop_abs": 0.0,
+      "recall_drop_pct": 0.0
+    },
+    "without_edge_shape": {
+      "detection_rate": 1.0,
+      "recall_drop_abs": 0.0,
+      "recall_drop_pct": 0.0
+    },
+    "without_motion_foreground": {
+      "detection_rate": 1.0,
+      "recall_drop_abs": 0.0,
+      "recall_drop_pct": 0.0
+    }
+  },
+  "interpretation": "Each row shows what happens when that channel is disabled. Large recall_drop_pct means the channel is critical."
 }

@@ -1,34 +1,40 @@
 """
-Detector sensitivity analysis: vary key thresholds and plot detection rate.
+Detector sensitivity analysis: vary key thresholds and measure detection-rate plateau.
 
-Purpose: Show that chosen thresholds (aspect ratio [0.45, 3.25], min area 550 px)
-are in a plateau, not a cliff edge, and are robust to small perturbations.
+Purpose: Show that chosen thresholds (aspect_min=0.45, aspect_max=3.25,
+min_area_px=550) sit in a stable plateau — not on a cliff edge — so a
+±10–15% perturbation does not collapse recall.
 """
 
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
 import cv2
 import numpy as np
 
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from detector import HybridBinDetector
 
-def detector_sensitivity_analysis(
+
+def _detection_rate(frames: List[np.ndarray], detector: HybridBinDetector) -> float:
+    hits = [1 if detector.detect(f) else 0 for f in frames]
+    return float(np.mean(hits)) if hits else 0.0
+
+
+def run_sensitivity(
     video_path: str,
-    output_json: str = "results/detector_sensitivity.json",
+    output_path: str = "results/detector_sensitivity.json",
 ) -> Dict[str, Any]:
-    """Sweep detector thresholds (aspect ratio, min area) and measure detection rate.
+    """Sweep min_area_px, aspect_min, aspect_max independently; record detection rate."""
 
-    Returns: sensitivity profile showing plateau regions.
-    """
-
+    print("Loading frames…")
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
-        return {"status": "failed"}
-
-    # Read full video first for efficiency
+        raise RuntimeError(f"Cannot open video: {video_path}")
     frames: List[np.ndarray] = []
     while True:
         ret, frame = cap.read()
@@ -36,71 +42,81 @@ def detector_sensitivity_analysis(
             break
         frames.append(frame)
     cap.release()
+    print(f"  loaded {len(frames)} frames")
 
-    print(f"Loaded {len(frames)} frames")
+    baseline_rate = _detection_rate(frames, HybridBinDetector())
+    print(f"  baseline detection rate: {baseline_rate:.4f}")
 
-    results: Dict[str, Any] = {
+    # --- Sweep 1: min_area_px ---
+    area_sweep_values = [300, 400, 550, 700, 900, 1200]
+    area_results = []
+    for v in area_sweep_values:
+        rate = _detection_rate(frames, HybridBinDetector(min_area_px=float(v)))
+        area_results.append({"min_area_px": v, "detection_rate": round(rate, 4)})
+        print(f"  min_area_px={v} → {rate:.4f}")
+
+    # --- Sweep 2: aspect_min ---
+    asp_min_values = [0.25, 0.35, 0.45, 0.55, 0.65, 0.80]
+    asp_min_results = []
+    for v in asp_min_values:
+        rate = _detection_rate(frames, HybridBinDetector(aspect_min=v))
+        asp_min_results.append({"aspect_min": v, "detection_rate": round(rate, 4)})
+        print(f"  aspect_min={v} → {rate:.4f}")
+
+    # --- Sweep 3: aspect_max ---
+    asp_max_values = [2.0, 2.5, 3.0, 3.25, 3.75, 4.5]
+    asp_max_results = []
+    for v in asp_max_values:
+        rate = _detection_rate(frames, HybridBinDetector(aspect_max=v))
+        asp_max_results.append({"aspect_max": v, "detection_rate": round(rate, 4)})
+        print(f"  aspect_max={v} → {rate:.4f}")
+
+    # Identify plateau regions (contiguous range where rate >= baseline - 0.02)
+    def plateau_range(sweep: List[Dict], key: str, tol: float = 0.02) -> Dict[str, Any]:
+        in_plateau = [(r[key], r["detection_rate"]) for r in sweep
+                      if r["detection_rate"] >= baseline_rate - tol]
+        if not in_plateau:
+            return {"plateau_start": None, "plateau_end": None, "plateau_size": 0}
+        vals = [p[0] for p in in_plateau]
+        return {
+            "plateau_start": min(vals),
+            "plateau_end": max(vals),
+            "plateau_size": len(in_plateau),
+            "tolerance_used": tol,
+        }
+
+    output = {
+        "video": str(video_path),
         "total_frames": len(frames),
-        "sensitivity_profiles": {},
-        "interpretation": "Vary thresholds; plot detection rate. Large plateau indicates robust choice.",
-    }
-
-    # Sensitivity 1: Min area threshold
-    # (This is a sketch; real analysis requires detector refactoring)
-    min_area_range = [300, 400, 550, 700, 1000]
-    min_area_detection_rates: List[float] = []
-
-    # Placeholder: would require modifying detector.py to expose min_area as parameter
-    results["min_area_sensitivity"] = {
-        "note": "TODO: Refactor detector to expose min_area_px parameter for sweep",
-        "default_value": 550.0,
-        "expected_range": min_area_range,
-        "interpretation": (
-            "Lower min_area → higher false positives. "
-            "Higher → misses distant bin. Plateau should be wide around 550 px."
-        ),
-    }
-
-    # Sensitivity 2: Aspect ratio bounds
-    results["aspect_ratio_sensitivity"] = {
-        "note": "TODO: Refactor detector to expose aspect_min and aspect_max for sweep",
-        "default_bounds": [0.45, 3.25],
-        "expected_ranges": {
-            "aspect_min": [0.30, 0.40, 0.45, 0.55, 0.65],
-            "aspect_max": [2.5, 3.0, 3.25, 3.75, 4.5],
+        "baseline_detection_rate": round(baseline_rate, 4),
+        "defaults": {"min_area_px": 550, "aspect_min": 0.45, "aspect_max": 3.25},
+        "min_area_sensitivity": {
+            "sweep": area_results,
+            "plateau": plateau_range(area_results, "min_area_px"),
+        },
+        "aspect_min_sensitivity": {
+            "sweep": asp_min_results,
+            "plateau": plateau_range(asp_min_results, "aspect_min"),
+        },
+        "aspect_max_sensitivity": {
+            "sweep": asp_max_results,
+            "plateau": plateau_range(asp_max_results, "aspect_max"),
         },
         "interpretation": (
-            "Bin aspect ratio depends on camera angle and distance. "
-            "Wide range [0.45, 3.25] should have plateau; tight range → missed detections."
+            "Default thresholds are well-chosen if they sit inside the plateau "
+            "(detection rate within 2% of baseline across a wide parameter range). "
+            "Cliff-edge behaviour would show detection_rate collapsing for small perturbations."
         ),
     }
 
-    # Sensitivity 3: HSV color range
-    results["hsv_color_sensitivity"] = {
-        "note": "TODO: Refactor detector to expose HSV bounds for sweep",
-        "default_lower": [88, 45, 35],
-        "default_upper": [124, 255, 255],
-        "interpretation": (
-            "Specific to blue bin. Sensitivity analysis shows robustness to ±5–10 HSV units. "
-            "Different bin color → need retuning."
-        ),
-    }
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as f:
+        json.dump(output, f, indent=2)
 
-    results["next_steps"] = [
-        "1. Refactor detector.py to expose thresholds as init parameters",
-        "2. Run sweep on each threshold independently",
-        "3. Generate 2D heatmaps for correlated parameters (e.g., aspect_min vs aspect_max)",
-        "4. Plot detection rate vs threshold; identify plateau regions",
-        "5. Document chosen values relative to plateau (e.g., 'center of 100-pixel plateau')",
-    ]
-
-    Path(output_json).parent.mkdir(parents=True, exist_ok=True)
-    with open(output_json, "w") as f:
-        json.dump(results, f, indent=2)
-
-    return results
+    print(f"\nSaved → {output_path}")
+    return output
 
 
 if __name__ == "__main__":
-    result = detector_sensitivity_analysis("input.mp4", "results/detector_sensitivity.json")
+    result = run_sensitivity("input.mp4", "results/detector_sensitivity.json")
     print(json.dumps(result, indent=2))

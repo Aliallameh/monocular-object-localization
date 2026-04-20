@@ -41,10 +41,26 @@ class HybridBinDetector:
     a hard multi-object decision by itself.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        enable_blue: bool = True,
+        enable_dark: bool = True,
+        enable_edge: bool = True,
+        enable_motion: bool = True,
+        min_area_px: float = 550.0,
+        aspect_min: float = 0.45,
+        aspect_max: float = 3.25,
+    ) -> None:
+        self.enable_blue = enable_blue
+        self.enable_dark = enable_dark
+        self.enable_edge = enable_edge
+        self.enable_motion = enable_motion
+        self.min_area_px = min_area_px
+        self.aspect_min = aspect_min
+        self.aspect_max = aspect_max
         self.lower_blue = np.array([88, 45, 35], dtype=np.uint8)
         self.upper_blue = np.array([124, 255, 255], dtype=np.uint8)
-        self.min_area_px = 550.0
         self.bg_subtractor = cv2.createBackgroundSubtractorMOG2(
             history=180,
             varThreshold=24,
@@ -54,10 +70,14 @@ class HybridBinDetector:
 
     def detect(self, frame_bgr: np.ndarray) -> List[Detection]:
         candidates: List[Detection] = []
-        candidates.extend(self._detect_blue(frame_bgr))
-        candidates.extend(self._detect_dark_rectangular_bin(frame_bgr))
-        candidates.extend(self._detect_edge_shape(frame_bgr))
-        candidates.extend(self._detect_motion_regions(frame_bgr))
+        if self.enable_blue:
+            candidates.extend(self._detect_blue(frame_bgr))
+        if self.enable_dark:
+            candidates.extend(self._detect_dark_rectangular_bin(frame_bgr))
+        if self.enable_edge:
+            candidates.extend(self._detect_edge_shape(frame_bgr))
+        if self.enable_motion:
+            candidates.extend(self._detect_motion_regions(frame_bgr))
         self.frame_index += 1
         return _non_max_suppression(candidates, iou_thresh=0.45)
 
@@ -98,7 +118,7 @@ class HybridBinDetector:
                 continue
 
             aspect = w / float(h)
-            if aspect < 0.45 or aspect > 3.25:
+            if aspect < self.aspect_min or aspect > self.aspect_max:
                 continue
 
             x1, y1, x2, y2 = self._expand_to_full_bin(frame_bgr, (x, y, x + w, y + h))
@@ -259,7 +279,7 @@ class HybridBinDetector:
             if w < 45 or h < 45:
                 continue
             aspect = w / float(h)
-            if aspect < 0.45 or aspect > 3.6:
+            if aspect < self.aspect_min or aspect > self.aspect_max:
                 continue
             if y + h < int(0.38 * h_img):
                 continue

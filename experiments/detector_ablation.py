@@ -16,87 +16,71 @@ from typing import Any, Dict, List
 import cv2
 import numpy as np
 
-# Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from detector import HybridBinDetector
 
 
-def run_ablation(
-    video_path: str,
-    output_path: str = "results/detector_ablation.csv",
-) -> Dict[str, Any]:
-    """Ablate each detector channel and measure detection rate drop.
-
-    Returns: {
-        'full_detection_rate': float,
-        'channel_ablations': {
-            'without_blue_hsv': float,
-            'without_dark_rect': float,
-            'without_edge_shape': float,
-            'without_motion_foreground': float,
-        },
-        'recall_drop': {
-            'blue_hsv': float (percentage),
-            ...
-        }
-    }
-    """
-
+def _detection_rate(video_path: str, detector: HybridBinDetector) -> tuple[float, int]:
+    """Run detector over all frames; return (detection_rate, total_frames)."""
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
-        return {"status": "failed", "reason": "cannot open video"}
-
-    # Baseline: full detector
-    detector_full = HybridBinDetector()
-    full_detection_counts: List[int] = []
-    frame_id = 0
-
+        raise RuntimeError(f"Cannot open video: {video_path}")
+    hits: List[int] = []
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-        detections = detector_full.detect(frame)
-        full_detection_counts.append(1 if detections else 0)
-        frame_id += 1
-
+        hits.append(1 if detector.detect(frame) else 0)
     cap.release()
+    return float(np.mean(hits)) if hits else 0.0, len(hits)
 
-    full_detection_rate = float(np.mean(full_detection_counts))
-    total_frames = frame_id
 
-    results = {
+def run_ablation(
+    video_path: str,
+    output_path: str = "results/detector_ablation.json",
+) -> Dict[str, Any]:
+    """Ablate each detector channel and measure detection-rate drop."""
+
+    ablations = [
+        ("without_blue_hsv",         dict(enable_blue=False)),
+        ("without_dark_rect",        dict(enable_dark=False)),
+        ("without_edge_shape",       dict(enable_edge=False)),
+        ("without_motion_foreground",dict(enable_motion=False)),
+    ]
+
+    print("Running baseline (all channels enabled)…")
+    baseline_rate, total_frames = _detection_rate(video_path, HybridBinDetector())
+    print(f"  baseline detection rate: {baseline_rate:.4f} ({total_frames} frames)")
+
+    channel_results: Dict[str, Any] = {}
+    for label, kwargs in ablations:
+        print(f"Running ablation: {label}…")
+        rate, _ = _detection_rate(video_path, HybridBinDetector(**kwargs))
+        drop = baseline_rate - rate
+        channel_results[label] = {
+            "detection_rate": round(rate, 4),
+            "recall_drop_abs": round(drop, 4),
+            "recall_drop_pct": round(drop / max(baseline_rate, 1e-9) * 100, 2),
+        }
+        print(f"  {label}: {rate:.4f} (drop {drop:.4f})")
+
+    output = {
         "video": str(video_path),
         "total_frames": total_frames,
-        "full_detection_rate": full_detection_rate,
-        "channel_contributions": {},
+        "baseline_detection_rate": round(baseline_rate, 4),
+        "channel_ablations": channel_results,
         "interpretation": (
-            "Ablation measures detection rate with each channel disabled. "
-            "Large drop indicates critical contribution."
+            "Each row shows what happens when that channel is disabled. "
+            "Large recall_drop_pct means the channel is critical."
         ),
     }
 
-    # Ablation: disable each channel by modifying detector methods
-    # (This is a sketch; real ablation would require refactoring detector API)
-
-    # For now, record expected channels from metadata
-    detector = HybridBinDetector()
-    metadata = detector.metadata()
-    channels = metadata.get("proposal_sources", [])
-
-    results["channels_tested"] = channels
-    results["note"] = (
-        "Full ablation requires refactoring detector.py to disable channels individually. "
-        "This is a TODO for the full implementation. "
-        "For now, baseline is: full hybrid detection works at {:.1f}% recall.".format(
-            full_detection_rate * 100
-        )
-    )
-
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
-        json.dump(results, f, indent=2)
+        json.dump(output, f, indent=2)
 
-    return results
+    print(f"\nSaved → {output_path}")
+    return output
 
 
 if __name__ == "__main__":
