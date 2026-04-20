@@ -96,6 +96,9 @@ def git_info() -> Dict[str, Any]:
         "trajectory.png",
         "trajectory_raw_vs_filtered.png",
         "trajectory_strict.png",
+        "trajectory_stress.png",
+        "trajectory_stress_raw_vs_filtered.png",
+        "trajectory_stress_strict.png",
         "trajectory_waypoint_calibrated.png",
     )
     code_dirty_files = [

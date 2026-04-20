@@ -17,8 +17,8 @@ import numpy as np
 from config_utils import load_runtime_config
 from detector import Detection, load_detector
 from eval_utils import (
+    asset_alignment_diagnostics,
     evaluate_bbox_annotations,
-    scene_control_diagnostics,
     trajectory_smoothness_metrics,
     write_annotation_template,
 )
@@ -29,17 +29,10 @@ from plots import (
     project_waypoints,
     save_raw_vs_filtered_plot,
     save_trajectory_plot,
-    write_waypoint_calibrated_csv,
 )
 from provenance import build_run_manifest, write_run_manifest
 from qa_utils import build_qa_report, save_qa_frames, write_diagnostics_csv, write_json
-from robustness_eval import run_dropout_stress_test
-from scene_calibration import (
-    apply_xy_affine_array,
-    apply_xy_affine_point,
-    calibrate_from_waypoint_frames,
-    calibrate_from_waypoint_samples,
-)
+from robustness_eval import run_dropout_stress_suite, run_dropout_stress_test
 from tracker_utils import BBoxKalmanTracker, LKFlowPropagator
 
 
@@ -68,21 +61,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=None, help="Learned-detector inference image size")
     parser.add_argument("--no-kalman", action="store_true", help="Disable world-position Kalman smoothing")
     parser.add_argument("--bbox-gt", default="", help="Optional JSON/CSV bbox annotations for local IoU evaluation")
-    parser.add_argument(
-        "--strict-geometry",
-        action="store_true",
-        help="Disable waypoint scene-control calibration and output strict camera/bin geometry",
-    )
-    parser.add_argument(
-        "--use-scene-control",
-        action="store_true",
-        help="Force fast waypoint scene-control calibration for non-input videos",
-    )
-    parser.add_argument(
-        "--scene-calibrate",
-        action="store_true",
-        help="Use the slower tracker-based waypoint scene-control calibration",
-    )
     parser.add_argument("--max-frames", type=int, default=0, help=argparse.SUPPRESS)
     return parser.parse_args()
 
@@ -95,7 +73,6 @@ def main() -> None:
     detector_cfg = cfg["detector"]
     tracker_cfg = cfg["tracker"]
     kalman_cfg = cfg["kalman"]
-    scene_cfg = cfg["scene_control"]
     detector_backend = args.backend or str(detector_cfg["backend"])
     detector_device = args.device or str(detector_cfg["device"])
     detector_conf = float(args.conf if args.conf is not None else detector_cfg["conf"])
@@ -114,39 +91,7 @@ def main() -> None:
     )
     waypoint_data = load_json(args.waypoints) if Path(args.waypoints).exists() else {"markers": []}
     projected_waypoints = project_waypoints(waypoint_data, camera)
-    scene_calibration = None
-    default_scene_control = bool(scene_cfg["auto_for_input_mp4"]) and Path(args.video).name == "input.mp4"
-    strict_geometry = bool(scene_cfg["strict_geometry"]) or args.strict_geometry
-    use_scene_control = bool(scene_cfg["use_scene_control"]) or args.use_scene_control
-    slow_scene_calibrate = bool(scene_cfg["slow_scene_calibrate"]) or args.scene_calibrate
-    if strict_geometry:
-        scene_calibration = None
-    elif slow_scene_calibrate:
-        scene_calibration = calibrate_from_waypoint_frames(
-            args.video,
-            detector,
-            camera,
-            projected_waypoints,
-            use_position_filter=not args.no_kalman,
-        )
-    elif use_scene_control or default_scene_control:
-        scene_calibration = calibrate_from_waypoint_samples(
-            args.video,
-            detector,
-            camera,
-            projected_waypoints,
-        )
-    else:
-        scene_calibration = None
-    scene_matrix = scene_calibration.matrix_xy if scene_calibration is not None else None
-    if scene_calibration is not None:
-        print(
-            f"[calib] scene-control affine enabled ({scene_calibration.method}) "
-            f"using {len(scene_calibration.controls)} waypoint frames",
-            flush=True,
-        )
-    else:
-        print("[calib] using strict camera geometry; scene-control affine disabled", flush=True)
+    print("[calib] using strict camera/bin geometry; waypoints are evaluation-only", flush=True)
 
     bbox_tracker = BBoxKalmanTracker(max_age=int(tracker_cfg["bbox_max_age"]))
     flow_tracker = LKFlowPropagator(min_points=int(tracker_cfg["lk_min_points"]))
@@ -174,8 +119,6 @@ def main() -> None:
     strict_filtered_world: List[np.ndarray] = []
     raw_world: List[np.ndarray] = []
     filtered_world: List[np.ndarray] = []
-    scene_raw_world: List[np.ndarray] = []
-    scene_filtered_world: List[np.ndarray] = []
     sigma_world: List[np.ndarray] = []
     detector_hits = 0
     detector_strong_hits = 0
@@ -328,16 +271,10 @@ def main() -> None:
                     sigma_xyz = np.array([np.nan, np.nan, np.nan], dtype=np.float64)
                 mu_stationary = pos_filter.stationary_probability()
 
-            # Main output always uses strict geometry (never hard-code ground truth via calibration).
-            # Calibration is for analysis only, not for published coordinates.
             raw_xyz_world = strict_raw_xyz_world
             out_xyz_world = strict_filtered_xyz_world
             raw_xyz_cam = loc.xyz_cam
             out_xyz_cam = loc.xyz_cam
-            
-            # Compute calibrated coords for analysis (summary.json only), but don't use in published output
-            calibrated_raw_xyz_world = apply_xy_affine_point(strict_raw_xyz_world, scene_matrix)
-            calibrated_out_xyz_world = apply_xy_affine_point(strict_filtered_xyz_world, scene_matrix)
             xw, yw, zw = out_xyz_world
             xc, yc, zc = out_xyz_cam
             elapsed_ms = float((time.perf_counter() - t0) * 1000.0)
@@ -405,8 +342,6 @@ def main() -> None:
             strict_filtered_world.append(strict_filtered_xyz_world.copy())
             raw_world.append(raw_xyz_world.copy())
             filtered_world.append(out_xyz_world.copy())
-            scene_raw_world.append(calibrated_raw_xyz_world.copy())
-            scene_filtered_world.append(calibrated_out_xyz_world.copy())
             sigma_world.append(sigma_xyz.copy())
             rows.append(
                 {
@@ -453,8 +388,6 @@ def main() -> None:
     strict_filt_arr = np.vstack(strict_filtered_world)
     raw_arr = np.vstack(raw_world)
     filt_arr = np.vstack(filtered_world)
-    scene_raw_arr = np.vstack(scene_raw_world)
-    scene_filt_arr = np.vstack(scene_filtered_world)
     sigma_arr = np.vstack(sigma_world) if sigma_world else None
 
     stops, metrics = estimate_stops(frame_arr, raw_arr, filt_arr, projected_waypoints, fps)
@@ -478,60 +411,24 @@ def main() -> None:
         strict_metrics,
     )
 
-    calibrated_csv_path = "results/output_scene_control.csv"
-    calibrated_plot_path = "trajectory_scene_control.png"
-    calibrated_stops: List[Dict[str, Any]] = []
-    calibrated_metrics: Dict[str, float] = {}
-    if scene_calibration is not None:
-        calibrated_stops, calibrated_metrics = estimate_stops(
-            frame_arr, scene_raw_arr, scene_filt_arr, projected_waypoints, fps
-        )
-        calibrated_metrics["smoothness"] = trajectory_smoothness_metrics(scene_raw_arr, scene_filt_arr)
-        write_waypoint_calibrated_csv(
-            calibrated_csv_path,
-            frame_arr,
-            fps,
-            strict_raw_arr,
-            strict_filt_arr,
-            scene_raw_arr,
-            scene_filt_arr,
-        )
-        save_trajectory_plot(
-            calibrated_plot_path,
-            frame_arr,
-            scene_raw_arr,
-            scene_filt_arr,
-            projected_waypoints,
-            calibrated_stops,
-            calibrated_metrics,
-        )
-    else:
-        for stale in (calibrated_csv_path, calibrated_plot_path):
-            try:
-                Path(stale).unlink()
-            except FileNotFoundError:
-                pass
+    for stale in (
+        "results/output_scene_control.csv",
+        "results/output_waypoint_calibrated.csv",
+        "trajectory_scene_control.png",
+        "trajectory_waypoint_calibrated.png",
+    ):
+        try:
+            Path(stale).unlink()
+        except FileNotFoundError:
+            pass
 
     elapsed = np.asarray(processing_ms, dtype=np.float64)
     robustness_report = run_dropout_stress_test(args.video, detector, rows)
+    occlusion_stress_suite = run_dropout_stress_suite(args.video, detector, rows)
     bbox_gt_path = args.bbox_gt or None
     bbox_eval_report = evaluate_bbox_annotations(bbox_gt_path, rows)
     annotation_template_path = write_annotation_template("results/bbox_annotation_template.csv", rows)
-    scene_control_report = scene_control_diagnostics(strict_stops)
-    if scene_calibration is not None:
-        post_errors = [
-            float(c.get("post_calibration_error_m", 0.0))
-            for c in scene_calibration.controls
-            if c.get("post_calibration_error_m") is not None
-        ]
-        scene_control_report["active_calibration"] = {
-            "method": scene_calibration.method,
-            "affine_matrix_xy": scene_calibration.matrix_xy.tolist(),
-            "controls": scene_calibration.controls,
-            "control_rmse_m": (
-                float(np.sqrt(np.mean(np.square(post_errors)))) if post_errors else None
-            ),
-        }
+    asset_alignment_report = asset_alignment_diagnostics(strict_stops)
     detector_metadata = detector.metadata() if hasattr(detector, "metadata") else {"backend": detector.__class__.__name__}
     summary = {
         "video": str(args.video),
@@ -568,40 +465,28 @@ def main() -> None:
         "strict_metrics": strict_metrics,
         "bbox_evaluation": bbox_eval_report,
         "bbox_annotation_template": annotation_template_path,
-        "scene_control_diagnostics": scene_control_report,
-        "scene_calibration": {
-            "enabled": scene_calibration is not None,
-            "method": (
-                None
-                if scene_calibration is None
-                else scene_calibration.method
-            ),
-            "affine_matrix_xy": None if scene_calibration is None else scene_calibration.matrix_xy.tolist(),
-            "controls": [] if scene_calibration is None else scene_calibration.controls,
-        },
-        "waypoint_calibrated": {
-            "enabled": scene_calibration is not None,
-            "method": "scene-control affine applied to separate output artifacts" if scene_calibration is not None else None,
-            "affine_matrix_xy": None if scene_calibration is None else scene_calibration.matrix_xy.tolist(),
-            "output_csv": calibrated_csv_path if scene_calibration is not None else None,
-            "trajectory_png": calibrated_plot_path if scene_calibration is not None else None,
-            "stops": calibrated_stops if scene_calibration is not None else [],
-            "metrics": calibrated_metrics if scene_calibration is not None else {},
-        },
+        "asset_alignment_diagnostics": asset_alignment_report,
         "robustness_stress_test": robustness_report,
+        "occlusion_stress_suite": occlusion_stress_suite,
     }
 
     os.makedirs("results", exist_ok=True)
     diagnostics_path = "results/diagnostics.csv"
     qa_report_path = "results/qa_report.json"
     robustness_path = "results/robustness_report.json"
+    occlusion_suite_path = "results/occlusion_stress_suite.json"
     bbox_eval_path = "results/bbox_eval.json"
-    scene_control_path = "results/scene_control_report.json"
+    asset_alignment_path = "results/asset_alignment_report.json"
     qa_frame_dir = "results/qa_frames"
     write_diagnostics_csv(diagnostics_path, rows)
     write_json(robustness_path, robustness_report)
+    write_json(occlusion_suite_path, occlusion_stress_suite)
     write_json(bbox_eval_path, bbox_eval_report)
-    write_json(scene_control_path, scene_control_report)
+    write_json(asset_alignment_path, asset_alignment_report)
+    try:
+        Path("results/scene_control_report.json").unlink()
+    except FileNotFoundError:
+        pass
     qa_frames = save_qa_frames(qa_frame_dir, args.video, rows, projected_waypoints, stops)
     qa_report = build_qa_report(
         args.video,
@@ -618,12 +503,11 @@ def main() -> None:
         "diagnostics_csv": diagnostics_path,
         "qa_report_json": qa_report_path,
         "robustness_report_json": robustness_path,
+        "occlusion_stress_suite_json": occlusion_suite_path,
         "bbox_eval_json": bbox_eval_path,
-        "scene_control_report_json": scene_control_path,
+        "asset_alignment_report_json": asset_alignment_path,
         "bbox_annotation_template_csv": annotation_template_path,
         "annotated_frames": qa_frames,
-        "waypoint_calibrated_csv": calibrated_csv_path if scene_calibration is not None else None,
-        "waypoint_calibrated_trajectory": calibrated_plot_path if scene_calibration is not None else None,
         "strict_trajectory": "trajectory_strict.png",
         "raw_vs_filtered_trajectory": "trajectory_raw_vs_filtered.png",
     }
@@ -644,7 +528,7 @@ def main() -> None:
     print(
         "[summary] frames={frames} detector_hits={det:.1f}% tracker_outputs={trk:.1f}% "
         "occluded={occ} mean_dt={mean:.1f}ms p95_dt={p95:.1f}ms "
-        "output_RMSE_XY={rmse:.3f}m strict_RMSE_XY={strict_rmse:.3f}m{cal_msg}".format(
+        "output_RMSE_XY={rmse:.3f}m strict_RMSE_XY={strict_rmse:.3f}m".format(
             frames=summary["frames_processed"],
             det=100.0 * summary["detector_hit_rate"],
             trk=100.0 * summary["tracker_output_rate"],
@@ -653,17 +537,10 @@ def main() -> None:
             p95=summary["p95_processing_ms_per_frame"],
             rmse=metrics.get("rmse_xy_m", float("nan")),
             strict_rmse=strict_metrics.get("rmse_xy_m", float("nan")),
-            cal_msg=(
-                " scene_calibrated=enabled"
-                if scene_calibration is not None
-                else " scene_calibrated=disabled"
-            ),
         ),
         flush=True,
     )
     print(f"[summary] wrote {output_path}, trajectory.png, and trajectory_strict.png", flush=True)
-    if scene_calibration is not None:
-        print(f"[summary] wrote {calibrated_csv_path} and {calibrated_plot_path}", flush=True)
     print(f"[summary] wrote {diagnostics_path}, {qa_report_path}, and {qa_frame_dir}/", flush=True)
     print(f"[summary] wrote run manifest {manifest_path}", flush=True)
 

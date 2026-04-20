@@ -20,6 +20,7 @@ def run_dropout_stress_test(
     frame_end: int = 230,
     dropout_start: int = 185,
     dropout_end: int = 210,
+    scenario_name: str = "mid_stop_dropout",
 ) -> Dict[str, Any]:
     """Suppress detections in a short interval and check continuity.
 
@@ -67,7 +68,7 @@ def run_dropout_stress_test(
                 )
             )
 
-        track = tracker.update(detections, dt_frames=1.0)
+        track = tracker.update(detections, dt_frames=1.0, frame=test_frame)
         if track is not None:
             tracked += 1
             if track.matched_detection is not None and track.matched_detection.source == "lk_optical_flow":
@@ -89,6 +90,7 @@ def run_dropout_stress_test(
     dropout_total = max(0, min(frame_end, dropout_end) - dropout_start + 1)
     return {
         "enabled": True,
+        "name": scenario_name,
         "scenario": "detections_suppressed_and_frames_blurred",
         "frame_start": frame_start,
         "frame_end": frame_end,
@@ -105,6 +107,63 @@ def run_dropout_stress_test(
         "dropout_min_iou_vs_baseline": _safe_min(dropout_ious),
         "dropout_mean_center_error_px": _safe_mean(dropout_center_errors),
         "dropout_max_center_error_px": _safe_max(dropout_center_errors),
+    }
+
+
+def run_dropout_stress_suite(
+    video_path: str,
+    detector: BlueBinDetector,
+    baseline_rows: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Run several detector-dropout windows against the same baseline output."""
+
+    scenarios = [
+        {
+            "scenario_name": "mid_stop_dropout",
+            "frame_start": 150,
+            "frame_end": 230,
+            "dropout_start": 185,
+            "dropout_end": 210,
+        },
+        {
+            "scenario_name": "moving_crossing_dropout",
+            "frame_start": 412,
+            "frame_end": 470,
+            "dropout_start": 432,
+            "dropout_end": 445,
+        },
+        {
+            "scenario_name": "late_low_confidence_dropout",
+            "frame_start": 728,
+            "frame_end": 787,
+            "dropout_start": 748,
+            "dropout_end": 762,
+        },
+    ]
+    reports = [run_dropout_stress_test(video_path, detector, baseline_rows, **scenario) for scenario in scenarios]
+    enabled_reports = [r for r in reports if r.get("enabled")]
+    continuity = [float(r["dropout_continuity_rate"]) for r in enabled_reports]
+    min_iou = [
+        float(r["dropout_min_iou_vs_baseline"])
+        for r in enabled_reports
+        if r.get("dropout_min_iou_vs_baseline") is not None
+    ]
+    max_center = [
+        float(r["dropout_max_center_error_px"])
+        for r in enabled_reports
+        if r.get("dropout_max_center_error_px") is not None
+    ]
+    return {
+        "enabled": bool(enabled_reports),
+        "scenario_count": len(enabled_reports),
+        "reports": reports,
+        "min_dropout_continuity_rate": _safe_min(continuity),
+        "min_dropout_iou_vs_baseline": _safe_min(min_iou),
+        "max_dropout_center_error_px": _safe_max(max_center),
+        "interpretation": (
+            "Detections are artificially suppressed and blurred; continuity is compared "
+            "against the normal pipeline output, not hidden ground truth."
+        ),
     }
 
 

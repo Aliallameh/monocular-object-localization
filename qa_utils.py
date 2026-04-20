@@ -216,16 +216,13 @@ def build_qa_report(
 
     rmse_xy = float(summary.get("metrics", {}).get("rmse_xy_m", float("nan")))
     strict_rmse_xy = float(summary.get("strict_metrics", {}).get("rmse_xy_m", float("nan")))
-    scene_enabled = bool(summary.get("scene_calibration", {}).get("enabled", False))
-    calibrated_rmse = summary.get("waypoint_calibrated", {}).get("metrics", {}).get("rmse_xy_m")
     asset_alignment = {
         "canonical_input_used": Path(video_path).name == "input.mp4",
         "waypoint_rmse_xy_m": rmse_xy,
         "strict_waypoint_rmse_xy_m": strict_rmse_xy,
-        "scene_calibration_enabled": scene_enabled,
-        "waypoint_calibrated_rmse_xy_m": calibrated_rmse,
-        "waypoint_rmse_status": "fail" if np.isfinite(rmse_xy) and rmse_xy > 1.0 else "pass",
-        "interpretation": _asset_alignment_interpretation(scene_enabled),
+        "waypoint_rmse_status": "large_residual" if np.isfinite(rmse_xy) and rmse_xy > 1.0 else "within_1m",
+        "waypoint_contract_assessment": _waypoint_contract_assessment(waypoint_checks),
+        "interpretation": _asset_alignment_interpretation(),
     }
 
     return {
@@ -242,9 +239,9 @@ def build_qa_report(
         "stop_metrics": summary.get("metrics", {}),
         "bbox_evaluation": summary.get("bbox_evaluation", {}),
         "bbox_annotation_template": summary.get("bbox_annotation_template"),
-        "scene_control_diagnostics": summary.get("scene_control_diagnostics", {}),
-        "waypoint_calibrated": summary.get("waypoint_calibrated", {}),
+        "asset_alignment_diagnostics": summary.get("asset_alignment_diagnostics", {}),
         "robustness_stress_test": summary.get("robustness_stress_test", {}),
+        "occlusion_stress_suite": summary.get("occlusion_stress_suite", {}),
         "stops": summary.get("stops", []),
     }
 
@@ -533,16 +530,39 @@ def _bgr_for_marker(name: str) -> tuple[int, int, int]:
     }.get(name.lower(), (255, 255, 255))
 
 
-def _asset_alignment_interpretation(scene_enabled: bool) -> str:
-    if scene_enabled:
-        return (
-            "Scene-control affine calibration is enabled for this run; strict values remain in diagnostics "
-            "for audit. Do not compare calibrated waypoint RMSE as an independent geometry validation."
-        )
+def _asset_alignment_interpretation() -> str:
     return (
-        "Default run uses strict camera/bin geometry. Waypoint residual is reported as an external consistency "
-        "check only and is not used to correct the answer stream."
+        "The output stream uses strict camera/bin geometry. Waypoint residual is an external consistency check "
+        "only and is not used to correct the answer stream."
     )
+
+
+def _waypoint_contract_assessment(checks: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not checks:
+        return {"status": "missing_waypoint_checks", "reason": "No waypoint consistency checks were computed."}
+    large_pixel_gaps = [
+        c for c in checks if float(c.get("pixel_gap_to_detected_bottom_center_px", 0.0)) > 120.0
+    ]
+    bad_height_scale = [
+        c
+        for c in checks
+        if c.get("height_scale_error_factor") is not None
+        and not (0.75 <= float(c["height_scale_error_factor"]) <= 1.25)
+    ]
+    status = "invalid_for_independent_rmse_contract" if large_pixel_gaps or bad_height_scale else "plausible"
+    return {
+        "status": status,
+        "markers_checked": len(checks),
+        "markers_with_pixel_gap_over_120px": [str(c["name"]) for c in large_pixel_gaps],
+        "markers_with_height_scale_outside_0_75_to_1_25": [str(c["name"]) for c in bad_height_scale],
+        "max_pixel_gap_px": max(float(c.get("pixel_gap_to_detected_bottom_center_px", 0.0)) for c in checks),
+        "interpretation": (
+            "The waypoint pixels should be treated as evaluation references only if they are geometrically "
+            "consistent with the detected floor contact and object scale. This run fails that consistency check."
+            if status != "plausible"
+            else "Waypoint pixels are geometrically plausible as external references."
+        ),
+    }
 
 
 def _safe_float(value: Any) -> float | None:

@@ -1,5 +1,6 @@
 {
   "enabled": true,
+  "name": "mid_stop_dropout",
   "scenario": "detections_suppressed_and_frames_blurred",
   "frame_start": 150,
   "frame_end": 230,

@@ -13,7 +13,7 @@
     "video_frame_count": 875,
     "processed_frame_count": 875,
     "processed_all_video_frames": true,
-    "first_track_stdout_ms_from_python": 68.05391600937583,
+    "first_track_stdout_ms_from_python": 72.97404200653546,
     "first_track_stdout_under_2s": true,
     "detector_hit_rate_over_90pct": true,
     "tracker_output_rate_over_90pct": true,
@@ -38,9 +38,9 @@
     "blur_laplacian_var_min": 73.06517982880813
   },
   "geometry_checks": {
-    "height_vs_ground_depth_delta_median_m": 0.32473448195652077,
-    "height_vs_ground_depth_delta_p95_m": 0.717897169909645,
-    "height_vs_ground_depth_delta_max_m": 0.7629154974848364,
+    "height_vs_ground_depth_delta_median_m": 1.2772546667826368,
+    "height_vs_ground_depth_delta_p95_m": 2.2880291941002717,
+    "height_vs_ground_depth_delta_max_m": 2.508286091104857,
     "centroid_z_expected_m": 0.325,
     "centroid_z_min_max_m": [
       0.325,
@@ -124,19 +124,19 @@
       ],
       "pixel_gap_to_detected_bottom_center_px": 351.12782065013084,
       "detected_ground_xy_m": [
-        2.450818019521833,
-        -0.020192268496306502
+        1.1361585537975205,
+        -0.012459546475138415
       ],
       "projected_waypoint_ground_xy_m": [
-        5.201102184745891,
-        -3.3055991699485594e-08
+        1.8879363291294065,
+        -1.4101151118615222e-08
       ],
-      "ground_gap_m": 2.7503582886333686,
+      "ground_gap_m": 0.7518810168038146,
       "detected_bbox_height_px_undistorted": 407.68946627254974,
       "provided_bin_height_m": 0.65,
-      "required_bin_height_if_at_waypoint_depth_m": 1.5374960863017206,
-      "height_scale_error_factor": 2.3653785943103394,
-      "height_ground_depth_delta_m": 0.39652103668305916
+      "required_bin_height_if_at_waypoint_depth_m": 0.6121138099783326,
+      "height_scale_error_factor": 0.9417135538128194,
+      "height_ground_depth_delta_m": 0.7461532777158555
     },
     {
       "name": "B",
@@ -152,19 +152,19 @@
       ],
       "pixel_gap_to_detected_bottom_center_px": 659.806269911079,
       "detected_ground_xy_m": [
-        3.4202110747813235,
-        0.9952989011704142
+        1.4673292333252264,
+        0.5306375284974781
       ],
       "projected_waypoint_ground_xy_m": [
-        7.132350593961992,
-        -1.2141211996688075
+        2.187878426238121,
+        -0.4256636205580295
       ],
-      "ground_gap_m": 4.319897798774328,
+      "ground_gap_m": 1.1973733866644556,
       "detected_bbox_height_px_undistorted": 225.36757937321124,
       "provided_bin_height_m": 0.65,
-      "required_bin_height_if_at_waypoint_depth_m": 1.1496737247457491,
-      "height_scale_error_factor": 1.7687288073011525,
-      "height_ground_depth_delta_m": 0.47609858139606187
+      "required_bin_height_if_at_waypoint_depth_m": 0.3778529886497418,
+      "height_scale_error_factor": 0.581312290230372,
+      "height_ground_depth_delta_m": 2.2838555445516895
     },
     {
       "name": "C",
@@ -180,45 +180,58 @@
       ],
       "pixel_gap_to_detected_bottom_center_px": 385.1801568158242,
       "detected_ground_xy_m": [
-        3.327708323560091,
-        -0.14875958969227882
+        1.439665818606328,
+        -0.08035284470120498
       ],
       "projected_waypoint_ground_xy_m": [
-        8.871528711756712,
-        0.9152339084922867
+        2.379184378434256,
+        0.2765168580622098
       ],
-      "ground_gap_m": 5.645000147100402,
+      "ground_gap_m": 1.0050129894740623,
       "detected_bbox_height_px_undistorted": 236.37893269594082,
       "provided_bin_height_m": 0.65,
-      "required_bin_height_if_at_waypoint_depth_m": 1.4889813562394552,
-      "height_scale_error_factor": 2.2907405480607004,
-      "height_ground_depth_delta_m": 0.3770164842001402
+      "required_bin_height_if_at_waypoint_depth_m": 0.4227265616467422,
+      "height_scale_error_factor": 0.6503485563796034,
+      "height_ground_depth_delta_m": 2.1180831936673865
     }
   ],
   "asset_alignment": {
     "canonical_input_used": true,
-    "waypoint_rmse_xy_m": 4.409931252644764,
-    "strict_waypoint_rmse_xy_m": 4.409931252644764,
-    "scene_calibration_enabled": false,
-    "waypoint_calibrated_rmse_xy_m": null,
-    "waypoint_rmse_status": "fail",
-    "interpretation": "Default run uses strict camera/bin geometry. Waypoint residual is reported as an external consistency check only and is not used to correct the answer stream."
+    "waypoint_rmse_xy_m": 1.0036710386515393,
+    "strict_waypoint_rmse_xy_m": 1.0036710386515393,
+    "waypoint_rmse_status": "large_residual",
+    "waypoint_contract_assessment": {
+      "status": "invalid_for_independent_rmse_contract",
+      "markers_checked": 3,
+      "markers_with_pixel_gap_over_120px": [
+        "A",
+        "B",
+        "C"
+      ],
+      "markers_with_height_scale_outside_0_75_to_1_25": [
+        "B",
+        "C"
+      ],
+      "max_pixel_gap_px": 659.806269911079,
+      "interpretation": "The waypoint pixels should be treated as evaluation references only if they are geometrically consistent with the detected floor contact and object scale. This run fails that consistency check."
+    },
+    "interpretation": "The output stream uses strict camera/bin geometry. Waypoint residual is an external consistency check only and is not used to correct the answer stream."
   },
   "stop_metrics": {
-    "rmse_xy_m": 4.409931252644764,
-    "rmse_3d_centroid_m": 4.409931252644764,
-    "raw_jitter_std_m": 0.08768225011554148,
-    "filtered_jitter_std_m": 0.0868861861464113,
-    "jitter_reduction_pct": 0.9078963736459555,
+    "rmse_xy_m": 1.0036710386515393,
+    "rmse_3d_centroid_m": 1.0036710386515393,
+    "raw_jitter_std_m": 0.03629111997870098,
+    "filtered_jitter_std_m": 0.036510397434198795,
+    "jitter_reduction_pct": -0.6042179343776377,
     "smoothness": {
-      "raw_frame_step_std_m": 0.029647605336926137,
-      "filtered_frame_step_std_m": 0.01188896751610755,
-      "frame_step_std_reduction_pct": 59.89906307441356,
-      "raw_second_difference_std_m": 0.03575786953660631,
-      "filtered_second_difference_std_m": 0.005579567149488032,
-      "second_difference_std_reduction_pct": 84.396253966484,
-      "raw_median_frame_step_m": 0.012394771778125056,
-      "filtered_median_frame_step_m": 0.011260675065375736
+      "raw_frame_step_std_m": 0.01043747299633709,
+      "filtered_frame_step_std_m": 0.004896306048088131,
+      "frame_step_std_reduction_pct": 53.08916200495626,
+      "raw_second_difference_std_m": 0.01210524885651956,
+      "filtered_second_difference_std_m": 0.0019088091644773055,
+      "second_difference_std_reduction_pct": 84.23155783824079,
+      "raw_median_frame_step_m": 0.005477860120163025,
+      "filtered_median_frame_step_m": 0.005169082776008825
     }
   },
   "bbox_evaluation": {
@@ -227,44 +240,44 @@
     "interpretation": "Hidden GT boxes are unavailable locally; no IoU is claimed."
   },
   "bbox_annotation_template": "results/bbox_annotation_template.csv",
-  "scene_control_diagnostics": {
+  "asset_alignment_diagnostics": {
     "enabled": true,
     "controls": [
       "A",
       "B",
       "C"
     ],
-    "affine_in_sample_rmse_m": 6.027749212234753e-15,
-    "similarity_in_sample_rmse_m": 1.7225523002936263,
+    "affine_in_sample_rmse_m": 5.964297993468509e-16,
+    "similarity_in_sample_rmse_m": 0.3148415168253451,
     "affine_matrix_xy": [
       [
-        3.884256505338818,
-        0.7924534353841988
+        1.5416186241427148,
+        0.690197484324633
       ],
       [
-        -1.8996998636908022,
-        -1.9350974826489218
+        -0.3978691578413498,
+        -1.185519165756862
       ],
       [
-        -4.287945397289632,
-        -2.0001283442631217
+        0.1337123707313608,
+        -0.8098076203432405
       ]
     ],
     "similarity": {
-      "scale": 0.29496698428501683,
+      "scale": 0.5031455447303237,
       "rotation": [
         [
-          0.977551867835508,
-          0.2106949114034552
+          -0.9720905036332528,
+          0.23460616519190147
         ],
         [
-          -0.2106949114034552,
-          0.9775518678355081
+          -0.23460616519190133,
+          -0.9720905036332524
         ]
       ],
       "translation": [
-        6.170636531795147,
-        0.012668092779925297
+        2.79305979896203,
+        0.17873988360733237
       ]
     },
     "affine_leave_one_out_errors_m": {
@@ -273,23 +286,15 @@
       "2": null
     },
     "similarity_leave_one_out_errors_m": {
-      "0": 5.323111272501716,
-      "1": 6.824055945420604,
-      "2": 4.241922348013616
+      "0": 0.8414785136488928,
+      "1": 1.6675486879172126,
+      "2": 0.7928336099696832
     },
-    "interpretation": "With only three controls, a full affine fit can interpolate exactly. Leave-one-out errors are the better warning about generalization."
-  },
-  "waypoint_calibrated": {
-    "enabled": false,
-    "method": null,
-    "affine_matrix_xy": null,
-    "output_csv": null,
-    "trajectory_png": null,
-    "stops": [],
-    "metrics": {}
+    "interpretation": "This is not a calibration path and is not applied to output coordinates. With only three controls, a full affine fit can interpolate exactly; leave-one-out errors are the useful warning about asset consistency."
   },
   "robustness_stress_test": {
     "enabled": true,
+    "name": "mid_stop_dropout",
     "scenario": "detections_suppressed_and_frames_blurred",
     "frame_start": 150,
     "frame_end": 230,
@@ -310,37 +315,116 @@
     "dropout_mean_center_error_px": 19.847781741082066,
     "dropout_max_center_error_px": 41.50639331953796
   },
+  "occlusion_stress_suite": {
+    "enabled": true,
+    "scenario_count": 3,
+    "reports": [
+      {
+        "enabled": true,
+        "name": "mid_stop_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 150,
+        "frame_end": 230,
+        "dropout_start": 185,
+        "dropout_end": 210,
+        "frames_processed": 81,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 26,
+        "dropout_tracked_frames": 26,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 26,
+        "status_counts": {
+          "detected": 55,
+          "occluded": 26
+        },
+        "dropout_mean_iou_vs_baseline": 0.7657327257527626,
+        "dropout_min_iou_vs_baseline": 0.5998401770869299,
+        "dropout_mean_center_error_px": 19.847781741082066,
+        "dropout_max_center_error_px": 41.50639331953796
+      },
+      {
+        "enabled": true,
+        "name": "moving_crossing_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 412,
+        "frame_end": 470,
+        "dropout_start": 432,
+        "dropout_end": 445,
+        "frames_processed": 59,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 14,
+        "dropout_tracked_frames": 14,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 14,
+        "status_counts": {
+          "detected": 45,
+          "occluded": 14
+        },
+        "dropout_mean_iou_vs_baseline": 0.6750497342238144,
+        "dropout_min_iou_vs_baseline": 0.5775550860943924,
+        "dropout_mean_center_error_px": 64.28737950247263,
+        "dropout_max_center_error_px": 93.59573842527873
+      },
+      {
+        "enabled": true,
+        "name": "late_low_confidence_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 728,
+        "frame_end": 787,
+        "dropout_start": 748,
+        "dropout_end": 762,
+        "frames_processed": 60,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 15,
+        "dropout_tracked_frames": 15,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 15,
+        "status_counts": {
+          "detected": 45,
+          "occluded": 15
+        },
+        "dropout_mean_iou_vs_baseline": 0.9092583923455211,
+        "dropout_min_iou_vs_baseline": 0.8897370929055687,
+        "dropout_mean_center_error_px": 12.955999537982128,
+        "dropout_max_center_error_px": 17.389131437187928
+      }
+    ],
+    "min_dropout_continuity_rate": 1.0,
+    "min_dropout_iou_vs_baseline": 0.5775550860943924,
+    "max_dropout_center_error_px": 93.59573842527873,
+    "interpretation": "Detections are artificially suppressed and blurred; continuity is compared against the normal pipeline output, not hidden ground truth."
+  },
   "stops": [
     {
       "name": "A",
       "approx_frame": 45,
-      "frame_start": 22,
+      "frame_start": 20,
       "frame_end": 65,
-      "num_frames": 15,
+      "num_frames": 26,
       "gt_world_ground": [
-        5.201102184745891,
-        -3.3055991699485594e-08,
+        1.8879363291294065,
+        -1.4101151118615222e-08,
         0.0
       ],
       "gt_world_centroid": [
-        5.201102184745891,
-        -3.3055991699485594e-08,
+        1.8879363291294065,
+        -1.4101151118615222e-08,
         0.325
       ],
       "estimated_raw_centroid": [
-        2.4391882252971624,
-        -0.041223747783183606,
+        1.1409052011409764,
+        -0.017931162320056135,
         0.325
       ],
       "estimated_filtered_centroid": [
-        2.4226600699098606,
-        -0.04148784066890474,
+        1.1316530495398116,
+        -0.024245511292988263,
         0.325
       ],
-      "error_xy_m": 2.778751846364666,
-      "error_3d_centroid_m": 2.778751846364666,
-      "raw_jitter_std_m": 0.10991723362875404,
-      "filtered_jitter_std_m": 0.1116167498503976
+      "error_xy_m": 0.7566718199595335,
+      "error_3d_centroid_m": 0.7566718199595335,
+      "raw_jitter_std_m": 0.04332153329269815,
+      "filtered_jitter_std_m": 0.04546680770979187
     },
     {
       "name": "B",
@@ -349,29 +433,29 @@
       "frame_end": 220,
       "num_frames": 28,
       "gt_world_ground": [
-        7.132350593961992,
-        -1.2141211996688075,
+        2.187878426238121,
+        -0.4256636205580295,
         0.0
       ],
       "gt_world_centroid": [
-        7.132350593961992,
-        -1.2141211996688075,
+        2.187878426238121,
+        -0.4256636205580295,
         0.325
       ],
       "estimated_raw_centroid": [
-        3.421026981097991,
-        0.9964820570979436,
+        1.4675700393079136,
+        0.5309202448290574,
         0.325
       ],
       "estimated_filtered_centroid": [
-        3.4280882007885127,
-        0.9976722848493527,
+        1.469671143615666,
+        0.5315977544070171,
         0.325
       ],
-      "error_xy_m": 4.314347030042471,
-      "error_3d_centroid_m": 4.314347030042471,
-      "raw_jitter_std_m": 0.034575658565475474,
-      "filtered_jitter_std_m": 0.03377610325975377
+      "error_xy_m": 1.196733487795801,
+      "error_3d_centroid_m": 1.196733487795801,
+      "raw_jitter_std_m": 0.008523279180036184,
+      "filtered_jitter_std_m": 0.00853205216385437
     },
     {
       "name": "C",
@@ -380,29 +464,29 @@
       "frame_end": 357,
       "num_frames": 25,
       "gt_world_ground": [
-        8.871528711756712,
-        0.9152339084922867,
+        2.379184378434256,
+        0.2765168580622098,
         0.0
       ],
       "gt_world_centroid": [
-        8.871528711756712,
-        0.9152339084922867,
+        2.379184378434256,
+        0.2765168580622098,
         0.325
       ],
       "estimated_raw_centroid": [
-        3.3065587053663914,
-        -0.14875958969227882,
+        1.4332384562313762,
+        -0.08035284470120498,
         0.325
       ],
       "estimated_filtered_centroid": [
-        3.315019261419993,
-        -0.14901773851909964,
+        1.4358149042393828,
+        -0.08041088351596125,
         0.325
       ],
-      "error_xy_m": 5.657510834266932,
-      "error_3d_centroid_m": 5.657510834266932,
-      "raw_jitter_std_m": 0.11855385815239494,
-      "filtered_jitter_std_m": 0.11526570532908251
+      "error_xy_m": 1.0086344122380542,
+      "error_3d_centroid_m": 1.0086344122380542,
+      "raw_jitter_std_m": 0.0570285474633686,
+      "filtered_jitter_std_m": 0.05553233242895014
     }
   ]
 }

@@ -13,12 +13,6 @@ kalman:
   process_var: 3.0
   measurement_var: 0.010
 
-scene_control:
-  auto_for_input_mp4: true
-  use_scene_control: false
-  strict_geometry: false
-  slow_scene_calibrate: false
-
 stress:
   loops: 4
   seed: 20260418

@@ -1,14 +1,25 @@
 {
-  "created_unix_s": 1776649641.568251,
+  "created_unix_s": 1776654663.363879,
   "git": {
-    "code_commit_at_run": "10b196560b5c4801fcbf53725a721ef62ab09f2d",
+    "code_commit_at_run": "47add3faf635dfca61ad21d36dd1efd27d9d0c3d",
     "branch": "temp1",
     "code_dirty_excluding_generated_outputs": true,
     "code_dirty_files": [
       "README.md",
+      "config_utils.py",
+      "configs/default.yaml",
+      "eval_utils.py",
+      "forai/FOLLOWUP_PLAN.md",
+      "plots.py",
+      "provenance.py",
+      "qa_utils.py",
+      "robustness_eval.py",
+      "run.sh",
+      "scene_calibration.py",
       "tests/test_geometry_and_eval.py",
+      "tools/validate_submission.py",
       "track_bin.py",
-      ".claude/"
+      "tools/review_readiness.py"
     ],
     "remote": "https://github.com/Aliallameh/monocular-object-localization.git",
     "note": "code_commit_at_run is the source commit used to generate the artifacts. The artifact commit itself can be later because generated outputs are committed after the run."
@@ -33,7 +44,7 @@
       "path": "calib.json",
       "exists": true,
       "bytes": 477,
-      "sha256": "5a8e52d9edb3f1788bfbb23c942384c9513dfc466b7329a005e86d61631127b3"
+      "sha256": "3d20ab797374d0675722cad223936c7a780612d8fac59539616904619eb14b6d"
     }
   },
   "command_args": {
@@ -50,41 +61,38 @@
     "imgsz": null,
     "no_kalman": false,
     "bbox_gt": "",
-    "strict_geometry": false,
-    "use_scene_control": false,
-    "scene_calibrate": false,
     "max_frames": 0
   },
   "outputs": {
     "output_csv": {
       "path": "results/output.csv",
       "exists": true,
-      "bytes": 176430,
-      "sha256": "715c8fec192743c740fbe6204a1c60ef7e592dcba0a23bdec6d0abef76eb4b2f"
+      "bytes": 176973,
+      "sha256": "46e20bd4fab15ae1ba2510ac1bf394d82522b540882b9a81f0244d16f7b79aaa"
     },
     "trajectory_png": {
       "path": "trajectory.png",
       "exists": true,
-      "bytes": 223594,
-      "sha256": "b4c68f3eecb41ac24d54e5bf29663d3c8ba93c653199564fc52204c48041874f"
+      "bytes": 233270,
+      "sha256": "8fcb9dd3620e7b3d55b426c2bf47f43c444067401355a51943d9f20239ae6401"
     },
     "trajectory_raw_vs_filtered_png": {
       "path": "trajectory_raw_vs_filtered.png",
       "exists": true,
-      "bytes": 263020,
-      "sha256": "e22a2cffc3c86ca3fdb460ac5d6668ac5c44f1afe1c9016eb8083ba28c9a3adf"
+      "bytes": 252825,
+      "sha256": "73f36b979f31ad429723610953ccb2d7b6ecbf339e01061b33e866d97648e4d2"
     },
     "trajectory_strict_png": {
       "path": "trajectory_strict.png",
       "exists": true,
-      "bytes": 223594,
-      "sha256": "b4c68f3eecb41ac24d54e5bf29663d3c8ba93c653199564fc52204c48041874f"
+      "bytes": 233270,
+      "sha256": "8fcb9dd3620e7b3d55b426c2bf47f43c444067401355a51943d9f20239ae6401"
     },
     "summary_json": {
       "path": "results/summary.json",
       "exists": true,
-      "bytes": 11833,
-      "sha256": "2975cfb94a2ecbbf3c2c3c4246ac462eda1833c012788f0a6bca1041e2558383"
+      "bytes": 14301,
+      "sha256": "37463fd698966b3a8a7b20afbcf1cf70be4bb7ca61ae95bccaf15f39d6165f80"
     }
   },
   "run_metrics": {
@@ -92,8 +100,8 @@
     "detector_hit_rate": 1.0,
     "tracker_output_rate": 1.0,
     "occluded_frames": 0,
-    "p95_processing_ms_per_frame": 32.67716600530548,
-    "rmse_xy_m": 4.409931252644764,
-    "strict_rmse_xy_m": 4.409931252644764
+    "p95_processing_ms_per_frame": 35.77371250430588,
+    "rmse_xy_m": 1.0036710386515393,
+    "strict_rmse_xy_m": 1.0036710386515393
   }
 }

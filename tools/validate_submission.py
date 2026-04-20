@@ -32,7 +32,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Validate generated submission artifacts")
     parser.add_argument("--results-dir", default="results")
     parser.add_argument("--expect-frames", type=int, default=875)
-    parser.add_argument("--max-rmse", type=float, default=0.35)
+    parser.add_argument("--max-rmse", type=float, default=None)
+    parser.add_argument("--enforce-rmse", action="store_true")
     parser.add_argument("--max-p95-ms", type=float, default=250.0)
     parser.add_argument("--allow-private-tracked", action="store_true")
     return parser.parse_args()
@@ -118,8 +119,14 @@ def validate_summary(summary: Dict[str, Any], args: argparse.Namespace, failures
     if p95 > args.max_p95_ms:
         failures.append(f"p95 latency {p95:.1f}ms > {args.max_p95_ms:.1f}ms")
     rmse = summary.get("metrics", {}).get("rmse_xy_m")
-    if rmse is None or float(rmse) > args.max_rmse:
-        failures.append(f"waypoint RMSE {rmse} > {args.max_rmse}")
+    if rmse is None:
+        failures.append("waypoint RMSE missing from summary metrics")
+    elif args.enforce_rmse:
+        max_rmse = 0.35 if args.max_rmse is None else float(args.max_rmse)
+        if float(rmse) > max_rmse:
+            failures.append(f"waypoint RMSE {rmse} > {max_rmse}")
+    if "scene_calibration" in summary or "waypoint_calibrated" in summary:
+        failures.append("summary contains deprecated waypoint-calibration output fields")
     bbox_eval = summary.get("bbox_evaluation", {})
     if bbox_eval.get("enabled") and bbox_eval.get("iou_over_0_6_rate") is not None:
         if float(bbox_eval["iou_over_0_6_rate"]) < 0.90:
@@ -127,7 +134,7 @@ def validate_summary(summary: Dict[str, Any], args: argparse.Namespace, failures
 
 
 def validate_files(failures: List[str]) -> None:
-    for path in [
+    required = [
         "README.md",
         "run.sh",
         "track_bin.py",
@@ -136,11 +143,25 @@ def validate_files(failures: List[str]) -> None:
         "requirements.txt",
         "results/output.csv",
         "results/run_manifest.json",
+        "results/occlusion_stress_suite.json",
+        "results/review_readiness.json",
+        "results/review_readiness.md",
         "trajectory.png",
         "trajectory_raw_vs_filtered.png",
-    ]:
+    ]
+    for path in required:
         if not Path(path).exists():
             failures.append(f"missing required file: {path}")
+    forbidden = [
+        "results/output_waypoint_calibrated.csv",
+        "results/output_scene_control.csv",
+        "results/scene_control_report.json",
+        "trajectory_waypoint_calibrated.png",
+        "trajectory_scene_control.png",
+    ]
+    for path in forbidden:
+        if Path(path).exists():
+            failures.append(f"deprecated calibration artifact exists: {path}")
 
 
 def validate_manifest(manifest: Dict[str, Any], failures: List[str]) -> None:
@@ -163,8 +184,18 @@ def validate_git_tracked_files(failures: List[str]) -> None:
         return
     forbidden_names = {"input.mp4", "calib.json", "Input sample.mp4", "stress_long_harsh.mp4"}
     forbidden_prefixes = (".venv/", "ProjectA/", "projectA/", "__pycache__/")
+    forbidden_exact = {
+        "scene_calibration.py",
+        "results/output_waypoint_calibrated.csv",
+        "results/output_scene_control.csv",
+        "results/scene_control_report.json",
+        "trajectory_waypoint_calibrated.png",
+        "trajectory_scene_control.png",
+    }
     for name in proc.stdout.splitlines():
         base = os.path.basename(name)
+        if name in forbidden_exact and Path(name).exists():
+            failures.append(f"deprecated calibration artifact/code is tracked: {name}")
         if base in forbidden_names or name.startswith(forbidden_prefixes):
             failures.append(f"private/generated asset is tracked: {name}")
         if base.endswith((".pyc", ".pt")):

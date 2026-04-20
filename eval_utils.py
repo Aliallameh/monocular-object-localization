@@ -103,8 +103,13 @@ def trajectory_smoothness_metrics(raw_world: np.ndarray, filtered_world: np.ndar
     }
 
 
-def scene_control_diagnostics(stops: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Report in-sample and leave-one-out risks for waypoint residual fits."""
+def asset_alignment_diagnostics(stops: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Report whether waypoint residuals look like a valid geometry check.
+
+    This is deliberately diagnostic only. A three-point affine residual can
+    interpolate three stop positions and therefore must not be used as evidence
+    that the monocular localization is accurate.
+    """
 
     if len(stops) < 3:
         return {"enabled": False, "reason": "fewer_than_three_stops"}
@@ -125,8 +130,9 @@ def scene_control_diagnostics(stops: List[Dict[str, Any]]) -> Dict[str, Any]:
         "affine_leave_one_out_errors_m": loo_affine,
         "similarity_leave_one_out_errors_m": loo_similarity,
         "interpretation": (
-            "With only three controls, a full affine fit can interpolate exactly. "
-            "Leave-one-out errors are the better warning about generalization."
+            "This is not a calibration path and is not applied to output coordinates. "
+            "With only three controls, a full affine fit can interpolate exactly; "
+            "leave-one-out errors are the useful warning about asset consistency."
         ),
     }
 

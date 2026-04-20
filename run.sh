@@ -10,9 +10,6 @@ DEVICE_FLAG=()
 CONF_FLAG=()
 IMGSZ_FLAG=()
 NO_KALMAN_FLAG=""
-SCENE_CALIBRATE_FLAG=""
-STRICT_GEOMETRY_FLAG=""
-USE_SCENE_CONTROL_FLAG=""
 BBOX_GT_FLAG=()
 
 while [[ $# -gt 0 ]]; do
@@ -53,18 +50,6 @@ while [[ $# -gt 0 ]]; do
       NO_KALMAN_FLAG="--no-kalman"
       shift
       ;;
-    --scene-calibrate)
-      SCENE_CALIBRATE_FLAG="--scene-calibrate"
-      shift
-      ;;
-    --use-scene-control)
-      USE_SCENE_CONTROL_FLAG="--use-scene-control"
-      shift
-      ;;
-    --strict-geometry)
-      STRICT_GEOMETRY_FLAG="--strict-geometry"
-      shift
-      ;;
     --bbox-gt)
       BBOX_GT_FLAG=(--bbox-gt "$2")
       shift 2
@@ -77,7 +62,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$VIDEO" || -z "$CALIB" ]]; then
-  echo "Usage: bash run.sh --video <path> --calib <path> [--config <path>] [--backend hybrid|auto|yolo_world] [--device cpu|cuda:0|mps|auto] [--conf <float>] [--imgsz <int>] [--gpu] [--no-kalman] [--scene-calibrate] [--use-scene-control] [--strict-geometry] [--bbox-gt <path>]" >&2
+  echo "Usage: bash run.sh --video <path> --calib <path> [--config <path>] [--backend hybrid|auto|yolo_world] [--device cpu|cuda:0|mps|auto] [--conf <float>] [--imgsz <int>] [--gpu] [--no-kalman] [--bbox-gt <path>]" >&2
   exit 1
 fi
 
@@ -150,17 +135,9 @@ fi
 if [[ -n "$NO_KALMAN_FLAG" ]]; then
   CMD+=("$NO_KALMAN_FLAG")
 fi
-if [[ -n "$SCENE_CALIBRATE_FLAG" ]]; then
-  CMD+=("$SCENE_CALIBRATE_FLAG")
-fi
-if [[ -n "$USE_SCENE_CONTROL_FLAG" ]]; then
-  CMD+=("$USE_SCENE_CONTROL_FLAG")
-fi
-if [[ -n "$STRICT_GEOMETRY_FLAG" ]]; then
-  CMD+=("$STRICT_GEOMETRY_FLAG")
-fi
 if [[ ${#BBOX_GT_FLAG[@]} -gt 0 ]]; then
   CMD+=("${BBOX_GT_FLAG[@]}")
 fi
 
 "${CMD[@]}"
+"$VENV_DIR/bin/python" tools/review_readiness.py

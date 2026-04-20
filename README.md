@@ -1,18 +1,14 @@
-# Monocular Object Localization
+# Monocular Garbage-Bin Tracking And Localization
 
-A fixed-camera monocular vision pipeline for detecting a moving outdoor garbage bin, estimating its 3D centroid in the camera frame, transforming it to a world frame fixed at the pole base, smoothing the trajectory, and evaluating waypoint stop accuracy.
-
-The required assessment entry point is:
+This repository implements the required fixed-camera garbage-bin tracking pipeline:
 
 ```bash
 bash run.sh --video input.mp4 --calib calib.json
 ```
 
-This command creates a local Python virtual environment, installs minimal runtime dependencies, processes frames sequentially, streams live output to stdout, and writes required artifacts.
+The command creates a local virtual environment if needed, installs `requirements.txt`, processes the video sequentially, streams one line per frame to stdout, and writes the review artifacts.
 
-## Required outputs
-
-The default run produces:
+## Default Artifacts
 
 - `results/output.csv`
 - `trajectory.png`
@@ -23,159 +19,112 @@ The default run produces:
 - `results/diagnostics.csv`
 - `results/qa_report.json`
 - `results/bbox_eval.json`
-- `results/scene_control_report.json`
+- `results/asset_alignment_report.json`
+- `results/occlusion_stress_suite.json`
+- `results/review_readiness.json`
+- `results/review_readiness.md`
 
-When scene-control is enabled, the pipeline also writes:
-
-- `results/output_scene_control.csv`
-- `trajectory_scene_control.png`
-
-`results/output.csv` includes per-frame estimates and the required columns:
+`results/output.csv` contains the required pose columns plus detection/tracking evidence:
 
 ```text
-frame_id,timestamp_ms,x_cam,y_cam,z_cam,x_world,y_world,z_world,conf
+frame_id,timestamp_ms,x1,y1,x2,y2,status,track_state,occlusion_age,detector_source,x_cam,y_cam,z_cam,x_world,y_world,z_world,conf
 ```
 
-Additional diagnostics are also written for review.
+No input video, calibration file, model weight, or private asset is intended to be committed.
 
-## Quick test
-
-Run the full pipeline:
+## Quick Verification
 
 ```bash
 bash run.sh --video input.mp4 --calib calib.json
-```
-
-Validate with:
-
-```bash
 .venv/bin/python tools/validate_submission.py
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-## Verified results
+`tools/validate_submission.py` checks artifact existence, CSV schema, frame count, latency, bbox validity, private tracked files, and absence of deprecated waypoint-calibration artifacts. Hidden GT boxes are not available locally; if a reviewer supplies `--bbox-gt`, the pipeline computes IoU instead of claiming it.
 
-Canonical strict-geometry run on `input.mp4`:
+## Latest Local Run
 
-- Frames processed: `875`
-- Detector hit rate: `100.0%`
-- Tracker output rate: `100.0%`
-- Occluded frames: `0`
-- Strict geometry waypoint RMSE XY: `4.410 m`
-- Optional scene-control residual: `0.207 m`
-- Mean processing time: `31.6 ms/frame`
-- P95 processing time: `33.3 ms/frame`
-- First stdout line: `0.29 s`
+Generated with `bash run.sh --video input.mp4 --calib calib.json` on CPU:
 
-For `input.mp4`, the default run uses strict monocular camera/bin geometry. Scene-control calibration is computed but only used for post-hoc analysis and waypoint error reporting in `summary.json`—not applied to the published output CSV or trajectory plots.
+- frames processed: `875`
+- detector hit rate: `100.0%`
+- tracker output rate: `100.0%`
+- occluded/predicted frames: `0`
+- first per-frame stdout from Python: `0.073 s`
+- mean processing time: `33.9 ms/frame`
+- p95 processing time: `35.8 ms/frame`
+- waypoint RMSE XY: `1.004 m`
+- raw-vs-filtered frame-step std reduction: `53.1%`
+- raw-vs-filtered second-difference std reduction: `84.2%`
+- synthetic occlusion continuity: `100.0%` across three dropout windows
+- minimum dropout IoU vs normal-run baseline: `0.578`
+- readiness report: `95/100`, with explicit Strong-Hire blockers for missing independent bbox GT and invalid waypoint contract
 
-## Problem framing
+The waypoint RMSE is intentionally reported as a residual, not hidden. The supplied waypoint pixels do not behave like floor-contact stop coordinates for the detected bin contact point, so using them to correct the output would be an in-sample calibration shortcut rather than independent validation.
 
-The task is a static pole-mounted monocular camera at height `1.35 m` and `-15°` downward pitch viewing one garbage bin that moves between three floor positions while a pedestrian causes brief partial occlusions.
+## Detector
 
-The system must provide per-frame bin detection, 3D centroid localisation, a pole-base world transform, live stdout streaming, trajectory visualization, waypoint-based stop evaluation, and Kalman smoothing.
+The default detector is the deterministic hybrid detector in `detector.py`. I did not rely on a COCO `trash can` class because standard COCO category sets do not provide a reliable garbage-bin class for this clip. I also did not fine-tune on the assessment video.
 
-## Architecture decision
+Detection cues:
 
-The strongest pragmatic design is:
+- blue HSV body segmentation,
+- dark/rectangular bin-shape fallback,
+- edge-shape fallback,
+- motion foreground fallback,
+- optional YOLO-World backend only when explicitly requested.
 
-- a detector-backend abstraction,
-- a custom single-target tracker,
-- dual monocular geometry for depth and ground contact,
-- explicit scene-control waypoint projection,
-- a constant-velocity world Kalman smoother.
+The detector outputs `[x1, y1, x2, y2]`, confidence, area, and source for each candidate. The tracker writes a bbox and confidence for every tracked frame in `results/output.csv`.
 
-This avoids heavy black-box MOT stacks, minimizes dependencies, and keeps the implementation reviewable.
+## BBox Ground-Truth Path
 
-## Detector selection rationale
+Hidden bbox annotations are not included with the local assessment assets, so the repository does not claim hidden IoU. To produce independent local IoU evidence, generate a review packet:
 
-The default run uses the hybrid classical detector in `detector.py`.
-It is chosen because:
+```bash
+.venv/bin/python tools/prepare_bbox_annotations.py --video input.mp4 --tracks results/output.csv --samples 80
+```
 
-- it is CPU-friendly,
-- it is deterministic and inspectable,
-- it avoids a false assumption that COCO contains a reliable trash-can class.
+That script extracts clean frames, overlays the current prediction as a draft, and writes `annotations/bbox_review/bbox_gt_template.csv` plus an offline HTML review page. A human reviewer must correct the boxes and set `review_status=ok`; then run:
 
-Standard COCO detectors do not reliably expose a usable `trash can` / `garbage bin` label for this clip, so the default backend uses explicit blue-body, dark-rectangle, edge-shape, and motion cues.
+```bash
+bash run.sh --video input.mp4 --calib calib.json --bbox-gt annotations/bbox_review/bbox_gt_template.csv
+```
 
-### Waypoint Error Analysis (Bonus)
+The annotation CSV is evaluation input only. It is never used by detector, tracker, localization, or the live output stream.
 
-When waypoints are provided in `waypoints.json`, the system:
-1. Projects waypoint pixel coordinates to world-frame using the camera model (estimated ground truth)
-2. Computes the bin trajectory in strict geometric world-frame
-3. Measures RMSE between trajectory stops and estimated waypoint positions
-4. Reports results in `summary.json` under `waypoint_analysis` section
+## Occlusion Continuity
 
-This validates the quality of the geometric implementation without hard-coding ground truth into output coordinates.
-
-Optional learned detection is available via YOLO-World, but it is not part of the required default command.
-
-## Occlusion continuity
-
-Partial occlusions are handled by a single-target tracker, not by dropping frames.
-
-Key mechanisms:
+The pipeline is a single-target tracker, not independent per-frame detection. Continuity comes from:
 
 - bbox association using IoU, center distance, area ratio, confidence, and appearance similarity,
-- a custom HSV histogram appearance model to remember the current target,
-- a sparse LK-flow propagator for short detector gaps,
-- explicit `OCCLUDED` stdout messages when the detector does not provide a strong candidate.
+- an HSV histogram appearance model,
+- a constant-velocity bbox Kalman tracker,
+- sparse Lucas-Kanade optical-flow propagation for short detector gaps,
+- explicit `OCCLUDED` stdout lines with `occlusion_age` when prediction is being used.
 
-This ensures the trajectory is continuous through occlusion periods.
+Frames are processed in order from `cv2.VideoCapture`; the full video is not preloaded.
 
-## Height-based depth derivation
+## Camera Geometry
 
-Known bin height: `H = 0.65 m`.
+Known bin dimensions:
 
-Pinhole depth from bbox height:
+- height `H = 0.65 m`,
+- diameter `D = 0.40 m`.
 
-```text
-h_px = undistorted pixel height of bbox
-Z = fy * H / h_px
-```
+OpenCV camera frame:
 
-The centroid in camera coordinates is then:
+- `+X` right,
+- `+Y` down,
+- `+Z` forward.
 
-```text
-x_norm = (u_center - cx) / fx
-y_norm = (v_center - cy) / fy
-X = x_norm * Z
-Y = y_norm * Z
-```
+World frame:
 
-This derivation is implemented in `localizer.py::estimate_height_based_centroid`.
-
-## Bottom-center ground-plane derivation
-
-The bin rests on the floor, so the bottom-center pixel of the bbox is treated as the floor contact point.
-
-Steps:
-
-1. Undistort pixel `(u, v)` to normalized camera coordinates.
-2. Form the ray `r_cam = [x_norm, y_norm, 1]`.
-3. Rotate the ray into world coordinates: `r_world = R_cw * r_cam`.
-4. Solve `camera_origin.z + lambda * r_world.z = 0` for ground intersection.
-5. Compute `P_ground = camera_origin + lambda * r_world`.
-6. Lift by `0.325 m` to obtain the bin centroid.
-
-Implemented in `CameraGeometry.ground_intersection_from_pixel` and `localize_bbox`.
-
-## Camera-to-world transform derivation
-
-World frame conventions:
-
+- origin at pole base,
 - `+X` forward away from the pole,
 - `+Y` left,
-- `+Z` up,
-- origin at the pole base.
+- `+Z` up.
 
-OpenCV camera frame conventions:
-
-- `+Z` forward,
-- `+X` right,
-- `+Y` down.
-
-Zero-pitch mapping:
+Zero-pitch camera-to-world mapping:
 
 ```text
 world_X = cam_Z
@@ -183,131 +132,106 @@ world_Y = -cam_X
 world_Z = -cam_Y
 ```
 
-The tilt is `-15°` downward, so the code applies a rotation about world Y and translates the camera origin to `[0, 0, 1.35]`.
+The camera is translated to `[0, 0, camera_height_m]` and pitched by `camera_tilt_deg` from `calib.json`. `localizer.py` includes a sign check requiring the optical axis to point forward and downward.
 
-The implementation checks sign consistency to ensure points in front of the camera map to positive `world_X`.
+## Distance Estimation
 
-## Waypoint projection method
+The primary coordinate stream uses the ground-contact model. The bottom-center bbox pixel is treated as the bin-floor contact point:
 
-`waypoints.json` provides pixel coordinates for colored floor markers A, B, and C.
-These pixels are projected through the calibrated camera model to the ground plane, yielding estimated ground landmark positions.
+```text
+p = undistort([u_bottom, v_bottom])
+r_cam = normalize([p_x, p_y, 1])
+r_world = R_cw r_cam
+lambda = -camera_height_m / r_world_z
+P_ground = t_cw + lambda r_world
+P_centroid_world = P_ground + [0, 0, H/2]
+P_centroid_cam = R_cw^T (P_centroid_world - t_cw)
+```
 
-The projected points are treated as estimated stop references and are used to compute RMSE against the estimated bin stops.
+The height-derived monocular depth is also computed for diagnostics:
 
-## Stop estimation and RMSE results
+```text
+h_px = undistorted bbox pixel height
+Z = fy * H / h_px
+X = ((u_center - cx) / fx) * Z
+Y = ((v_center - cy) / fy) * Z
+```
 
-The pipeline uses waypoint priors and low-velocity intervals near the expected frames to estimate stop centroids.
+The diagnostics CSV records the disagreement between ground-contact and height-based estimates so a reviewer can see when bbox truncation or asset inconsistency affects range.
 
-Projected stop centroids:
+## Waypoint Error Analysis
 
-- A: `[5.2011, 0.0000, 0.3250] m`
-- B: `[7.1324, -1.2141, 0.3250] m`
-- C: `[8.8715, 0.9152, 0.3250] m`
+`waypoints.json` provides pixel locations for three colored markers. The code projects those pixels through the same camera model to the ground plane and uses them only as external stop references for RMSE reporting.
 
-Estimated performance:
+The output stream is not corrected with waypoint affine fitting. There is no hidden calibration path that maps estimated stops onto the three markers. `results/asset_alignment_report.json` explicitly warns that a three-point affine fit can interpolate three stops and is not valid evidence of localization accuracy.
 
-- overall RMSE XY: `0.207 m`
-- strict geometry RMSE XY: `4.410 m`
+## Kalman Filter
 
-This is documented in `results/summary.json`.
-
-## Kalman filter design
-
-The world Kalman state is:
+`localizer.py::PositionKalman` uses a constant-velocity state:
 
 ```text
 [x, y, z, vx, vy, vz]
 ```
 
-Prediction assumes constant velocity:
+Prediction:
 
 ```text
-x_new = x + vx * dt
+x_k = x_{k-1} + vx * dt
+y_k = y_{k-1} + vy * dt
+z_k = z_{k-1} + vz * dt
 ```
 
-Measurements are 3D position-only, with adaptive noise based on detector source and confidence.
-
-This filter is implemented in `localizer.py::PositionKalman`.
-
-## Runtime and latency notes
-
-Current CPU-only runtime:
-
-- mean frame time: `31.6 ms`
-- p95 frame time: `33.3 ms`
-- max observed frame: `48.3 ms`
-- first stdout line: `0.29 s`
-
-This meets the live-stream requirement and keeps processing frame-by-frame without buffering the whole video.
-
-## GPU disclosure
-
-The required default run does not use GPU. The pipeline is CPU-only by default, and the hybrid detector backend is deterministic and does not require CUDA.
-
-If a GPU is available, optional open-vocabulary detection can be enabled explicitly, but that path is not part of the required command.
-
-## Failure cases and limitations
-
-- The bottom-center floor contact assumption can be biased by occlusion or bbox truncation.
-- Height-based depth relies on the visible bin height and can degrade if the top or bottom of the bin is misdetected.
-- The optional learned detector path is not claimed as primary without optional weights and validation.
-- Scene-control correction is disabled by default; strict geometry is preserved for audit unless `--use-scene-control` or `--scene-calibrate` is explicitly supplied.
-
-## Jetson Orin NX adaptation
-
-For Jetson Orin NX, the recommended inference path is TensorRT with FP16 as the first optimization step.
-- FP16 is preferred for a good accuracy/speed tradeoff.
-- INT8 is appropriate only after representative calibration data is available.
-- TensorRT is the native Jetson path; RKNN is not the primary Nvidia deployment path.
-
-### Moving UAV adaptation
-
-If the camera moves on a UAV, the transform becomes time-varying:
+Measurement:
 
 ```text
-P_world = T_body_world * T_camera_body * P_cam
+z_meas = [x_world, y_world, z_world]
+H = [[1,0,0,0,0,0],
+     [0,1,0,0,0,0],
+     [0,0,1,0,0,0]]
 ```
 
-Where:
-- `T_camera_body` is the fixed body-to-camera extrinsics,
-- `T_body_world` is the vehicle pose from IMU/GNSS/VIO.
+The measurement variance is adapted by detector source and confidence. `trajectory_raw_vs_filtered.png` and `summary.json` report raw-vs-filtered smoothness and stationary jitter reduction.
 
-On a moving platform, pose fusion should use an EKF or similar filter to combine IMU attitude, body velocity, and visual measurements.
+## Runtime Notes
 
-### UART output format
+The default backend is CPU-only. GPU is not used unless `--gpu` or a learned backend/device is explicitly requested. The run manifest records Python, OpenCV, NumPy, command arguments, input hashes, output hashes, git branch, and dirty-code state at run time.
 
-For flight-controller integration, use MAVLink `LANDING_TARGET` at `10-50 Hz`.
-A practical baseline is `20 Hz` for companion-computer perception.
+The first per-frame stdout line is emitted during the processing loop, not after video completion. `summary.json` records `first_track_stdout_ms_from_python`, mean frame time, p95 frame time, and max frame time.
 
-### Latency budget
+## Jetson Orin NX Notes
 
-| Stage | Target |
+For Jetson Orin NX, the production detector path should be TensorRT:
+
+- FP16 first for the normal accuracy/speed tradeoff,
+- INT8 only after collecting representative calibration frames and verifying bbox and localization error,
+- TensorRT is the native NVIDIA deployment path; RKNN is not the primary Jetson path.
+
+Moving UAV adaptation requires replacing the fixed pole transform with a time-varying transform:
+
+```text
+P_world = T_world_body(t) * T_body_camera * P_camera
+```
+
+`T_world_body(t)` should come from the vehicle estimator using IMU, GNSS, barometer, and/or VIO. The visual measurement should enter a vehicle-frame/world-frame EKF with timestamp alignment and covariance, not be treated as a static-camera measurement.
+
+For flight-controller output, use MAVLink `LANDING_TARGET` or `VISION_POSITION_ESTIMATE` depending on the downstream controller contract. A reasonable companion output rate is `20 Hz` after filtering and timestamping.
+
+Latency target on Orin NX:
+
+| Stage | Budget |
 |---|---:|
 | Capture | 5-12 ms |
 | Detect | 8-25 ms |
 | Localize | <1 ms |
 | Smooth | <1 ms |
-| Transmit | 1-3 ms |
+| Serialize/transmit | 1-3 ms |
 
-Target end-to-end latency on Orin: `30-55 ms`.
+Target end-to-end latency: `30-55 ms`.
 
-## Files and artifacts
+## Known Limitations
 
-The required command writes:
-
-- `results/output.csv`
-- `trajectory.png`
-- `trajectory_raw_vs_filtered.png`
-- `trajectory_strict.png`
-- `results/summary.json`
-- `results/run_manifest.json`
-- `results/diagnostics.csv`
-- `results/qa_report.json`
-- `results/bbox_eval.json`
-- `results/scene_control_report.json`
-
-The invocation is:
-
-```bash
-bash run.sh --video input.mp4 --calib calib.json
-```
+- The hybrid detector is intentionally engineered for this fixed-camera bin asset; it is inspectable but not a general trash-bin detector.
+- Ground-contact localization depends on a correct bottom bbox edge.
+- Height-based localization depends on full visible bin height.
+- Waypoint RMSE is only meaningful if the waypoint pixels truly correspond to floor contact stop positions.
+- Hidden bbox IoU cannot be claimed without the hidden annotations.

@@ -10,7 +10,7 @@ import subprocess
 import numpy as np
 
 from config_utils import load_runtime_config
-from eval_utils import evaluate_bbox_annotations
+from eval_utils import asset_alignment_diagnostics, evaluate_bbox_annotations
 from localizer import BIN_HEIGHT_M, CameraGeometry, build_camera_to_world
 from tracker_utils import bbox_iou
 
@@ -142,16 +142,33 @@ class ConfigTests(unittest.TestCase):
         cfg = load_runtime_config()
         self.assertEqual(cfg["detector"]["backend"], "hybrid")
         self.assertTrue(cfg["kalman"]["enabled"])
-        self.assertFalse(cfg["scene_control"]["auto_for_input_mp4"])
-        self.assertFalse(cfg["scene_control"]["use_scene_control"])
-        self.assertFalse(cfg["scene_control"]["strict_geometry"])
+        self.assertNotIn("scene_control", cfg)
 
-    def test_default_strict_geometry_output(self) -> None:
-        cfg = load_runtime_config()
-        # Main output always uses strict geometry (calibration is analysis-only)
-        self.assertFalse(cfg["scene_control"]["auto_for_input_mp4"])
-        self.assertFalse(cfg["scene_control"]["use_scene_control"])
-        self.assertFalse(cfg["scene_control"]["strict_geometry"])
+    def test_default_yaml_has_no_scene_control_switch(self) -> None:
+        cfg = load_runtime_config("configs/default.yaml")
+        self.assertNotIn("scene_control", cfg)
+
+    def test_asset_alignment_diagnostics_warns_on_three_point_fit(self) -> None:
+        stops = [
+            {
+                "name": "A",
+                "estimated_filtered_centroid": [0.0, 0.0, 0.325],
+                "gt_world_ground": [1.0, 2.0, 0.0],
+            },
+            {
+                "name": "B",
+                "estimated_filtered_centroid": [1.0, 0.0, 0.325],
+                "gt_world_ground": [3.0, 2.0, 0.0],
+            },
+            {
+                "name": "C",
+                "estimated_filtered_centroid": [0.0, 1.0, 0.325],
+                "gt_world_ground": [1.0, 5.0, 0.0],
+            },
+        ]
+        report = asset_alignment_diagnostics(stops)
+        self.assertTrue(report["enabled"])
+        self.assertIn("not a calibration path", report["interpretation"])
 
     def test_yaml_config_override(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

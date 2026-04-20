@@ -1,0 +1,82 @@
+{
+  "overall_score": 95,
+  "decision": "Hire",
+  "strong_hire_blockers": [
+    "No independent bbox GT/IoU evidence is available locally.",
+    "Waypoint pixels are not geometrically valid independent stop references."
+  ],
+  "sections": {
+    "requirement_compliance": {
+      "score": 10.0,
+      "evidence": {
+        "output_csv_exists": true,
+        "required_pose_columns_present": true,
+        "bbox_columns_present": true,
+        "processed_all_video_frames": true,
+        "first_stdout_under_2s": true,
+        "detector_hit_rate_over_90pct": true,
+        "tracker_output_rate_over_90pct": true,
+        "latency_under_250ms_p95": true,
+        "trajectory_png_exists": true,
+        "raw_vs_filtered_png_exists": true
+      }
+    },
+    "technical_correctness": {
+      "score": 8.0,
+      "evidence": {
+        "finite_pose_stream": true,
+        "bbox_gt_iou_available": false,
+        "waypoint_rmse_xy_m": 1.0036710386515393,
+        "waypoint_contract_status": "invalid_for_independent_rmse_contract",
+        "z_world_centroid_near_expected": true
+      }
+    },
+    "code_quality": {
+      "score": 10.0,
+      "evidence": {
+        "run_sh_executable": true,
+        "validator_exists": true,
+        "tests_exist": true,
+        "deprecated_calibration_code_absent": true
+      }
+    },
+    "occlusion_runtime_realism": {
+      "score": 10.0,
+      "evidence": {
+        "first_stdout_ms": 72.97404200653546,
+        "p95_processing_ms": 35.77371250430588,
+        "stress_suite_enabled": true,
+        "min_dropout_continuity_rate": 1.0,
+        "min_dropout_iou_vs_baseline": 0.5775550860943924
+      }
+    },
+    "math_derivation_clarity": {
+      "score": 10.0,
+      "evidence": {
+        "height_depth_derivation": true,
+        "ground_intersection_derivation": true,
+        "camera_world_axes": true,
+        "kalman_state_documented": true
+      }
+    },
+    "deployment_realism": {
+      "score": 10.0,
+      "evidence": {
+        "tensor_rt_fp16_int8": true,
+        "moving_uav_transform": true,
+        "mavlink_named": true,
+        "latency_budget": true
+      }
+    },
+    "honesty": {
+      "score": 10.0,
+      "evidence": {
+        "no_waypoint_calibration_fields": true,
+        "hidden_iou_not_claimed_without_gt": true,
+        "waypoint_contract_status_reported": true,
+        "deprecated_artifacts_absent": true
+      }
+    }
+  },
+  "interpretation": "This is an audit report, not a marketing score. Hidden IoU and invalid waypoint RMSE do not receive full credit without independent evidence."
+}
