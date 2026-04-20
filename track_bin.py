@@ -174,6 +174,8 @@ def main() -> None:
     strict_filtered_world: List[np.ndarray] = []
     raw_world: List[np.ndarray] = []
     filtered_world: List[np.ndarray] = []
+    scene_raw_world: List[np.ndarray] = []
+    scene_filtered_world: List[np.ndarray] = []
     sigma_world: List[np.ndarray] = []
     detector_hits = 0
     detector_strong_hits = 0
@@ -326,8 +328,10 @@ def main() -> None:
                     sigma_xyz = np.array([np.nan, np.nan, np.nan], dtype=np.float64)
                 mu_stationary = pos_filter.stationary_probability()
 
-            raw_xyz_world = apply_xy_affine_point(strict_raw_xyz_world, scene_matrix)
-            out_xyz_world = apply_xy_affine_point(strict_filtered_xyz_world, scene_matrix)
+            raw_xyz_world = strict_raw_xyz_world
+            out_xyz_world = strict_filtered_xyz_world
+            calibrated_raw_xyz_world = apply_xy_affine_point(strict_raw_xyz_world, scene_matrix)
+            calibrated_out_xyz_world = apply_xy_affine_point(strict_filtered_xyz_world, scene_matrix)
             raw_xyz_cam = camera.world_to_cam(raw_xyz_world)
             out_xyz_cam = camera.world_to_cam(out_xyz_world)
             xw, yw, zw = out_xyz_world
@@ -397,6 +401,8 @@ def main() -> None:
             strict_filtered_world.append(strict_filtered_xyz_world.copy())
             raw_world.append(raw_xyz_world.copy())
             filtered_world.append(out_xyz_world.copy())
+            scene_raw_world.append(calibrated_raw_xyz_world.copy())
+            scene_filtered_world.append(calibrated_out_xyz_world.copy())
             sigma_world.append(sigma_xyz.copy())
             rows.append(
                 {
@@ -443,6 +449,8 @@ def main() -> None:
     strict_filt_arr = np.vstack(strict_filtered_world)
     raw_arr = np.vstack(raw_world)
     filt_arr = np.vstack(filtered_world)
+    scene_raw_arr = np.vstack(scene_raw_world)
+    scene_filt_arr = np.vstack(scene_filtered_world)
     sigma_arr = np.vstack(sigma_world) if sigma_world else None
 
     stops, metrics = estimate_stops(frame_arr, raw_arr, filt_arr, projected_waypoints, fps)
@@ -466,26 +474,32 @@ def main() -> None:
         strict_metrics,
     )
 
-    calibrated_csv_path = "results/output_waypoint_calibrated.csv"
-    calibrated_plot_path = "trajectory_waypoint_calibrated.png"
+    calibrated_csv_path = "results/output_scene_control.csv"
+    calibrated_plot_path = "trajectory_scene_control.png"
+    calibrated_stops: List[Dict[str, Any]] = []
+    calibrated_metrics: Dict[str, float] = {}
     if scene_calibration is not None:
+        calibrated_stops, calibrated_metrics = estimate_stops(
+            frame_arr, scene_raw_arr, scene_filt_arr, projected_waypoints, fps
+        )
+        calibrated_metrics["smoothness"] = trajectory_smoothness_metrics(scene_raw_arr, scene_filt_arr)
         write_waypoint_calibrated_csv(
             calibrated_csv_path,
             frame_arr,
             fps,
             strict_raw_arr,
             strict_filt_arr,
-            raw_arr,
-            filt_arr,
+            scene_raw_arr,
+            scene_filt_arr,
         )
         save_trajectory_plot(
             calibrated_plot_path,
             frame_arr,
-            raw_arr,
-            filt_arr,
+            scene_raw_arr,
+            scene_filt_arr,
             projected_waypoints,
-            stops,
-            metrics,
+            calibrated_stops,
+            calibrated_metrics,
         )
     else:
         for stale in (calibrated_csv_path, calibrated_plot_path):
@@ -563,12 +577,12 @@ def main() -> None:
         },
         "waypoint_calibrated": {
             "enabled": scene_calibration is not None,
-            "method": "same scene-control affine used by live output.csv" if scene_calibration is not None else None,
+            "method": "scene-control affine applied to separate output artifacts" if scene_calibration is not None else None,
             "affine_matrix_xy": None if scene_calibration is None else scene_calibration.matrix_xy.tolist(),
             "output_csv": calibrated_csv_path if scene_calibration is not None else None,
             "trajectory_png": calibrated_plot_path if scene_calibration is not None else None,
-            "stops": stops if scene_calibration is not None else [],
-            "metrics": metrics if scene_calibration is not None else {},
+            "stops": calibrated_stops if scene_calibration is not None else [],
+            "metrics": calibrated_metrics if scene_calibration is not None else {},
         },
         "robustness_stress_test": robustness_report,
     }
@@ -644,6 +658,8 @@ def main() -> None:
         flush=True,
     )
     print(f"[summary] wrote {output_path}, trajectory.png, and trajectory_strict.png", flush=True)
+    if scene_calibration is not None:
+        print(f"[summary] wrote {calibrated_csv_path} and {calibrated_plot_path}", flush=True)
     print(f"[summary] wrote {diagnostics_path}, {qa_report_path}, and {qa_frame_dir}/", flush=True)
     print(f"[summary] wrote run manifest {manifest_path}", flush=True)
 

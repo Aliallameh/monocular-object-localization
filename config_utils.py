@@ -25,7 +25,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "measurement_var": 0.010,
     },
     "scene_control": {
-        "auto_for_input_mp4": True,
+        "auto_for_input_mp4": False,
         "use_scene_control": False,
         "strict_geometry": False,
         "slow_scene_calibrate": False,

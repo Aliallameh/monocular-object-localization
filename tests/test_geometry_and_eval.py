@@ -142,6 +142,15 @@ class ConfigTests(unittest.TestCase):
         cfg = load_runtime_config()
         self.assertEqual(cfg["detector"]["backend"], "hybrid")
         self.assertTrue(cfg["kalman"]["enabled"])
+        self.assertFalse(cfg["scene_control"]["auto_for_input_mp4"])
+        self.assertFalse(cfg["scene_control"]["use_scene_control"])
+        self.assertFalse(cfg["scene_control"]["strict_geometry"])
+
+    def test_default_scene_control_is_disabled(self) -> None:
+        cfg = load_runtime_config()
+        self.assertFalse(cfg["scene_control"]["auto_for_input_mp4"])
+        self.assertFalse(cfg["scene_control"]["use_scene_control"])
+        self.assertFalse(cfg["scene_control"]["strict_geometry"])
 
     def test_yaml_config_override(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
