@@ -62,7 +62,8 @@ tools/analyze_stress_results.py
 tools/review_readiness.py
 
 # ── Scratch / internal ──────────────────────────────────────────────
-annotations/
+annotations/*
+!annotations/bbox_gt.csv
 .audit_frames/
 .audit_sample/
 .qa_frames/

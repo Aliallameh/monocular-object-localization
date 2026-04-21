@@ -11,7 +11,7 @@
     "skipped_rows": 1,
     "invalid_rows": 0,
     "duplicate_frames_collapsed": 0,
-    "blank_occluded_assumed_visible": 5
+    "blank_occluded_assumed_visible": 0
   },
   "matched_frames": 61,
   "missing_track_frames": 0,

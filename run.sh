@@ -160,11 +160,18 @@ fi
 if [[ -n "$NO_KALMAN_FLAG" ]]; then
   CMD+=("$NO_KALMAN_FLAG")
 fi
+# Auto-detect committed bbox GT and floor-contact GT so the default command
+# always produces IoU metrics without requiring the caller to specify flags.
 if [[ ${#BBOX_GT_FLAG[@]} -gt 0 ]]; then
   CMD+=("${BBOX_GT_FLAG[@]}")
+elif [[ -f "annotations/bbox_gt.csv" ]]; then
+  CMD+=(--bbox-gt "annotations/bbox_gt.csv")
+  echo "[run.sh] Auto-detected annotations/bbox_gt.csv — IoU metrics enabled"
 fi
 if [[ ${#CONTACT_GT_FLAG[@]} -gt 0 ]]; then
   CMD+=("${CONTACT_GT_FLAG[@]}")
+elif [[ -f "manual_contact_points.csv" ]]; then
+  CMD+=(--contact-gt "manual_contact_points.csv")
 fi
 if [[ ${#OBSERVER_VIDEO_FLAG[@]} -gt 0 ]]; then
   CMD+=("${OBSERVER_VIDEO_FLAG[@]}")

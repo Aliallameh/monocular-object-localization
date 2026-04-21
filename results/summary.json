@@ -49,10 +49,10 @@
   "detector_source_counts": {
     "blue_hsv_shape": 875
   },
-  "mean_processing_ms_per_frame": 32.88230093379804,
-  "p95_processing_ms_per_frame": 34.69774119876092,
-  "max_processing_ms_per_frame": 58.582750003552064,
-  "first_track_stdout_ms_from_python": 73.64691700058756,
+  "mean_processing_ms_per_frame": 32.762989397942356,
+  "p95_processing_ms_per_frame": 35.0348045998544,
+  "max_processing_ms_per_frame": 159.4478339975467,
+  "first_track_stdout_ms_from_python": 97.9583329972229,
   "waypoints": {
     "A": {
       "color": "green",
@@ -336,7 +336,7 @@
       "skipped_rows": 1,
       "invalid_rows": 0,
       "duplicate_frames_collapsed": 0,
-      "blank_occluded_assumed_visible": 5
+      "blank_occluded_assumed_visible": 0
     },
     "matched_frames": 61,
     "missing_track_frames": 0,

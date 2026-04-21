@@ -1,15 +1,21 @@
 {
-  "created_unix_s": 1776796763.544609,
+  "created_unix_s": 1776799978.219027,
   "git": {
-    "code_commit_at_run": "e655a0387fc0db7bcecf9eb1bc272732644b253a",
+    "code_commit_at_run": "4862169ee7b02a4f4cfb566dc6f69161e7f288f6",
     "branch": "main",
-    "code_dirty_excluding_generated_outputs": false,
-    "code_dirty_files": [],
+    "code_dirty_excluding_generated_outputs": true,
+    "code_dirty_files": [
+      ".gitignore",
+      "README.md",
+      "run.sh",
+      "annotations/",
+      "results_committed/"
+    ],
     "remote": "https://github.com/Aliallameh/monocular-object-localization.git",
     "note": "code_commit_at_run is the source commit used to generate the artifacts. Generated artifacts are reproducible outputs and may be committed after the run."
   },
   "python": {
-    "executable": "/Users/aliallameh/Documents/finalreview/candidate_repo/.venv/bin/python",
+    "executable": "/Users/aliallameh/final/monocular-object-localization/.venv/bin/python",
     "version": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.6.3.2)]",
     "platform": "macOS-26.4.1-arm64-arm-64bit"
   },
@@ -86,8 +92,8 @@
     "summary_json": {
       "path": "results/summary.json",
       "exists": true,
-      "bytes": 23927,
-      "sha256": "ae4370239ca54ee7a6be44f6e155db9ccad3da95e997be2b9b037cc30a1ab449"
+      "bytes": 15565,
+      "sha256": "773da7ed5abff9f053eb8d202dc44cfafc8d74f1569f8264b95cdc214ba891c9"
     }
   },
   "run_metrics": {
@@ -95,7 +101,7 @@
     "detector_hit_rate": 1.0,
     "tracker_output_rate": 1.0,
     "occluded_frames": 0,
-    "p95_processing_ms_per_frame": 34.69774119876092,
+    "p95_processing_ms_per_frame": 35.0348045998544,
     "waypoint_proxy_residual_xy_m": 4.409931252644764
   }
 }
