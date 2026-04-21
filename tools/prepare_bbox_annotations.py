@@ -30,8 +30,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--samples", type=int, default=60, help="Number of frames to sample")
     parser.add_argument(
         "--include-frames",
-        default="45,195,345",
-        help="Comma-separated must-include frame IDs such as waypoint/occlusion frames",
+        default="50,200,500",
+        help="Comma-separated must-include frame IDs such as reviewed contact/occlusion frames",
     )
     parser.add_argument(
         "--include-ranges",
@@ -246,8 +246,20 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
     rows_html = "\n".join(
         f"""
         <section class="card" data-frame="{row['frame_id']}">
-          <h2>Frame {row['frame_id']}</h2>
-          <img src="{html.escape(str(row['draft_image']))}" alt="draft frame {row['frame_id']}">
+          <div class="card-title">
+            <h2>Frame {row['frame_id']}</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Clean frame</figcaption>
+              <img src="{html.escape(str(row['image']))}" alt="clean frame {row['frame_id']}">
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="{html.escape(str(row['draft_image']))}" alt="draft frame {row['frame_id']}">
+            </figure>
+          </div>
           <div class="grid">
             <label>x1 <input value="{row['x1']}" data-field="x1"></label>
             <label>y1 <input value="{row['y1']}" data-field="y1"></label>
@@ -269,19 +281,33 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
   <meta charset="utf-8">
   <title>BBox Annotation Review</title>
   <style>
-    body {{ font-family: system-ui, sans-serif; margin: 24px; background: #f5f6f7; color: #111; }}
+    body {{ font-family: system-ui, sans-serif; margin: 0; background: #f5f6f7; color: #111; }}
+    header {{ position: sticky; top: 0; z-index: 3; background: #fff; border-bottom: 1px solid #cfd5dc; padding: 14px 22px; }}
+    main {{ margin: 22px; }}
     button {{ border-radius: 6px; border: 1px solid #333; padding: 9px 14px; background: #111; color: white; cursor: pointer; }}
     .card {{ background: white; border: 1px solid #d0d4d8; border-radius: 8px; padding: 14px; margin: 16px 0; }}
-    img {{ max-width: 100%; height: auto; display: block; border: 1px solid #999; }}
+    .card-title {{ display: flex; align-items: center; justify-content: space-between; gap: 12px; }}
+    .pill {{ border: 1px solid #a9b2bc; border-radius: 999px; padding: 4px 8px; color: #303942; font-size: 12px; }}
+    .images {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }}
+    figure {{ margin: 0; }}
+    figcaption {{ font-size: 13px; font-weight: 700; margin: 0 0 6px; color: #29313a; }}
+    img {{ width: 100%; height: auto; display: block; border: 1px solid #999; background: #ddd; }}
     .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }}
     input, select {{ width: 100%; box-sizing: border-box; padding: 6px; }}
+    .warn {{ color: #8a3000; font-weight: 700; }}
+    @media (max-width: 900px) {{ .images {{ grid-template-columns: 1fr; }} }}
   </style>
 </head>
 <body>
-  <h1>BBox Annotation Review</h1>
-  <p>Correct draft boxes, mark usable rows as <strong>ok</strong>, mark real occlusion rows with <strong>occluded=1</strong>, then download CSV and run with <code>--bbox-gt</code>. For continuity evidence, use amodal/full-bin boxes when the bin extent is inferable; skip fully ambiguous frames.</p>
-  <button onclick="downloadCsv()">Download corrected CSV</button>
-  {rows_html}
+  <header>
+    <h1>BBox Annotation Review</h1>
+    <p>Correct draft boxes, mark usable rows as <strong>ok</strong>, mark real occlusion rows with <strong>occluded=1</strong>, then download CSV and run with <code>--bbox-gt</code>. For continuity evidence, use amodal/full-bin boxes when the bin extent is inferable; skip fully ambiguous frames.</p>
+    <p class="warn">Draft rows are ignored by evaluation. Nothing counts until you set review_status=ok.</p>
+    <button onclick="downloadCsv()">Download corrected CSV</button>
+  </header>
+  <main>
+    {rows_html}
+  </main>
   <script>
     const initialRows = {base64.b64encode(payload.encode()).decode()};
     function b64decode(s) {{ return decodeURIComponent(Array.prototype.map.call(atob(s), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }}
