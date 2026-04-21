@@ -29,7 +29,7 @@ def detect_compute() -> tuple[str, str]:
     except (cv2.error, AttributeError):
         pass
 
-    # CUDA or MPS via torch (optional dep)
+    # CUDA or MPS via torch
     try:
         import torch  # type: ignore
         if torch.cuda.is_available():
