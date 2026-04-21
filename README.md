@@ -9,10 +9,11 @@ bash run.sh --video input.mp4 --calib calib.json
 ```
 
 ```
-[frame 0001] bin @ world (2.44, -0.04, 0.33) m  conf=0.92  state=STATIONARY  dt=58ms
-[frame 0002] bin @ world (2.44, -0.04, 0.33) m  conf=0.92  state=STATIONARY  dt=31ms
+[frame 0000] bin @ world (2.87, 0.04, 0.33) m conf=0.92 state=STATIONARY dt=84ms
+[frame 0001] bin @ world (2.86, 0.04, 0.33) m conf=0.92 state=STATIONARY dt=33ms
+[frame 0002] bin @ world (2.86, 0.03, 0.33) m conf=0.92 state=STATIONARY dt=29ms
 ...
-[summary] frames=875  detector_hits=100.0%  tracker_outputs=100.0%  mean_dt=33.9ms
+[summary] frames=875  detector_hits=100.0%  tracker_outputs=100.0%  mean_dt=32ms
 ```
 
 ---
@@ -89,7 +90,7 @@ Candidates from all four channels are merged with NMS (IoU threshold 0.45).
 | | Hybrid (ours) | YOLOv8-n (off-shelf) |
 |---|---:|---:|
 | Detection rate | 100.0% | 92.2% |
-| Mean latency | 34 ms | 16.7 ms |
+| Mean latency | 32 ms | 16.7 ms |
 
 YOLOv8-n misses ~68 frames. The 2× speedup does not justify a 7.8% miss rate
 when the 250 ms CPU budget is already met by a wide margin.
@@ -248,24 +249,40 @@ kalman:
   measurement_var: 0.01
 ```
 
-**On hyperparameter validation:** A grid search was originally run using
-`results/output.csv` as ground truth — circular evaluation. The filter was
-scored against the same detector output it smooths. All configs produced
-~0.001 m RMSE because z_world is construction-imposed constant and x/y
-barely vary. Those results have been invalidated. The grid search script
-(`experiments/kalman_gridsearch.py`) has been rewritten to use jitter on
-stationary windows — an independent signal. Re-run it to tune empirically:
+**On hyperparameter validation.** There is no independent positional ground
+truth for the bin in this clip, so the grid-search script
+(`experiments/kalman_gridsearch.py`) does not compute a position RMSE — it
+caches the raw localizer output once and replays the Kalman over that
+cached signal for each `(process_var, measurement_var)` pair, reporting
+frame-step and 2nd-difference std reduction. Same input for every config,
+so the results are directly comparable.
+
+Grid-search result (24 configs over `process_var ∈ {0.3, 0.5, 1, 2, 3, 5}`
+and `measurement_var ∈ {0.001, 0.01, 0.05, 0.1}`):
+
+| Config | Frame-step reduction | 2nd-diff reduction |
+|---|---:|---:|
+| `process_var=3.0, measurement_var=0.010` (pipeline default) | 60.5% | 84.7% |
+| `process_var=0.3, measurement_var=0.100` (grid optimum) | 74.1% | 95.0% |
+
+The pipeline keeps the default (3.0 / 0.010) — tuning on a single clip
+without a validation set is a single-scene fit. Full results:
+`results/kalman_gridsearch_results.json`.
 
 ```
 python experiments/kalman_gridsearch.py --video input.mp4 --calib calib.json
 ```
 
-**Measured smoothing** (raw vs filtered, no external GT needed):
+**Smoothing measured on the delivered run** (default config, raw vs filtered
+from `eval_utils.trajectory_smoothness_metrics`):
 
 | Metric | Value |
 |---|---|
 | Frame-step std reduction | 59.9% |
 | Second-difference std reduction | 84.4% |
+
+(The small gap vs 60.5% in the grid-search table is because the replay pins
+`z = 0.325 m` while the pipeline feeds the live z from `localize_bbox`.)
 
 ---
 
@@ -303,7 +320,10 @@ primary delivered run.
 
 ## Results and benchmarks
 
-Measured on CPU (no GPU) with the supplied `calib.json`:
+Measured on CPU (no GPU) with the supplied `calib.json`. Latency numbers
+are from one local run on an Apple M-series CPU — expect variation on
+other hardware; the authoritative values for any given run land in
+`results/summary.json`.
 
 | Metric | Value |
 |---|---|
@@ -311,12 +331,13 @@ Measured on CPU (no GPU) with the supplied `calib.json`:
 | Detector hit rate | 100.0% |
 | Tracker output rate | 100.0% |
 | Occluded frames (real) | 0 |
-| Flow-assisted frames | 0 |
-| First stdout from Python | 622 ms |
-| Mean frame time | 33.9 ms |
-| p95 frame time | 35.4 ms |
+| Flow-assisted frames (real) | 0 |
+| First stdout from Python | ~110 ms |
+| Mean frame time | ~33 ms |
+| p95 frame time | ~35 ms |
 | Kalman frame-step σ reduction | 59.9% |
-| Waypoint RMSE XY | 4.41 m (see Waypoint evaluation) |
+| Kalman 2nd-difference σ reduction | 84.4% |
+| Waypoint residual XY | 4.41 m (weak proxy — see Waypoint evaluation) |
 
 ---
 
@@ -354,10 +375,18 @@ x_world_filt, y_world_filt, z_world_filt <- post-Kalman
 
 ## Waypoint evaluation
 
-`waypoints.json` provides pixel coordinates of the three floor tape markers.
+Short version: on this clip the waypoint RMSE is not a valid accuracy
+metric. `qa_report.json` flags it as `large_residual` and
+`invalid_for_independent_rmse_contract` because the bin never goes near the
+declared marker pixels (gap > 350 px per marker; detected bbox heights are
+1.8–2.4× what they would be at the declared depths). Treat the 4.41 m as a
+content mismatch between the clip and the scenario description, not as
+localization error.
+
+`waypoints.json` provides pixel coordinates of three floor tape markers.
 The pipeline projects each pixel through the camera model onto the ground
-plane to get estimated world-frame stop positions, then computes RMSE
-between the bin trajectory near each stop and those estimated positions.
+plane, then reports the gap between the bin trajectory near each stop and
+the projected marker positions.
 
 ### Projected waypoint positions (from camera model)
 
@@ -377,21 +406,21 @@ validates the camera model geometry.
 | A | (2.42, −0.04) | (5.20, 0.00) | 2.78 |
 | B | (3.43, 1.00) | (7.13, −1.21) | 4.31 |
 | C | (3.32, −0.15) | (8.87, 0.92) | 5.66 |
-| **RMSE XY** | | | **4.41 m** |
+| **Residual RMSE XY** (weak proxy, not GT) | | | **4.41 m** |
 
-### Why the gap is 4.41 m
+### Why the gap is 4.41 m (and why it is not a localization error)
 
-The 4.41 m RMSE does **not** mean the localization formula is wrong. The
-geometry check confirms this: the `height_scale_error_factor` for stop A is
-2.37, meaning the bin's bounding box pixel height is 2.37× larger than it
-would be if the bin were at the waypoint depth (5.2 m). Dividing:
-5.2 m / 2.37 ≈ 2.2 m — matching the pipeline's estimate of 2.42 m.
+The 4.41 m residual does **not** mean the localization formula is wrong.
+The geometry check confirms this: `height_scale_error_factor` for stop A
+is 2.37, meaning the bin's bbox pixel height is 2.37× larger than it would
+be if the bin were at the waypoint depth (5.2 m). Dividing: 5.2 m / 2.37
+≈ 2.2 m — close to the pipeline's estimate of 2.42 m.
 
-**Conclusion:** The bin in the video is physically at ~2–4 m from the pole
-during the delivered sequence, while the tape markers on the floor are at
-5–9 m. The pipeline correctly localises the bin where it actually appears.
-The gap is a content mismatch between the delivered clip and the assessment
-scenario description, not a localization error.
+**Conclusion:** the bin is physically at ~2–4 m from the pole during the
+delivered sequence; the tape markers are at 5–9 m. The pipeline localises
+the bin where it actually appears. The 4.41 m residual is therefore a
+content-mismatch between the clip and the scenario description, not a
+geometry error.
 
 ### Waypoint pixel reliability
 
@@ -465,12 +494,17 @@ which this pipeline provides via `sigma_x / sigma_y / sigma_z` per frame.
   slopes.
 - **Ground-contact model needs a clean bottom edge.** Partial bbox
   truncation or wheel occlusion degrades x/y accuracy.
-- **RMSE vs waypoints is 4.41 m.** This reflects a content mismatch
-  between the video and the scenario (bin at 2–4 m, tape at 5–9 m),
-  not a geometry error. See Waypoint evaluation.
-- **Kalman hyperparameters not independently validated.** The original
-  grid search was circular; re-run `experiments/kalman_gridsearch.py`
-  to tune empirically once video is available.
+- **Residual RMSE vs waypoints is 4.41 m.** This is a weak proxy, not an
+  accuracy metric — the waypoints describe the operator's tape path
+  (5–9 m from the pole), the bin sits at 2–4 m. The residual reflects
+  that scene-content mismatch, not a geometry error. See Waypoint
+  evaluation for the full breakdown.
+- **Kalman hyperparameters tuned on smoothing only.** No independent
+  positional GT exists for the bin in this clip, so
+  `experiments/kalman_gridsearch.py` reports frame-step and
+  2nd-difference std reduction instead of RMSE. The runtime defaults
+  (pv=3.0, mv=0.010) are kept deliberately — the grid optimum is a
+  single-scene fit without a validation set.
 - **No real occlusion in delivered clip.** Occlusion handling is
   implemented and stress-tested synthetically, but 0 real occluded frames
   appear in the delivered run.
