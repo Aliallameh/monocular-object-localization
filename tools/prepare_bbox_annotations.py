@@ -252,8 +252,11 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
           </div>
           <div class="images">
             <figure>
-              <figcaption>Clean frame</figcaption>
-              <img src="{html.escape(str(row['image']))}" alt="clean frame {row['frame_id']}">
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="{html.escape(str(row['image']))}" alt="clean frame {row['frame_id']}">
+                <canvas data-frame="{row['frame_id']}"></canvas>
+              </div>
             </figure>
             <figure>
               <figcaption>Draft tracker box</figcaption>
@@ -261,15 +264,21 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
             </figure>
           </div>
           <div class="grid">
-            <label>x1 <input value="{row['x1']}" data-field="x1"></label>
-            <label>y1 <input value="{row['y1']}" data-field="y1"></label>
-            <label>x2 <input value="{row['x2']}" data-field="x2"></label>
-            <label>y2 <input value="{row['y2']}" data-field="y2"></label>
+            <label>x1 <input value="{row['x1']}" data-field="x1" readonly></label>
+            <label>y1 <input value="{row['y1']}" data-field="y1" readonly></label>
+            <label>x2 <input value="{row['x2']}" data-field="x2" readonly></label>
+            <label>y2 <input value="{row['y2']}" data-field="y2" readonly></label>
             <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
             <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
             <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
             <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
             <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
           </div>
         </section>
         """
@@ -292,8 +301,13 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
     figure {{ margin: 0; }}
     figcaption {{ font-size: 13px; font-weight: 700; margin: 0 0 6px; color: #29313a; }}
     img {{ width: 100%; height: auto; display: block; border: 1px solid #999; background: #ddd; }}
+    .canvas-wrap {{ position: relative; }}
+    .canvas-wrap img {{ position: relative; z-index: 1; }}
+    .canvas-wrap canvas {{ position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; cursor: crosshair; }}
     .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }}
     input, select {{ width: 100%; box-sizing: border-box; padding: 6px; }}
+    input[readonly] {{ background: #eef1f4; color: #222; }}
+    .actions {{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }}
     .warn {{ color: #8a3000; font-weight: 700; }}
     @media (max-width: 900px) {{ .images {{ grid-template-columns: 1fr; }} }}
   </style>
@@ -301,7 +315,7 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
 <body>
   <header>
     <h1>BBox Annotation Review</h1>
-    <p>Correct draft boxes, mark usable rows as <strong>ok</strong>, mark real occlusion rows with <strong>occluded=1</strong>, then download CSV and run with <code>--bbox-gt</code>. For continuity evidence, use amodal/full-bin boxes when the bin extent is inferable; skip fully ambiguous frames.</p>
+    <p>Drag on the clean frame to draw the GT box. Mark usable rows as <strong>ok</strong>, mark real occlusion rows with <strong>occluded=1</strong>, then download CSV and run with <code>--bbox-gt</code>. For continuity evidence, use amodal/full-bin boxes when the bin extent is inferable; skip fully ambiguous frames.</p>
     <p class="warn">Draft rows are ignored by evaluation. Nothing counts until you set review_status=ok.</p>
     <button onclick="downloadCsv()">Download corrected CSV</button>
   </header>
@@ -311,6 +325,96 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
   <script>
     const initialRows = {base64.b64encode(payload.encode()).decode()};
     function b64decode(s) {{ return decodeURIComponent(Array.prototype.map.call(atob(s), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }}
+    const rowByFrame = new Map(initialRows.map(r => [String(r.frame_id), r]));
+    function fields(card) {{
+      const out = {{}};
+      card.querySelectorAll('[data-field]').forEach(el => out[el.dataset.field] = el);
+      return out;
+    }}
+    function setBox(card, box) {{
+      const f = fields(card);
+      f.x1.value = box.x1.toFixed(2);
+      f.y1.value = box.y1.toFixed(2);
+      f.x2.value = box.x2.toFixed(2);
+      f.y2.value = box.y2.toFixed(2);
+      drawCanvas(card);
+    }}
+    function getBox(card) {{
+      const f = fields(card);
+      return {{x1:+f.x1.value, y1:+f.y1.value, x2:+f.x2.value, y2:+f.y2.value}};
+    }}
+    function drawCanvas(card) {{
+      const img = card.querySelector('.canvas-wrap img');
+      const canvas = card.querySelector('canvas');
+      const ctx = canvas.getContext('2d');
+      const w = img.naturalWidth || 1366;
+      const h = img.naturalHeight || 768;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.clearRect(0, 0, w, h);
+      const b = getBox(card);
+      ctx.lineWidth = Math.max(3, w / 450);
+      ctx.strokeStyle = '#ff00cc';
+      ctx.fillStyle = 'rgba(255,0,204,0.10)';
+      ctx.fillRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+      ctx.strokeRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+    }}
+    function pointerToImage(e, canvas) {{
+      const r = canvas.getBoundingClientRect();
+      return {{
+        x: (e.clientX - r.left) * canvas.width / r.width,
+        y: (e.clientY - r.top) * canvas.height / r.height,
+      }};
+    }}
+    document.querySelectorAll('.card').forEach(card => {{
+      const canvas = card.querySelector('canvas');
+      const img = card.querySelector('.canvas-wrap img');
+      let start = null;
+      img.addEventListener('load', () => drawCanvas(card));
+      canvas.addEventListener('pointerdown', e => {{
+        start = pointerToImage(e, canvas);
+        canvas.setPointerCapture(e.pointerId);
+      }});
+      canvas.addEventListener('pointermove', e => {{
+        if (!start) return;
+        const p = pointerToImage(e, canvas);
+        setBox(card, {{
+          x1: Math.min(start.x, p.x),
+          y1: Math.min(start.y, p.y),
+          x2: Math.max(start.x, p.x),
+          y2: Math.max(start.y, p.y),
+        }});
+      }});
+      canvas.addEventListener('pointerup', e => {{
+        if (!start) return;
+        const f = fields(card);
+        if (f.review_status.value === 'draft') f.review_status.value = 'ok';
+        start = null;
+        drawCanvas(card);
+      }});
+      drawCanvas(card);
+    }});
+    function cardFromButton(btn) {{ return btn.closest('.card'); }}
+    function markOk(btn) {{
+      const f = fields(cardFromButton(btn));
+      f.review_status.value = 'ok';
+      if (!f.occluded.value) f.occluded.value = '0';
+    }}
+    function markOccluded(btn) {{
+      const f = fields(cardFromButton(btn));
+      f.review_status.value = 'ok';
+      f.occluded.value = '1';
+      if (!f.visibility.value) f.visibility.value = '0.7';
+    }}
+    function markSkip(btn) {{
+      fields(cardFromButton(btn)).review_status.value = 'skip';
+    }}
+    function resetDraft(btn) {{
+      const card = cardFromButton(btn);
+      const r = rowByFrame.get(card.dataset.frame);
+      setBox(card, {{x1:+r.x1, y1:+r.y1, x2:+r.x2, y2:+r.y2}});
+      fields(card).review_status.value = 'draft';
+    }}
     function collectRows() {{
       return Array.from(document.querySelectorAll('.card')).map(card => {{
         const row = {{frame_id: card.dataset.frame, image: `frames/frame_${{String(card.dataset.frame).padStart(5, '0')}}.jpg`, draft_image: `frames/frame_${{String(card.dataset.frame).padStart(5, '0')}}_draft.jpg`}};
