@@ -1,0 +1,101 @@
+{
+  "created_unix_s": 1776796763.544609,
+  "git": {
+    "code_commit_at_run": "e655a0387fc0db7bcecf9eb1bc272732644b253a",
+    "branch": "main",
+    "code_dirty_excluding_generated_outputs": false,
+    "code_dirty_files": [],
+    "remote": "https://github.com/Aliallameh/monocular-object-localization.git",
+    "note": "code_commit_at_run is the source commit used to generate the artifacts. Generated artifacts are reproducible outputs and may be committed after the run."
+  },
+  "python": {
+    "executable": "/Users/aliallameh/Documents/finalreview/candidate_repo/.venv/bin/python",
+    "version": "3.11.14 (main, Oct  9 2025, 16:16:55) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "platform": "macOS-26.4.1-arm64-arm-64bit"
+  },
+  "libraries": {
+    "opencv": "4.13.0",
+    "numpy": "2.4.4"
+  },
+  "inputs": {
+    "video": {
+      "path": "input.mp4",
+      "exists": true,
+      "bytes": 54522713,
+      "sha256": "dae61a8cde161e97ca155a90998a14d0ae7a68777d81abd3a6cd7ba54e7e49aa"
+    },
+    "calibration": {
+      "path": "calib.json",
+      "exists": true,
+      "bytes": 477,
+      "sha256": "5a8e52d9edb3f1788bfbb23c942384c9513dfc466b7329a005e86d61631127b3"
+    }
+  },
+  "command_args": {
+    "video": "input.mp4",
+    "calib": "calib.json",
+    "waypoints": "waypoints.json",
+    "output": "results/output.csv",
+    "config": "",
+    "manifest": "results/run_manifest.json",
+    "gpu": false,
+    "backend": null,
+    "device": null,
+    "conf": null,
+    "imgsz": null,
+    "no_kalman": false,
+    "bbox_gt": "annotations/bbox_gt.csv",
+    "contact_gt": "manual_contact_points.csv",
+    "observer_video": "results/observer_overlay.mp4",
+    "observer_json": "results/observer_events.json",
+    "no_observer": false,
+    "display": false,
+    "max_frames": 0
+  },
+  "outputs": {
+    "output_csv": {
+      "path": "results/output.csv",
+      "exists": true,
+      "bytes": 176430,
+      "sha256": "715c8fec192743c740fbe6204a1c60ef7e592dcba0a23bdec6d0abef76eb4b2f"
+    },
+    "trajectory_png": {
+      "path": "trajectory.png",
+      "exists": true,
+      "bytes": 223594,
+      "sha256": "b4c68f3eecb41ac24d54e5bf29663d3c8ba93c653199564fc52204c48041874f"
+    },
+    "trajectory_raw_vs_filtered_png": {
+      "path": "trajectory_raw_vs_filtered.png",
+      "exists": true,
+      "bytes": 263020,
+      "sha256": "e22a2cffc3c86ca3fdb460ac5d6668ac5c44f1afe1c9016eb8083ba28c9a3adf"
+    },
+    "observer_overlay_video": {
+      "path": "results/observer_overlay.mp4",
+      "exists": true,
+      "bytes": 33820656,
+      "sha256": "451d90e03ae50b06587af80e2823bcb885d53289eec55ab5ab00f934b2879528"
+    },
+    "observer_events_json": {
+      "path": "results/observer_events.json",
+      "exists": true,
+      "bytes": 36001,
+      "sha256": "5ce368a00691b87fa2621bd254c186451a89fc582c6efe4ae798faf043411a2f"
+    },
+    "summary_json": {
+      "path": "results/summary.json",
+      "exists": true,
+      "bytes": 23927,
+      "sha256": "ae4370239ca54ee7a6be44f6e155db9ccad3da95e997be2b9b037cc30a1ab449"
+    }
+  },
+  "run_metrics": {
+    "frames_processed": 875,
+    "detector_hit_rate": 1.0,
+    "tracker_output_rate": 1.0,
+    "occluded_frames": 0,
+    "p95_processing_ms_per_frame": 34.69774119876092,
+    "waypoint_proxy_residual_xy_m": 4.409931252644764
+  }
+}

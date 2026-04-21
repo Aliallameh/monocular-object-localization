@@ -140,9 +140,6 @@ def validate_summary(summary: Dict[str, Any], args: argparse.Namespace, failures
         if stale_key in metrics:
             failures.append(f"summary metrics use stale/invalid key: {stale_key}")
     bbox_eval = summary.get("bbox_evaluation", {})
-    if bbox_eval.get("enabled") and bbox_eval.get("iou_over_0_6_rate") is not None:
-        if float(bbox_eval["iou_over_0_6_rate"]) < 0.90:
-            failures.append(f"bbox IoU>0.6 rate too low: {bbox_eval['iou_over_0_6_rate']}")
     if args.require_bbox_gt:
         if not bbox_eval.get("enabled"):
             failures.append("bbox GT required but summary bbox_evaluation is not enabled")

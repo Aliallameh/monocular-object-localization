@@ -1,0 +1,132 @@
+{
+  "enabled": true,
+  "gt_file": "manual_contact_points.csv",
+  "schema": "manual_floor_contact_points_v1",
+  "parse_report": {
+    "raw_rows": 3,
+    "usable_rows": 3,
+    "skipped_rows": 0,
+    "invalid_rows": 0
+  },
+  "gt_frames": 3,
+  "matched_frames": 3,
+  "missing_track_frames": 0,
+  "occluded_contact_frames": 0,
+  "mean_pixel_error": 44.62084026642359,
+  "max_pixel_error": 67.41654467646596,
+  "mean_ground_xy_error_m": 0.17505129737249384,
+  "max_ground_xy_error_m": 0.379207163667658,
+  "mean_filtered_centroid_xy_error_m": 0.17189683915247897,
+  "max_filtered_centroid_xy_error_m": 0.3865618848856393,
+  "frames": [
+    {
+      "frame_id": 50,
+      "matched": true,
+      "review_status": "ok",
+      "occluded": false,
+      "visibility": 1.0,
+      "manual_contact_px": [
+        922.0,
+        885.0
+      ],
+      "detected_bottom_center_px": [
+        977.0518450952852,
+        879.7893772708089
+      ],
+      "pixel_error_dx_dy": [
+        55.051845095285216,
+        -5.210622729191073
+      ],
+      "pixel_error_norm": 55.29788637571278,
+      "manual_ground_world": [
+        2.43009661104804,
+        0.07434108238476887,
+        0.0
+      ],
+      "detected_ground_world": [
+        2.4515544996851966,
+        -0.033616792486918186,
+        0.0
+      ],
+      "ground_xy_error_m": 0.11006972213817684,
+      "raw_centroid_xy_error_m": 0.11006972213817684,
+      "filtered_centroid_xy_error_m": 0.09519751665300873,
+      "detector_source": "blue_hsv_shape",
+      "track_state": "CONFIRMED",
+      "notes": "Manual floor-contact point supplied by reviewer; validates contact geometry only"
+    },
+    {
+      "frame_id": 200,
+      "matched": true,
+      "review_status": "ok",
+      "occluded": false,
+      "visibility": 1.0,
+      "manual_contact_px": [
+        576.0,
+        694.0
+      ],
+      "detected_bottom_center_px": [
+        586.999819508719,
+        695.8121467338002
+      ],
+      "pixel_error_dx_dy": [
+        10.999819508719042,
+        1.8121467338002049
+      ],
+      "pixel_error_norm": 11.148089747092046,
+      "manual_ground_world": [
+        3.440548774494322,
+        1.031339039728281,
+        0.0
+      ],
+      "detected_ground_world": [
+        3.4286948144257803,
+        0.9974769191127708,
+        0.0
+      ],
+      "ground_xy_error_m": 0.03587700631164672,
+      "raw_centroid_xy_error_m": 0.03587700631164672,
+      "filtered_centroid_xy_error_m": 0.033931115918788855,
+      "detector_source": "blue_hsv_shape",
+      "track_state": "STATIONARY",
+      "notes": "Manual floor-contact point supplied by reviewer; person visible but not blocking the bin"
+    },
+    {
+      "frame_id": 500,
+      "matched": true,
+      "review_status": "ok",
+      "occluded": false,
+      "visibility": 1.0,
+      "manual_contact_px": [
+        462.0,
+        760.0
+      ],
+      "detected_bottom_center_px": [
+        469.60298046283333,
+        826.9864552293649
+      ],
+      "pixel_error_dx_dy": [
+        7.6029804628333295,
+        66.98645522936488
+      ],
+      "pixel_error_norm": 67.41654467646596,
+      "manual_ground_world": [
+        2.9874425204784623,
+        1.2018452875408008,
+        0.0
+      ],
+      "detected_ground_world": [
+        2.634425859509645,
+        1.0633631224245046,
+        0.0
+      ],
+      "ground_xy_error_m": 0.379207163667658,
+      "raw_centroid_xy_error_m": 0.379207163667658,
+      "filtered_centroid_xy_error_m": 0.3865618848856393,
+      "detector_source": "blue_hsv_shape",
+      "track_state": "CONFIRMED",
+      "notes": "Manual floor-contact point supplied by reviewer; validates bottom-contact estimate"
+    }
+  ],
+  "interpretation": "Manual floor-contact GT is used only for validation. It is not used to calibrate, correct, or generate output coordinates."
+}

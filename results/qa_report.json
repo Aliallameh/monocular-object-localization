@@ -1,0 +1,786 @@
+{
+  "schema_version": 1,
+  "video": "input.mp4",
+  "output_csv": "results/output.csv",
+  "contract_checks": {
+    "output_csv_exists": true,
+    "required_pose_columns_present": true,
+    "bbox_columns_present": true,
+    "status_column_present": true,
+    "tracked_rows_with_valid_bbox": 875,
+    "tracked_rows": 875,
+    "all_tracked_rows_have_valid_bbox": true,
+    "video_frame_count": 875,
+    "processed_frame_count": 875,
+    "processed_all_video_frames": true,
+    "first_track_stdout_ms_from_python": 73.64691700058756,
+    "first_track_stdout_under_2s": true,
+    "detector_hit_rate_over_90pct": true,
+    "tracker_output_rate_over_90pct": true,
+    "mean_cpu_latency_under_250ms": true,
+    "p95_cpu_latency_under_250ms": true
+  },
+  "detector_checks": {
+    "mean_confidence": 0.8746704775395673,
+    "min_confidence": 0.7713828273244782,
+    "max_confidence": 0.9535263685269845,
+    "status_counts": {
+      "detected": 875
+    },
+    "detector_sources": {
+      "blue_hsv_shape": 875
+    },
+    "flow_assisted_frames": 0
+  },
+  "quality_checks": {
+    "blurry_frames": 0,
+    "blur_laplacian_var_median": 125.55883038704954,
+    "blur_laplacian_var_min": 73.06517982880813
+  },
+  "geometry_checks": {
+    "height_vs_ground_depth_delta_median_m": 0.32473448195652077,
+    "height_vs_ground_depth_delta_p95_m": 0.717897169909645,
+    "height_vs_ground_depth_delta_max_m": 0.7629154974848364,
+    "height_vs_ground_xy_delta_median_m": 0.29975331505570435,
+    "height_vs_ground_xy_delta_p95_m": 0.7086191099711112,
+    "height_vs_ground_xy_delta_max_m": 0.7541111032441233,
+    "centroid_z_expected_m": 0.325,
+    "centroid_z_min_max_m": [
+      0.325,
+      0.325
+    ],
+    "synthetic_geometry_validation": {
+      "type": "synthetic_camera_model_check_not_video_gt",
+      "case_count": 5,
+      "ground_contact_rmse_m": 0.004937561818102386,
+      "height_based_rmse_m": 0.09068388169416888,
+      "max_ground_contact_error_m": 0.009017495202485648,
+      "max_height_based_error_m": 0.16957573060026207,
+      "cases": [
+        {
+          "world_centroid_true": [
+            3.0,
+            0.0,
+            0.325
+          ],
+          "bbox_px": [
+            871.3183217977814,
+            494.32296298504247,
+            1048.6778276137331,
+            766.206234002743
+          ],
+          "ground_contact_est_world": [
+            2.999999999674194,
+            -4.1430822980255255e-06,
+            0.325
+          ],
+          "height_based_est_world": [
+            3.1635070334795747,
+            3.1950077018529615e-06,
+            0.28004025799547105
+          ],
+          "ground_contact_error_m": 4.143082310835986e-06,
+          "height_based_error_m": 0.16957573060026207,
+          "height_based_depth_error_m": 0.16957210391150035
+        },
+        {
+          "world_centroid_true": [
+            5.0,
+            0.0,
+            0.325
+          ],
+          "bbox_px": [
+            904.9440797466701,
+            367.79547440420856,
+            1015.0537867398151,
+            542.682211573079
+          ],
+          "ground_contact_est_world": [
+            5.000000000005775,
+            3.937335560982394e-06,
+            0.325
+          ],
+          "height_based_est_world": [
+            5.094644614159961,
+            2.0500918392668596e-06,
+            0.30998650587395327
+          ],
+          "ground_contact_error_m": 3.937335560986629e-06,
+          "height_based_error_m": 0.09582801260364099,
+          "height_based_depth_error_m": 0.09530545534962531
+        },
+        {
+          "world_centroid_true": [
+            7.0,
+            0.0,
+            0.325
+          ],
+          "bbox_px": [
+            920.0790002959977,
+            312.34571355401806,
+            999.9165324237476,
+            440.0081258490054
+          ],
+          "ground_contact_est_world": [
+            6.99999999941831,
+            7.710930477098356e-06,
+            0.325
+          ],
+          "height_based_est_world": [
+            7.026383008577045,
+            1.538834520277554e-06,
+            0.32354006119288403
+          ],
+          "ground_contact_error_m": 7.71093049903887e-06,
+          "height_based_error_m": 0.026423371572624102,
+          "height_based_depth_error_m": 0.025861889327739362
+        },
+        {
+          "world_centroid_true": [
+            7.0,
+            1.0,
+            0.325
+          ],
+          "bbox_px": [
+            722.4801340496826,
+            313.66051455412116,
+            802.3176661774326,
+            440.56621243653024
+          ],
+          "ground_contact_est_world": [
+            7.000270772319908,
+            1.009013428985554,
+            0.325
+          ],
+          "height_based_est_world": [
+            7.0282116512295225,
+            1.0034429545431072,
+            0.32322978310413464
+          ],
+          "ground_contact_error_m": 0.009017495202485648,
+          "height_based_error_m": 0.028476040260902304,
+          "height_based_depth_error_m": 0.027708528371467978
+        },
+        {
+          "world_centroid_true": [
+            9.0,
+            -1.0,
+            0.325
+          ],
+          "bbox_px": [
+            1083.6497381450506,
+            282.2244889581016,
+            1146.270976393593,
+            382.1076084145057
+          ],
+          "ground_contact_est_world": [
+            9.000304259013868,
+            -1.0063631515884308,
+            0.325
+          ],
+          "height_based_est_world": [
+            8.959881082592302,
+            -0.9951785636539902,
+            0.33108624439404655
+          ],
+          "ground_contact_error_m": 0.006370421625361192,
+          "height_based_error_m": 0.04086338401586895,
+          "height_based_depth_error_m": 0.04032713440918201
+        }
+      ]
+    }
+  },
+  "waypoint_pixel_probes": [
+    {
+      "name": "A",
+      "expected_marker_color": "green",
+      "frame": 45,
+      "pixel_uv": [
+        960,
+        529
+      ],
+      "mean_bgr": [
+        163.92,
+        96.91555555555556,
+        12.115555555555556
+      ],
+      "mean_hsv": [
+        103.31111111111112,
+        235.51111111111112,
+        163.92
+      ],
+      "observed_color_class": "blue"
+    },
+    {
+      "name": "B",
+      "expected_marker_color": "orange",
+      "frame": 195,
+      "pixel_uv": [
+        1193,
+        436
+      ],
+      "mean_bgr": [
+        49.52444444444444,
+        48.28,
+        45.92
+      ],
+      "mean_hsv": [
+        100.32888888888888,
+        26.142222222222223,
+        49.52444444444444
+      ],
+      "observed_color_class": "neutral/gray"
+    },
+    {
+      "name": "C",
+      "expected_marker_color": "red",
+      "frame": 345,
+      "pixel_uv": [
+        817,
+        385
+      ],
+      "mean_bgr": [
+        78.19555555555556,
+        117.77333333333333,
+        136.51555555555555
+      ],
+      "mean_hsv": [
+        43.791111111111114,
+        107.99555555555555,
+        140.95111111111112
+      ],
+      "observed_color_class": "green"
+    }
+  ],
+  "waypoint_consistency_checks": [
+    {
+      "name": "A",
+      "approx_frame": 45,
+      "actual_frame_used": 45,
+      "waypoint_pixel_uv": [
+        960.0,
+        529.0
+      ],
+      "detected_bottom_center_uv": [
+        970.2417442806403,
+        879.9784225683973
+      ],
+      "pixel_gap_to_detected_bottom_center_px": 351.12782065013084,
+      "detected_ground_xy_m": [
+        2.450818019521833,
+        -0.020192268496306502
+      ],
+      "projected_waypoint_ground_xy_m": [
+        5.201102184745891,
+        -3.3055991699485594e-08
+      ],
+      "ground_gap_m": 2.7503582886333686,
+      "detected_bbox_height_px_undistorted": 407.68946627254974,
+      "provided_bin_height_m": 0.65,
+      "required_bin_height_if_at_waypoint_depth_m": 1.5374960863017206,
+      "height_scale_error_factor": 2.3653785943103394,
+      "height_ground_depth_delta_m": 0.39652103668305916
+    },
+    {
+      "name": "B",
+      "approx_frame": 195,
+      "actual_frame_used": 195,
+      "waypoint_pixel_uv": [
+        1193.0,
+        436.0
+      ],
+      "detected_bottom_center_uv": [
+        587.0000695859419,
+        696.9758574123829
+      ],
+      "pixel_gap_to_detected_bottom_center_px": 659.806269911079,
+      "detected_ground_xy_m": [
+        3.4202110747813235,
+        0.9952989011704142
+      ],
+      "projected_waypoint_ground_xy_m": [
+        7.132350593961992,
+        -1.2141211996688075
+      ],
+      "ground_gap_m": 4.319897798774328,
+      "detected_bbox_height_px_undistorted": 225.36757937321124,
+      "provided_bin_height_m": 0.65,
+      "required_bin_height_if_at_waypoint_depth_m": 1.1496737247457491,
+      "height_scale_error_factor": 1.7687288073011525,
+      "height_ground_depth_delta_m": 0.47609858139606187
+    },
+    {
+      "name": "C",
+      "approx_frame": 345,
+      "actual_frame_used": 345,
+      "waypoint_pixel_uv": [
+        817.0,
+        385.0
+      ],
+      "detected_bottom_center_uv": [
+        1018.2641353756453,
+        713.4151351813081
+      ],
+      "pixel_gap_to_detected_bottom_center_px": 385.1801568158242,
+      "detected_ground_xy_m": [
+        3.327708323560091,
+        -0.14875958969227882
+      ],
+      "projected_waypoint_ground_xy_m": [
+        8.871528711756712,
+        0.9152339084922867
+      ],
+      "ground_gap_m": 5.645000147100402,
+      "detected_bbox_height_px_undistorted": 236.37893269594082,
+      "provided_bin_height_m": 0.65,
+      "required_bin_height_if_at_waypoint_depth_m": 1.4889813562394552,
+      "height_scale_error_factor": 2.2907405480607004,
+      "height_ground_depth_delta_m": 0.3770164842001402
+    }
+  ],
+  "asset_alignment": {
+    "canonical_input_used": true,
+    "waypoint_proxy_residual_xy_m": 4.409931252644764,
+    "strict_waypoint_proxy_residual_xy_m": 4.409931252644764,
+    "waypoint_proxy_status": "large_residual",
+    "waypoint_contract_assessment": {
+      "status": "invalid_for_independent_rmse_contract",
+      "markers_checked": 3,
+      "markers_with_pixel_gap_over_120px": [
+        "A",
+        "B",
+        "C"
+      ],
+      "markers_with_height_scale_outside_0_75_to_1_25": [
+        "A",
+        "B",
+        "C"
+      ],
+      "max_pixel_gap_px": 659.806269911079,
+      "interpretation": "The waypoint pixels should be treated as evaluation references only if they are geometrically consistent with the detected floor contact and object scale. This run fails that consistency check."
+    },
+    "interpretation": "The output stream uses camera/bin geometry only. Waypoint proxy residual is an external consistency check, not independent ground truth, and is not used to correct the answer stream."
+  },
+  "stop_metrics": {
+    "waypoint_proxy_residual_xy_m": 4.409931252644764,
+    "waypoint_proxy_residual_3d_m": 4.409931252644764,
+    "waypoint_metric_interpretation": "Weak proxy residual against pixel-projected waypoints; invalid for an independent RMSE contract when QA flags geometry/color mismatch.",
+    "raw_jitter_std_m": 0.08768225011554148,
+    "filtered_jitter_std_m": 0.0868861861464113,
+    "jitter_reduction_pct": 0.9078963736459555,
+    "smoothness": {
+      "raw_frame_step_std_m": 0.029647605336926137,
+      "filtered_frame_step_std_m": 0.01188896751610755,
+      "frame_step_std_reduction_pct": 59.89906307441356,
+      "raw_second_difference_std_m": 0.03575786953660631,
+      "filtered_second_difference_std_m": 0.005579567149488032,
+      "second_difference_std_reduction_pct": 84.396253966484,
+      "raw_median_frame_step_m": 0.012394771778125056,
+      "filtered_median_frame_step_m": 0.011260675065375736
+    }
+  },
+  "bbox_evaluation": {
+    "enabled": true,
+    "gt_file": "annotations/bbox_gt.csv",
+    "gt_frames": 61,
+    "gt_visible_frames": 31,
+    "gt_occluded_frames": 30,
+    "occlusion_labels_present": true,
+    "parse_report": {
+      "raw_rows": 62,
+      "usable_rows": 61,
+      "skipped_rows": 1,
+      "invalid_rows": 0,
+      "duplicate_frames_collapsed": 0,
+      "blank_occluded_assumed_visible": 5
+    },
+    "matched_frames": 61,
+    "missing_track_frames": 0,
+    "continuity_rate": 1.0,
+    "mean_iou": 0.7541153046308171,
+    "median_iou": 0.731201434024742,
+    "min_iou": 0.4482766956354729,
+    "iou_over_0_6_rate": 0.8524590163934426,
+    "all_frames": {
+      "gt_frames": 61,
+      "matched_frames": 61,
+      "missing_track_frames": 0,
+      "continuity_rate": 1.0,
+      "mean_iou": 0.7541153046308171,
+      "median_iou": 0.731201434024742,
+      "min_iou": 0.4482766956354729,
+      "iou_over_0_5_rate": 0.9508196721311475,
+      "iou_over_0_6_rate": 0.8524590163934426,
+      "iou_over_0_75_rate": 0.4426229508196721
+    },
+    "visible_frames": {
+      "gt_frames": 31,
+      "matched_frames": 31,
+      "missing_track_frames": 0,
+      "continuity_rate": 1.0,
+      "mean_iou": 0.8169709649810181,
+      "median_iou": 0.8076677326246318,
+      "min_iou": 0.5169258967125755,
+      "iou_over_0_5_rate": 1.0,
+      "iou_over_0_6_rate": 0.967741935483871,
+      "iou_over_0_75_rate": 0.5806451612903226
+    },
+    "occluded_frames": {
+      "gt_frames": 30,
+      "matched_frames": 30,
+      "missing_track_frames": 0,
+      "continuity_rate": 1.0,
+      "mean_iou": 0.6891644556022765,
+      "median_iou": 0.7045572820841751,
+      "min_iou": 0.4482766956354729,
+      "iou_over_0_5_rate": 0.9,
+      "iou_over_0_6_rate": 0.7333333333333333,
+      "iou_over_0_75_rate": 0.3
+    },
+    "detector_source_counts_on_gt": {
+      "blue_hsv_shape": 61
+    },
+    "detector_source_counts_on_gt_occluded": {
+      "blue_hsv_shape": 30
+    },
+    "pred_status_counts_on_gt_occluded": {
+      "detected": 30
+    },
+    "annotation_independence_check": {
+      "enabled": true,
+      "matched_frames": 61,
+      "near_identical_box_rate": 0.14754098360655737,
+      "mean_abs_bbox_delta_px": 19.785738632449362,
+      "max_abs_bbox_delta_px": 61.675904087992265,
+      "near_identical_threshold_px": 0.05,
+      "likely_draft_boxes_not_independent": false,
+      "interpretation": "GT boxes differ from tracker output enough to be treated as independently reviewed annotations."
+    },
+    "worst_iou_frames": [
+      {
+        "frame_id": 782,
+        "iou": 0.4482766956354729,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 736,
+        "iou": 0.4662278914032496,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 805,
+        "iou": 0.4720552041818046,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 804,
+        "iou": 0.5169258967125755,
+        "occluded": false,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 803,
+        "iou": 0.5291322287029072,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 800,
+        "iou": 0.5833048038702577,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 802,
+        "iou": 0.5841816248184538,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 806,
+        "iou": 0.5902527500821757,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 807,
+        "iou": 0.5925349241879901,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 801,
+        "iou": 0.6101849812910003,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      }
+    ],
+    "passes_iou_contract_on_supplied_gt": false,
+    "passes_hidden_contract_proxy": false,
+    "passes_occlusion_continuity_on_supplied_gt": true,
+    "interpretation": "Evaluation uses externally supplied reviewed bbox annotations. IoU contract does not pass on supplied GT or GT coverage is too weak. Occlusion continuity passes on supplied occluded GT frames."
+  },
+  "bbox_annotation_template": "results/bbox_annotation_template.csv",
+  "asset_alignment_diagnostics": {
+    "enabled": true,
+    "controls": [
+      "A",
+      "B",
+      "C"
+    ],
+    "affine_in_sample_residual_m": 6.027749212234753e-15,
+    "similarity_in_sample_residual_m": 1.7225523002936263,
+    "affine_matrix_xy": [
+      [
+        3.884256505338818,
+        0.7924534353841988
+      ],
+      [
+        -1.8996998636908022,
+        -1.9350974826489218
+      ],
+      [
+        -4.287945397289632,
+        -2.0001283442631217
+      ]
+    ],
+    "similarity": {
+      "scale": 0.29496698428501683,
+      "rotation": [
+        [
+          0.977551867835508,
+          0.2106949114034552
+        ],
+        [
+          -0.2106949114034552,
+          0.9775518678355081
+        ]
+      ],
+      "translation": [
+        6.170636531795147,
+        0.012668092779925297
+      ]
+    },
+    "affine_leave_one_out_errors_m": {
+      "0": null,
+      "1": null,
+      "2": null
+    },
+    "similarity_leave_one_out_errors_m": {
+      "0": 5.323111272501716,
+      "1": 6.824055945420604,
+      "2": 4.241922348013616
+    },
+    "interpretation": "This is not a calibration path and is not applied to output coordinates. With only three controls, a full affine fit can interpolate exactly; leave-one-out errors are the useful warning about asset consistency."
+  },
+  "robustness_stress_test": {
+    "enabled": true,
+    "name": "mid_stop_dropout",
+    "scenario": "detections_suppressed_and_frames_blurred",
+    "frame_start": 150,
+    "frame_end": 230,
+    "dropout_start": 185,
+    "dropout_end": 210,
+    "frames_processed": 81,
+    "tracker_output_rate": 1.0,
+    "dropout_frames": 26,
+    "dropout_tracked_frames": 26,
+    "dropout_continuity_rate": 1.0,
+    "flow_assisted_frames": 26,
+    "status_counts": {
+      "detected": 55,
+      "occluded": 26
+    },
+    "dropout_mean_iou_vs_baseline": 0.7657327257527626,
+    "dropout_min_iou_vs_baseline": 0.5998401770869299,
+    "dropout_mean_center_error_px": 19.847781741082066,
+    "dropout_max_center_error_px": 41.50639331953796
+  },
+  "occlusion_stress_suite": {
+    "enabled": true,
+    "scenario_count": 3,
+    "reports": [
+      {
+        "enabled": true,
+        "name": "mid_stop_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 150,
+        "frame_end": 230,
+        "dropout_start": 185,
+        "dropout_end": 210,
+        "frames_processed": 81,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 26,
+        "dropout_tracked_frames": 26,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 26,
+        "status_counts": {
+          "detected": 55,
+          "occluded": 26
+        },
+        "dropout_mean_iou_vs_baseline": 0.7657327257527626,
+        "dropout_min_iou_vs_baseline": 0.5998401770869299,
+        "dropout_mean_center_error_px": 19.847781741082066,
+        "dropout_max_center_error_px": 41.50639331953796
+      },
+      {
+        "enabled": true,
+        "name": "moving_crossing_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 412,
+        "frame_end": 470,
+        "dropout_start": 432,
+        "dropout_end": 445,
+        "frames_processed": 59,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 14,
+        "dropout_tracked_frames": 14,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 14,
+        "status_counts": {
+          "detected": 45,
+          "occluded": 14
+        },
+        "dropout_mean_iou_vs_baseline": 0.6750497342238144,
+        "dropout_min_iou_vs_baseline": 0.5775550860943924,
+        "dropout_mean_center_error_px": 64.28737950247263,
+        "dropout_max_center_error_px": 93.59573842527873
+      },
+      {
+        "enabled": true,
+        "name": "late_low_confidence_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 728,
+        "frame_end": 787,
+        "dropout_start": 748,
+        "dropout_end": 762,
+        "frames_processed": 60,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 15,
+        "dropout_tracked_frames": 15,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 15,
+        "status_counts": {
+          "detected": 45,
+          "occluded": 15
+        },
+        "dropout_mean_iou_vs_baseline": 0.9092583923455211,
+        "dropout_min_iou_vs_baseline": 0.8897370929055687,
+        "dropout_mean_center_error_px": 12.955999537982128,
+        "dropout_max_center_error_px": 17.389131437187928
+      }
+    ],
+    "min_dropout_continuity_rate": 1.0,
+    "min_dropout_iou_vs_baseline": 0.5775550860943924,
+    "max_dropout_center_error_px": 93.59573842527873,
+    "interpretation": "Detections are artificially suppressed and blurred; continuity is compared against the normal pipeline output, not hidden ground truth."
+  },
+  "stops": [
+    {
+      "name": "A",
+      "approx_frame": 45,
+      "frame_start": 22,
+      "frame_end": 65,
+      "num_frames": 15,
+      "gt_world_ground": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.0
+      ],
+      "gt_world_centroid": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        2.4391882252971624,
+        -0.041223747783183606,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        2.4226600699098606,
+        -0.04148784066890474,
+        0.325
+      ],
+      "error_xy_m": 2.778751846364666,
+      "error_3d_centroid_m": 2.778751846364666,
+      "raw_jitter_std_m": 0.10991723362875404,
+      "filtered_jitter_std_m": 0.1116167498503976
+    },
+    {
+      "name": "B",
+      "approx_frame": 195,
+      "frame_start": 172,
+      "frame_end": 220,
+      "num_frames": 28,
+      "gt_world_ground": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.0
+      ],
+      "gt_world_centroid": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        3.421026981097991,
+        0.9964820570979436,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        3.4280882007885127,
+        0.9976722848493527,
+        0.325
+      ],
+      "error_xy_m": 4.314347030042471,
+      "error_3d_centroid_m": 4.314347030042471,
+      "raw_jitter_std_m": 0.034575658565475474,
+      "filtered_jitter_std_m": 0.03377610325975377
+    },
+    {
+      "name": "C",
+      "approx_frame": 345,
+      "frame_start": 333,
+      "frame_end": 357,
+      "num_frames": 25,
+      "gt_world_ground": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.0
+      ],
+      "gt_world_centroid": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        3.3065587053663914,
+        -0.14875958969227882,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        3.315019261419993,
+        -0.14901773851909964,
+        0.325
+      ],
+      "error_xy_m": 5.657510834266932,
+      "error_3d_centroid_m": 5.657510834266932,
+      "raw_jitter_std_m": 0.11855385815239494,
+      "filtered_jitter_std_m": 0.11526570532908251
+    }
+  ]
+}

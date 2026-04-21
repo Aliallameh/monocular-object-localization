@@ -1,0 +1,801 @@
+{
+  "video": "input.mp4",
+  "detector_backend": {
+    "backend": "hybrid_classical_cpu",
+    "uses_native_pretrained_class": false,
+    "uses_gpu": false,
+    "proposal_sources": [
+      "blue_hsv_shape",
+      "dark_rect_shape",
+      "edge_shape",
+      "motion_foreground"
+    ],
+    "notes": "CPU-only multi-cue proposal detector. It avoids the false COCO trash-can-class assumption and is paired with temporal association."
+  },
+  "runtime_config": {
+    "detector": {
+      "backend": "hybrid",
+      "device": "auto",
+      "conf": 0.05,
+      "imgsz": 640
+    },
+    "tracker": {
+      "bbox_max_age": 35,
+      "lk_min_points": 8
+    },
+    "kalman": {
+      "enabled": true,
+      "process_var": 3.0,
+      "measurement_var": 0.01
+    },
+    "stress": {
+      "loops": 4,
+      "seed": 20260418
+    }
+  },
+  "frames_processed": 875,
+  "fps_reported": 29.97002997002997,
+  "detector_hit_rate": 1.0,
+  "detector_strong_hit_rate": 1.0,
+  "flow_assisted_frames": 0,
+  "world_gate_rejections": 4634,
+  "tracker_output_rate": 1.0,
+  "occluded_frames": 0,
+  "blurry_frames": 0,
+  "track_state_counts": {
+    "STATIONARY": 145,
+    "CONFIRMED": 730
+  },
+  "detector_source_counts": {
+    "blue_hsv_shape": 875
+  },
+  "mean_processing_ms_per_frame": 32.88230093379804,
+  "p95_processing_ms_per_frame": 34.69774119876092,
+  "max_processing_ms_per_frame": 58.582750003552064,
+  "first_track_stdout_ms_from_python": 73.64691700058756,
+  "waypoints": {
+    "A": {
+      "color": "green",
+      "approx_frame": 45,
+      "world_ground": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.0
+      ],
+      "world_centroid": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.325
+      ]
+    },
+    "B": {
+      "color": "orange",
+      "approx_frame": 195,
+      "world_ground": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.0
+      ],
+      "world_centroid": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.325
+      ]
+    },
+    "C": {
+      "color": "red",
+      "approx_frame": 345,
+      "world_ground": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.0
+      ],
+      "world_centroid": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.325
+      ]
+    }
+  },
+  "stops": [
+    {
+      "name": "A",
+      "approx_frame": 45,
+      "frame_start": 22,
+      "frame_end": 65,
+      "num_frames": 15,
+      "gt_world_ground": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.0
+      ],
+      "gt_world_centroid": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        2.4391882252971624,
+        -0.041223747783183606,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        2.4226600699098606,
+        -0.04148784066890474,
+        0.325
+      ],
+      "error_xy_m": 2.778751846364666,
+      "error_3d_centroid_m": 2.778751846364666,
+      "raw_jitter_std_m": 0.10991723362875404,
+      "filtered_jitter_std_m": 0.1116167498503976
+    },
+    {
+      "name": "B",
+      "approx_frame": 195,
+      "frame_start": 172,
+      "frame_end": 220,
+      "num_frames": 28,
+      "gt_world_ground": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.0
+      ],
+      "gt_world_centroid": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        3.421026981097991,
+        0.9964820570979436,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        3.4280882007885127,
+        0.9976722848493527,
+        0.325
+      ],
+      "error_xy_m": 4.314347030042471,
+      "error_3d_centroid_m": 4.314347030042471,
+      "raw_jitter_std_m": 0.034575658565475474,
+      "filtered_jitter_std_m": 0.03377610325975377
+    },
+    {
+      "name": "C",
+      "approx_frame": 345,
+      "frame_start": 333,
+      "frame_end": 357,
+      "num_frames": 25,
+      "gt_world_ground": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.0
+      ],
+      "gt_world_centroid": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        3.3065587053663914,
+        -0.14875958969227882,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        3.315019261419993,
+        -0.14901773851909964,
+        0.325
+      ],
+      "error_xy_m": 5.657510834266932,
+      "error_3d_centroid_m": 5.657510834266932,
+      "raw_jitter_std_m": 0.11855385815239494,
+      "filtered_jitter_std_m": 0.11526570532908251
+    }
+  ],
+  "metrics": {
+    "waypoint_proxy_residual_xy_m": 4.409931252644764,
+    "waypoint_proxy_residual_3d_m": 4.409931252644764,
+    "waypoint_metric_interpretation": "Weak proxy residual against pixel-projected waypoints; invalid for an independent RMSE contract when QA flags geometry/color mismatch.",
+    "raw_jitter_std_m": 0.08768225011554148,
+    "filtered_jitter_std_m": 0.0868861861464113,
+    "jitter_reduction_pct": 0.9078963736459555,
+    "smoothness": {
+      "raw_frame_step_std_m": 0.029647605336926137,
+      "filtered_frame_step_std_m": 0.01188896751610755,
+      "frame_step_std_reduction_pct": 59.89906307441356,
+      "raw_second_difference_std_m": 0.03575786953660631,
+      "filtered_second_difference_std_m": 0.005579567149488032,
+      "second_difference_std_reduction_pct": 84.396253966484,
+      "raw_median_frame_step_m": 0.012394771778125056,
+      "filtered_median_frame_step_m": 0.011260675065375736
+    }
+  },
+  "strict_stops": [
+    {
+      "name": "A",
+      "approx_frame": 45,
+      "frame_start": 22,
+      "frame_end": 65,
+      "num_frames": 15,
+      "gt_world_ground": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.0
+      ],
+      "gt_world_centroid": [
+        5.201102184745891,
+        -3.3055991699485594e-08,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        2.4391882252971624,
+        -0.041223747783183606,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        2.4226600699098606,
+        -0.04148784066890474,
+        0.325
+      ],
+      "error_xy_m": 2.778751846364666,
+      "error_3d_centroid_m": 2.778751846364666,
+      "raw_jitter_std_m": 0.10991723362875404,
+      "filtered_jitter_std_m": 0.1116167498503976
+    },
+    {
+      "name": "B",
+      "approx_frame": 195,
+      "frame_start": 172,
+      "frame_end": 220,
+      "num_frames": 28,
+      "gt_world_ground": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.0
+      ],
+      "gt_world_centroid": [
+        7.132350593961992,
+        -1.2141211996688075,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        3.421026981097991,
+        0.9964820570979436,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        3.4280882007885127,
+        0.9976722848493527,
+        0.325
+      ],
+      "error_xy_m": 4.314347030042471,
+      "error_3d_centroid_m": 4.314347030042471,
+      "raw_jitter_std_m": 0.034575658565475474,
+      "filtered_jitter_std_m": 0.03377610325975377
+    },
+    {
+      "name": "C",
+      "approx_frame": 345,
+      "frame_start": 333,
+      "frame_end": 357,
+      "num_frames": 25,
+      "gt_world_ground": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.0
+      ],
+      "gt_world_centroid": [
+        8.871528711756712,
+        0.9152339084922867,
+        0.325
+      ],
+      "estimated_raw_centroid": [
+        3.3065587053663914,
+        -0.14875958969227882,
+        0.325
+      ],
+      "estimated_filtered_centroid": [
+        3.315019261419993,
+        -0.14901773851909964,
+        0.325
+      ],
+      "error_xy_m": 5.657510834266932,
+      "error_3d_centroid_m": 5.657510834266932,
+      "raw_jitter_std_m": 0.11855385815239494,
+      "filtered_jitter_std_m": 0.11526570532908251
+    }
+  ],
+  "strict_metrics": {
+    "waypoint_proxy_residual_xy_m": 4.409931252644764,
+    "waypoint_proxy_residual_3d_m": 4.409931252644764,
+    "waypoint_metric_interpretation": "Weak proxy residual against pixel-projected waypoints; invalid for an independent RMSE contract when QA flags geometry/color mismatch.",
+    "raw_jitter_std_m": 0.08768225011554148,
+    "filtered_jitter_std_m": 0.0868861861464113,
+    "jitter_reduction_pct": 0.9078963736459555,
+    "smoothness": {
+      "raw_frame_step_std_m": 0.029647605336926137,
+      "filtered_frame_step_std_m": 0.01188896751610755,
+      "frame_step_std_reduction_pct": 59.89906307441356,
+      "raw_second_difference_std_m": 0.03575786953660631,
+      "filtered_second_difference_std_m": 0.005579567149488032,
+      "second_difference_std_reduction_pct": 84.396253966484,
+      "raw_median_frame_step_m": 0.012394771778125056,
+      "filtered_median_frame_step_m": 0.011260675065375736
+    }
+  },
+  "bbox_evaluation": {
+    "enabled": true,
+    "gt_file": "annotations/bbox_gt.csv",
+    "gt_frames": 61,
+    "gt_visible_frames": 31,
+    "gt_occluded_frames": 30,
+    "occlusion_labels_present": true,
+    "parse_report": {
+      "raw_rows": 62,
+      "usable_rows": 61,
+      "skipped_rows": 1,
+      "invalid_rows": 0,
+      "duplicate_frames_collapsed": 0,
+      "blank_occluded_assumed_visible": 5
+    },
+    "matched_frames": 61,
+    "missing_track_frames": 0,
+    "continuity_rate": 1.0,
+    "mean_iou": 0.7541153046308171,
+    "median_iou": 0.731201434024742,
+    "min_iou": 0.4482766956354729,
+    "iou_over_0_6_rate": 0.8524590163934426,
+    "all_frames": {
+      "gt_frames": 61,
+      "matched_frames": 61,
+      "missing_track_frames": 0,
+      "continuity_rate": 1.0,
+      "mean_iou": 0.7541153046308171,
+      "median_iou": 0.731201434024742,
+      "min_iou": 0.4482766956354729,
+      "iou_over_0_5_rate": 0.9508196721311475,
+      "iou_over_0_6_rate": 0.8524590163934426,
+      "iou_over_0_75_rate": 0.4426229508196721
+    },
+    "visible_frames": {
+      "gt_frames": 31,
+      "matched_frames": 31,
+      "missing_track_frames": 0,
+      "continuity_rate": 1.0,
+      "mean_iou": 0.8169709649810181,
+      "median_iou": 0.8076677326246318,
+      "min_iou": 0.5169258967125755,
+      "iou_over_0_5_rate": 1.0,
+      "iou_over_0_6_rate": 0.967741935483871,
+      "iou_over_0_75_rate": 0.5806451612903226
+    },
+    "occluded_frames": {
+      "gt_frames": 30,
+      "matched_frames": 30,
+      "missing_track_frames": 0,
+      "continuity_rate": 1.0,
+      "mean_iou": 0.6891644556022765,
+      "median_iou": 0.7045572820841751,
+      "min_iou": 0.4482766956354729,
+      "iou_over_0_5_rate": 0.9,
+      "iou_over_0_6_rate": 0.7333333333333333,
+      "iou_over_0_75_rate": 0.3
+    },
+    "detector_source_counts_on_gt": {
+      "blue_hsv_shape": 61
+    },
+    "detector_source_counts_on_gt_occluded": {
+      "blue_hsv_shape": 30
+    },
+    "pred_status_counts_on_gt_occluded": {
+      "detected": 30
+    },
+    "annotation_independence_check": {
+      "enabled": true,
+      "matched_frames": 61,
+      "near_identical_box_rate": 0.14754098360655737,
+      "mean_abs_bbox_delta_px": 19.785738632449362,
+      "max_abs_bbox_delta_px": 61.675904087992265,
+      "near_identical_threshold_px": 0.05,
+      "likely_draft_boxes_not_independent": false,
+      "interpretation": "GT boxes differ from tracker output enough to be treated as independently reviewed annotations."
+    },
+    "worst_iou_frames": [
+      {
+        "frame_id": 782,
+        "iou": 0.4482766956354729,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 736,
+        "iou": 0.4662278914032496,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 805,
+        "iou": 0.4720552041818046,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 804,
+        "iou": 0.5169258967125755,
+        "occluded": false,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 803,
+        "iou": 0.5291322287029072,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 800,
+        "iou": 0.5833048038702577,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 802,
+        "iou": 0.5841816248184538,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 806,
+        "iou": 0.5902527500821757,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 807,
+        "iou": 0.5925349241879901,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      },
+      {
+        "frame_id": 801,
+        "iou": 0.6101849812910003,
+        "occluded": true,
+        "pred_status": "detected",
+        "pred_detector_source": "blue_hsv_shape"
+      }
+    ],
+    "passes_iou_contract_on_supplied_gt": false,
+    "passes_hidden_contract_proxy": false,
+    "passes_occlusion_continuity_on_supplied_gt": true,
+    "interpretation": "Evaluation uses externally supplied reviewed bbox annotations. IoU contract does not pass on supplied GT or GT coverage is too weak. Occlusion continuity passes on supplied occluded GT frames."
+  },
+  "contact_point_evaluation": {
+    "enabled": true,
+    "gt_file": "manual_contact_points.csv",
+    "schema": "manual_floor_contact_points_v1",
+    "parse_report": {
+      "raw_rows": 3,
+      "usable_rows": 3,
+      "skipped_rows": 0,
+      "invalid_rows": 0
+    },
+    "gt_frames": 3,
+    "matched_frames": 3,
+    "missing_track_frames": 0,
+    "occluded_contact_frames": 0,
+    "mean_pixel_error": 44.62084026642359,
+    "max_pixel_error": 67.41654467646596,
+    "mean_ground_xy_error_m": 0.17505129737249384,
+    "max_ground_xy_error_m": 0.379207163667658,
+    "mean_filtered_centroid_xy_error_m": 0.17189683915247897,
+    "max_filtered_centroid_xy_error_m": 0.3865618848856393,
+    "frames": [
+      {
+        "frame_id": 50,
+        "matched": true,
+        "review_status": "ok",
+        "occluded": false,
+        "visibility": 1.0,
+        "manual_contact_px": [
+          922.0,
+          885.0
+        ],
+        "detected_bottom_center_px": [
+          977.0518450952852,
+          879.7893772708089
+        ],
+        "pixel_error_dx_dy": [
+          55.051845095285216,
+          -5.210622729191073
+        ],
+        "pixel_error_norm": 55.29788637571278,
+        "manual_ground_world": [
+          2.43009661104804,
+          0.07434108238476887,
+          0.0
+        ],
+        "detected_ground_world": [
+          2.4515544996851966,
+          -0.033616792486918186,
+          0.0
+        ],
+        "ground_xy_error_m": 0.11006972213817684,
+        "raw_centroid_xy_error_m": 0.11006972213817684,
+        "filtered_centroid_xy_error_m": 0.09519751665300873,
+        "detector_source": "blue_hsv_shape",
+        "track_state": "CONFIRMED",
+        "notes": "Manual floor-contact point supplied by reviewer; validates contact geometry only"
+      },
+      {
+        "frame_id": 200,
+        "matched": true,
+        "review_status": "ok",
+        "occluded": false,
+        "visibility": 1.0,
+        "manual_contact_px": [
+          576.0,
+          694.0
+        ],
+        "detected_bottom_center_px": [
+          586.999819508719,
+          695.8121467338002
+        ],
+        "pixel_error_dx_dy": [
+          10.999819508719042,
+          1.8121467338002049
+        ],
+        "pixel_error_norm": 11.148089747092046,
+        "manual_ground_world": [
+          3.440548774494322,
+          1.031339039728281,
+          0.0
+        ],
+        "detected_ground_world": [
+          3.4286948144257803,
+          0.9974769191127708,
+          0.0
+        ],
+        "ground_xy_error_m": 0.03587700631164672,
+        "raw_centroid_xy_error_m": 0.03587700631164672,
+        "filtered_centroid_xy_error_m": 0.033931115918788855,
+        "detector_source": "blue_hsv_shape",
+        "track_state": "STATIONARY",
+        "notes": "Manual floor-contact point supplied by reviewer; person visible but not blocking the bin"
+      },
+      {
+        "frame_id": 500,
+        "matched": true,
+        "review_status": "ok",
+        "occluded": false,
+        "visibility": 1.0,
+        "manual_contact_px": [
+          462.0,
+          760.0
+        ],
+        "detected_bottom_center_px": [
+          469.60298046283333,
+          826.9864552293649
+        ],
+        "pixel_error_dx_dy": [
+          7.6029804628333295,
+          66.98645522936488
+        ],
+        "pixel_error_norm": 67.41654467646596,
+        "manual_ground_world": [
+          2.9874425204784623,
+          1.2018452875408008,
+          0.0
+        ],
+        "detected_ground_world": [
+          2.634425859509645,
+          1.0633631224245046,
+          0.0
+        ],
+        "ground_xy_error_m": 0.379207163667658,
+        "raw_centroid_xy_error_m": 0.379207163667658,
+        "filtered_centroid_xy_error_m": 0.3865618848856393,
+        "detector_source": "blue_hsv_shape",
+        "track_state": "CONFIRMED",
+        "notes": "Manual floor-contact point supplied by reviewer; validates bottom-contact estimate"
+      }
+    ],
+    "interpretation": "Manual floor-contact GT is used only for validation. It is not used to calibrate, correct, or generate output coordinates."
+  },
+  "bbox_annotation_template": "results/bbox_annotation_template.csv",
+  "asset_alignment_diagnostics": {
+    "enabled": true,
+    "controls": [
+      "A",
+      "B",
+      "C"
+    ],
+    "affine_in_sample_residual_m": 6.027749212234753e-15,
+    "similarity_in_sample_residual_m": 1.7225523002936263,
+    "affine_matrix_xy": [
+      [
+        3.884256505338818,
+        0.7924534353841988
+      ],
+      [
+        -1.8996998636908022,
+        -1.9350974826489218
+      ],
+      [
+        -4.287945397289632,
+        -2.0001283442631217
+      ]
+    ],
+    "similarity": {
+      "scale": 0.29496698428501683,
+      "rotation": [
+        [
+          0.977551867835508,
+          0.2106949114034552
+        ],
+        [
+          -0.2106949114034552,
+          0.9775518678355081
+        ]
+      ],
+      "translation": [
+        6.170636531795147,
+        0.012668092779925297
+      ]
+    },
+    "affine_leave_one_out_errors_m": {
+      "0": null,
+      "1": null,
+      "2": null
+    },
+    "similarity_leave_one_out_errors_m": {
+      "0": 5.323111272501716,
+      "1": 6.824055945420604,
+      "2": 4.241922348013616
+    },
+    "interpretation": "This is not a calibration path and is not applied to output coordinates. With only three controls, a full affine fit can interpolate exactly; leave-one-out errors are the useful warning about asset consistency."
+  },
+  "robustness_stress_test": {
+    "enabled": true,
+    "name": "mid_stop_dropout",
+    "scenario": "detections_suppressed_and_frames_blurred",
+    "frame_start": 150,
+    "frame_end": 230,
+    "dropout_start": 185,
+    "dropout_end": 210,
+    "frames_processed": 81,
+    "tracker_output_rate": 1.0,
+    "dropout_frames": 26,
+    "dropout_tracked_frames": 26,
+    "dropout_continuity_rate": 1.0,
+    "flow_assisted_frames": 26,
+    "status_counts": {
+      "detected": 55,
+      "occluded": 26
+    },
+    "dropout_mean_iou_vs_baseline": 0.7657327257527626,
+    "dropout_min_iou_vs_baseline": 0.5998401770869299,
+    "dropout_mean_center_error_px": 19.847781741082066,
+    "dropout_max_center_error_px": 41.50639331953796
+  },
+  "occlusion_stress_suite": {
+    "enabled": true,
+    "scenario_count": 3,
+    "reports": [
+      {
+        "enabled": true,
+        "name": "mid_stop_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 150,
+        "frame_end": 230,
+        "dropout_start": 185,
+        "dropout_end": 210,
+        "frames_processed": 81,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 26,
+        "dropout_tracked_frames": 26,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 26,
+        "status_counts": {
+          "detected": 55,
+          "occluded": 26
+        },
+        "dropout_mean_iou_vs_baseline": 0.7657327257527626,
+        "dropout_min_iou_vs_baseline": 0.5998401770869299,
+        "dropout_mean_center_error_px": 19.847781741082066,
+        "dropout_max_center_error_px": 41.50639331953796
+      },
+      {
+        "enabled": true,
+        "name": "moving_crossing_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 412,
+        "frame_end": 470,
+        "dropout_start": 432,
+        "dropout_end": 445,
+        "frames_processed": 59,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 14,
+        "dropout_tracked_frames": 14,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 14,
+        "status_counts": {
+          "detected": 45,
+          "occluded": 14
+        },
+        "dropout_mean_iou_vs_baseline": 0.6750497342238144,
+        "dropout_min_iou_vs_baseline": 0.5775550860943924,
+        "dropout_mean_center_error_px": 64.28737950247263,
+        "dropout_max_center_error_px": 93.59573842527873
+      },
+      {
+        "enabled": true,
+        "name": "late_low_confidence_dropout",
+        "scenario": "detections_suppressed_and_frames_blurred",
+        "frame_start": 728,
+        "frame_end": 787,
+        "dropout_start": 748,
+        "dropout_end": 762,
+        "frames_processed": 60,
+        "tracker_output_rate": 1.0,
+        "dropout_frames": 15,
+        "dropout_tracked_frames": 15,
+        "dropout_continuity_rate": 1.0,
+        "flow_assisted_frames": 15,
+        "status_counts": {
+          "detected": 45,
+          "occluded": 15
+        },
+        "dropout_mean_iou_vs_baseline": 0.9092583923455211,
+        "dropout_min_iou_vs_baseline": 0.8897370929055687,
+        "dropout_mean_center_error_px": 12.955999537982128,
+        "dropout_max_center_error_px": 17.389131437187928
+      }
+    ],
+    "min_dropout_continuity_rate": 1.0,
+    "min_dropout_iou_vs_baseline": 0.5775550860943924,
+    "max_dropout_center_error_px": 93.59573842527873,
+    "interpretation": "Detections are artificially suppressed and blurred; continuity is compared against the normal pipeline output, not hidden ground truth."
+  },
+  "main_run_occlusion_interpretation": "The delivered run contains no detector dropouts/occluded rows; occlusion behavior is exercised only by the forced-dropout stress suite.",
+  "observer": {
+    "enabled": true,
+    "video": "results/observer_overlay.mp4",
+    "events_json": "results/observer_events.json",
+    "frames_rendered": 875,
+    "state_counts": {
+      "STATIONARY": 31,
+      "SETTLING": 140,
+      "MOVING": 640,
+      "CHANGING_DIRECTION": 64
+    }
+  },
+  "qa_artifacts": {
+    "diagnostics_csv": "results/diagnostics.csv",
+    "qa_report_json": "results/qa_report.json",
+    "robustness_report_json": "results/robustness_report.json",
+    "occlusion_stress_suite_json": "results/occlusion_stress_suite.json",
+    "bbox_eval_json": "results/bbox_eval.json",
+    "contact_point_eval_json": "results/contact_point_eval.json",
+    "asset_alignment_report_json": "results/asset_alignment_report.json",
+    "observer_events_json": "results/observer_events.json",
+    "observer_overlay_video": "results/observer_overlay.mp4",
+    "bbox_annotation_template_csv": "results/bbox_annotation_template.csv",
+    "annotated_frames": [
+      "results/qa_frames/waypoint_A_frame_0045.jpg",
+      "results/qa_frames/waypoint_B_frame_0195.jpg",
+      "results/qa_frames/waypoint_C_frame_0345.jpg",
+      "results/qa_frames/largest_height_ground_delta_frame_0529.jpg"
+    ],
+    "strict_trajectory": null,
+    "raw_vs_filtered_trajectory": "trajectory_raw_vs_filtered.png",
+    "run_manifest_json": "results/run_manifest.json"
+  }
+}

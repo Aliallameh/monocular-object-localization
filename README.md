@@ -1,5 +1,7 @@
 # Monocular Garbage-Bin Tracking and Localization
 
+Author: Ali Allameh
+
 Real-time fixed-camera pipeline for detecting a standard outdoor garbage bin,
 estimating its camera/world-frame centroid, and streaming frame-by-frame
 coordinates to stdout.
@@ -64,8 +66,8 @@ Regenerated delivered-run evidence:
 | Detector source mix | `blue_hsv_shape`: 875 / 875 |
 | Real flow-assisted frames | 0 |
 | Real occluded rows | 0 |
-| Mean frame time | 33.5 ms |
-| p95 frame time | 35.2 ms |
+| Mean frame time | 32.9 ms |
+| p95 frame time | 34.7 ms |
 
 This proves the detector found the bin in this sequence. It does not prove
 COCO-class generalization, cross-weather generalization, or hidden-GT IoU.
@@ -142,6 +144,29 @@ GT results are written to `results/bbox_eval.json` and embedded in
 If `annotation_independence_check.likely_draft_boxes_not_independent=true`, the
 IoU numbers are not valid independent evidence even if they are numerically
 high. Strict validation rejects that case.
+
+Manual GT result from the final reviewed CSV (`annotations/bbox_gt.csv`, kept
+out of git with the private annotation workspace):
+
+| Metric | Value |
+|---|---:|
+| Reviewed GT frames | 61 |
+| Visible GT frames | 31 |
+| Occluded / handled GT frames | 30 |
+| Continuity on reviewed GT | 100.0% |
+| Overall IoU > 0.6 | 85.2% |
+| Visible-frame IoU > 0.6 | 96.8% |
+| Occluded/handled-frame IoU > 0.6 | 73.3% |
+| Mean IoU | 0.754 |
+| Near-identical-to-draft rate | 14.8% |
+
+The reviewed boxes are independent enough for local diagnostics
+(`likely_draft_boxes_not_independent=false`), but the overall IoU contract does
+not pass on this manual set. The miss is concentrated in handled/partially
+occluded frames near the end of the video where the blue-mask detector tends to
+include extra floor reflection or stale lower-bin extent. This is reported as a
+detector limitation rather than hidden by changing the GT or applying a
+correction.
 
 ### Manual Floor-Contact Validation
 
@@ -305,9 +330,11 @@ Delivered-run evidence:
 | Real LK-flow-assisted rows | 0 |
 | Detector source | `blue_hsv_shape` for all 875 frames |
 
-So the delivered output does not demonstrate a real person-occlusion event.
-Continuity is only exercised by the forced detector-dropout stress suite in
-`results/occlusion_stress_suite.json`.
+The live output has no detector-dropout rows because the bin remains visible to
+the blue-mask detector. The separate reviewed bbox GT marks 30 handled/partly
+occluded frames; the tracker produces a continuous estimate on all of them, but
+box IoU drops on those frames. Short detector dropouts are additionally tested
+with the forced-dropout stress suite in `results/occlusion_stress_suite.json`.
 
 Forced-dropout stress evidence, explicitly artificial:
 
@@ -427,11 +454,13 @@ Latency budget target on Orin NX:
 
 - The detector is scene-specific. It works on this clip; it is not a general
   outdoor trash-bin detector without additional data.
-- No hidden bbox GT is available locally, so IoU > 0.6 cannot be claimed unless
-  an external annotation file is supplied.
+- On the final manual bbox GT set, visible-frame IoU passes the 0.6 threshold on
+  96.8% of reviewed visible frames, but overall IoU > 0.6 is 85.2% because the
+  handled/partially occluded frames expose bbox-size errors.
 - No independent world-coordinate GT exists. Kalman analysis is smoothing and
   jitter analysis only.
-- The delivered sequence has no real occlusion rows. Occlusion behavior is
-  stress-tested with forced detector dropout only.
+- The delivered sequence has no detector-dropout rows. Human-reviewed frames do
+  include handled/partly occluded cases, where continuity is good and bbox
+  accuracy is weaker.
 - `z_world` is imposed by the ground-plane model as `H/2 = 0.325 m`; sloped
   terrain or bottom-edge truncation will bias the estimate.

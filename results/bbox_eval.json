@@ -1,0 +1,154 @@
+{
+  "enabled": true,
+  "gt_file": "annotations/bbox_gt.csv",
+  "gt_frames": 61,
+  "gt_visible_frames": 31,
+  "gt_occluded_frames": 30,
+  "occlusion_labels_present": true,
+  "parse_report": {
+    "raw_rows": 62,
+    "usable_rows": 61,
+    "skipped_rows": 1,
+    "invalid_rows": 0,
+    "duplicate_frames_collapsed": 0,
+    "blank_occluded_assumed_visible": 5
+  },
+  "matched_frames": 61,
+  "missing_track_frames": 0,
+  "continuity_rate": 1.0,
+  "mean_iou": 0.7541153046308171,
+  "median_iou": 0.731201434024742,
+  "min_iou": 0.4482766956354729,
+  "iou_over_0_6_rate": 0.8524590163934426,
+  "all_frames": {
+    "gt_frames": 61,
+    "matched_frames": 61,
+    "missing_track_frames": 0,
+    "continuity_rate": 1.0,
+    "mean_iou": 0.7541153046308171,
+    "median_iou": 0.731201434024742,
+    "min_iou": 0.4482766956354729,
+    "iou_over_0_5_rate": 0.9508196721311475,
+    "iou_over_0_6_rate": 0.8524590163934426,
+    "iou_over_0_75_rate": 0.4426229508196721
+  },
+  "visible_frames": {
+    "gt_frames": 31,
+    "matched_frames": 31,
+    "missing_track_frames": 0,
+    "continuity_rate": 1.0,
+    "mean_iou": 0.8169709649810181,
+    "median_iou": 0.8076677326246318,
+    "min_iou": 0.5169258967125755,
+    "iou_over_0_5_rate": 1.0,
+    "iou_over_0_6_rate": 0.967741935483871,
+    "iou_over_0_75_rate": 0.5806451612903226
+  },
+  "occluded_frames": {
+    "gt_frames": 30,
+    "matched_frames": 30,
+    "missing_track_frames": 0,
+    "continuity_rate": 1.0,
+    "mean_iou": 0.6891644556022765,
+    "median_iou": 0.7045572820841751,
+    "min_iou": 0.4482766956354729,
+    "iou_over_0_5_rate": 0.9,
+    "iou_over_0_6_rate": 0.7333333333333333,
+    "iou_over_0_75_rate": 0.3
+  },
+  "detector_source_counts_on_gt": {
+    "blue_hsv_shape": 61
+  },
+  "detector_source_counts_on_gt_occluded": {
+    "blue_hsv_shape": 30
+  },
+  "pred_status_counts_on_gt_occluded": {
+    "detected": 30
+  },
+  "annotation_independence_check": {
+    "enabled": true,
+    "matched_frames": 61,
+    "near_identical_box_rate": 0.14754098360655737,
+    "mean_abs_bbox_delta_px": 19.785738632449362,
+    "max_abs_bbox_delta_px": 61.675904087992265,
+    "near_identical_threshold_px": 0.05,
+    "likely_draft_boxes_not_independent": false,
+    "interpretation": "GT boxes differ from tracker output enough to be treated as independently reviewed annotations."
+  },
+  "worst_iou_frames": [
+    {
+      "frame_id": 782,
+      "iou": 0.4482766956354729,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 736,
+      "iou": 0.4662278914032496,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 805,
+      "iou": 0.4720552041818046,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 804,
+      "iou": 0.5169258967125755,
+      "occluded": false,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 803,
+      "iou": 0.5291322287029072,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 800,
+      "iou": 0.5833048038702577,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 802,
+      "iou": 0.5841816248184538,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 806,
+      "iou": 0.5902527500821757,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 807,
+      "iou": 0.5925349241879901,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    },
+    {
+      "frame_id": 801,
+      "iou": 0.6101849812910003,
+      "occluded": true,
+      "pred_status": "detected",
+      "pred_detector_source": "blue_hsv_shape"
+    }
+  ],
+  "passes_iou_contract_on_supplied_gt": false,
+  "passes_hidden_contract_proxy": false,
+  "passes_occlusion_continuity_on_supplied_gt": true,
+  "interpretation": "Evaluation uses externally supplied reviewed bbox annotations. IoU contract does not pass on supplied GT or GT coverage is too weak. Occlusion continuity passes on supplied occluded GT frames."
+}
