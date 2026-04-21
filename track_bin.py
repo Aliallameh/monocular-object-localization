@@ -19,6 +19,7 @@ from detector import Detection, detect_compute, load_detector
 from eval_utils import (
     asset_alignment_diagnostics,
     evaluate_bbox_annotations,
+    evaluate_contact_points,
     trajectory_smoothness_metrics,
     write_annotation_template,
 )
@@ -81,7 +82,7 @@ def _summary_box(summary: dict, metrics: dict, strict_metrics: dict) -> None:
     trk      = summary["tracker_output_rate"] * 100
     mean     = summary["mean_processing_ms_per_frame"]
     p95      = summary["p95_processing_ms_per_frame"]
-    rmse     = metrics.get("rmse_xy_m", float("nan"))
+    proxy    = metrics.get("waypoint_proxy_residual_xy_m", float("nan"))
     occ      = summary["occluded_frames"]
     step_red = metrics.get("smoothness", {}).get("frame_step_std_reduction_pct", float("nan"))
 
@@ -97,7 +98,7 @@ def _summary_box(summary: dict, metrics: dict, strict_metrics: dict) -> None:
         row("Mean latency",        f"{mean:.1f} ms / frame"),
         row("p95 latency",         f"{p95:.1f} ms / frame"),
         f"├{sep}┤",
-        row("Waypoint RMSE XY",    f"{rmse:.3f} m  (residual — see README)"),
+        row("Waypoint proxy resid", f"{proxy:.3f} m  (not independent GT)"),
         row("Kalman smoothing",    f"{step_red:.1f}% frame-step σ reduction" if not __import__('math').isnan(step_red) else "N/A (Kalman off)"),
         f"└{sep}┘",
     ]
@@ -124,6 +125,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--imgsz", type=int, default=None, help="Learned-detector inference image size")
     parser.add_argument("--no-kalman", action="store_true", help="Disable world-position Kalman smoothing")
     parser.add_argument("--bbox-gt", default="", help="Optional JSON/CSV bbox annotations for local IoU evaluation")
+    parser.add_argument("--contact-gt", default="", help="Optional manual floor-contact point CSV/JSON validation")
     parser.add_argument(
         "--observer-video",
         default="results/observer_overlay.mp4",
@@ -477,8 +479,12 @@ def main() -> None:
                     "strict_raw_world": strict_raw_xyz_world.tolist(),
                     "strict_filtered_world": strict_filtered_xyz_world.tolist(),
                     "height_cam": loc.xyz_cam_height.tolist(),
-                    "ground_world": loc.xyz_world_ground.tolist(),
+                    "height_world": loc.xyz_world_height.tolist(),
+                    "ground_contact_cam": loc.xyz_cam_ground_model.tolist(),
+                    "ground_contact_world": loc.xyz_world_ground_model.tolist(),
+                    "ground_world": loc.xyz_world_ground_contact.tolist(),
                     "height_depth_delta_m": loc.depth_delta_m,
+                    "height_ground_world_xy_delta_m": loc.world_xy_delta_m,
                     "fallback": bool(loc.used_fallback),
                     "blur_laplacian_var": quality.blur_laplacian_var,
                     "brightness_mean": quality.brightness_mean,
@@ -505,6 +511,7 @@ def main() -> None:
     sigma_arr = np.vstack(sigma_world) if sigma_world else None
 
     stops, metrics = estimate_stops(frame_arr, raw_arr, filt_arr, projected_waypoints, fps)
+    _add_proxy_metric_aliases(metrics)
     smoothness_metrics = trajectory_smoothness_metrics(raw_arr, filt_arr)
     metrics["smoothness"] = smoothness_metrics
     save_trajectory_plot("trajectory.png", frame_arr, raw_arr, filt_arr, projected_waypoints, stops, metrics)
@@ -532,6 +539,8 @@ def main() -> None:
     occlusion_stress_suite = run_dropout_stress_suite(args.video, detector, rows)
     bbox_gt_path = args.bbox_gt or None
     bbox_eval_report = evaluate_bbox_annotations(bbox_gt_path, rows)
+    contact_gt_path = args.contact_gt or None
+    contact_eval_report = evaluate_contact_points(contact_gt_path, rows, camera)
     annotation_template_path = write_annotation_template("results/bbox_annotation_template.csv", rows)
     asset_alignment_report = asset_alignment_diagnostics(stops)
     detector_metadata = detector.metadata() if hasattr(detector, "metadata") else {"backend": detector.__class__.__name__}
@@ -549,6 +558,7 @@ def main() -> None:
         "occluded_frames": int(occluded_frames),
         "blurry_frames": int(blurry_frames),
         "track_state_counts": dict(Counter(frame_states)),
+        "detector_source_counts": dict(Counter(row["detector_source"] for row in rows)),
         "mean_processing_ms_per_frame": float(np.mean(elapsed)) if len(elapsed) else float("nan"),
         "p95_processing_ms_per_frame": float(np.percentile(elapsed, 95)) if len(elapsed) else float("nan"),
         "max_processing_ms_per_frame": float(np.max(elapsed)) if len(elapsed) else float("nan"),
@@ -569,10 +579,15 @@ def main() -> None:
         "strict_stops": strict_stops,
         "strict_metrics": strict_metrics,
         "bbox_evaluation": bbox_eval_report,
+        "contact_point_evaluation": contact_eval_report,
         "bbox_annotation_template": annotation_template_path,
         "asset_alignment_diagnostics": asset_alignment_report,
         "robustness_stress_test": robustness_report,
         "occlusion_stress_suite": occlusion_stress_suite,
+        "main_run_occlusion_interpretation": (
+            "The delivered run contains no detector dropouts/occluded rows; "
+            "occlusion behavior is exercised only by the forced-dropout stress suite."
+        ),
         "observer": (
             {
                 "enabled": True,
@@ -592,6 +607,7 @@ def main() -> None:
     robustness_path = "results/robustness_report.json"
     occlusion_suite_path = "results/occlusion_stress_suite.json"
     bbox_eval_path = "results/bbox_eval.json"
+    contact_eval_path = "results/contact_point_eval.json"
     asset_alignment_path = "results/asset_alignment_report.json"
     observer_json_path = str(args.observer_json) if observer_report is not None else None
     observer_video_path = str(args.observer_video) if observer_report is not None else None
@@ -600,6 +616,7 @@ def main() -> None:
     write_json(robustness_path, robustness_report)
     write_json(occlusion_suite_path, occlusion_stress_suite)
     write_json(bbox_eval_path, bbox_eval_report)
+    write_json(contact_eval_path, contact_eval_report)
     write_json(asset_alignment_path, asset_alignment_report)
     try:
         Path("results/scene_control_report.json").unlink()
@@ -623,6 +640,7 @@ def main() -> None:
         "robustness_report_json": robustness_path,
         "occlusion_stress_suite_json": occlusion_suite_path,
         "bbox_eval_json": bbox_eval_path,
+        "contact_point_eval_json": contact_eval_path,
         "asset_alignment_report_json": asset_alignment_path,
         "observer_events_json": observer_json_path,
         "observer_overlay_video": observer_video_path,
@@ -663,6 +681,15 @@ def _measurement_var_for_track(track: Any) -> float:
     if source.startswith("yolo_world"):
         return 0.010 + 0.030 * (1.0 - conf) ** 2
     return 0.008 + 0.055 * (1.0 - conf) ** 2
+
+
+def _add_proxy_metric_aliases(metrics: Dict[str, Any]) -> None:
+    """Ensure waypoint residuals are labeled as proxy metrics only."""
+
+    metrics["waypoint_metric_interpretation"] = (
+        "Weak proxy residual against pixel-projected waypoints; invalid for "
+        "an independent RMSE contract when QA flags geometry/color mismatch."
+    )
 
 
 def _candidate_measurement_var(det: Detection) -> float:

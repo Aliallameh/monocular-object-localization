@@ -1,13 +1,15 @@
 """
-Localization confidence interval estimation.
+Localization sensitivity analysis.
 
-Purpose: Decompose the 1.004 m RMSE into constituent error sources:
+Purpose: decompose plausible error sources without pretending the clip contains
+surveyed world-coordinate ground truth:
   1. Bounding box uncertainty (width/height noise)
   2. Calibration uncertainty (K, tilt, height precision)
   3. Centroid approximation (bin is 3D; bottom-center pixel ≠ floor contact)
   4. Distance estimation model error
 
-Then estimate confidence band: if each source is σ, total is √(σ1² + σ2² + ...).
+Then estimate a heuristic uncertainty band: if each source is σ, total is
+√(σ1² + σ2² + ...). This is not validated RMSE.
 """
 
 from __future__ import annotations
@@ -70,7 +72,7 @@ def estimate_bbox_uncertainty(calib_data: Dict[str, Any], sample_frame_path: str
 def estimate_calibration_uncertainty(calib_data: Dict[str, Any]) -> Dict[str, float]:
     """Estimate sensitivity of localization to calibration error.
 
-    Perturb K, tilt, height; measure RMSE change.
+    Perturb K, tilt, height; measure position sensitivity.
     """
 
     camera = CameraGeometry.from_json_dict(calib_data)
@@ -123,7 +125,7 @@ def estimate_calibration_uncertainty(calib_data: Dict[str, Any]) -> Dict[str, fl
 
 
 def localization_confidence_analysis(calib_path: str = "calib.json") -> Dict[str, Any]:
-    """Estimate end-to-end localization confidence interval."""
+    """Estimate heuristic localization sensitivity; no real-world GT is used."""
 
     calib_data = json.loads(Path(calib_path).read_text())
 
@@ -141,7 +143,8 @@ def localization_confidence_analysis(calib_path: str = "calib.json") -> Dict[str
     )
 
     result = {
-        "nominal_rmse_from_waypoints_m": 1.004,  # Measured in results/summary.json
+        "method": "heuristic_sensitivity_budget_not_accuracy_validation",
+        "gt_status": "no_independent_world_coordinate_ground_truth_available",
         "error_decomposition": {
             "bbox_uncertainty": bbox_errors,
             "calibration_uncertainty": calib_errors,
@@ -154,9 +157,7 @@ def localization_confidence_analysis(calib_path: str = "calib.json") -> Dict[str
                 f"Estimated localization σ = {total_sigma_m:.3f} m. "
                 f"68% confidence: ±{total_sigma_m:.3f} m. "
                 f"95% confidence: ±{2*total_sigma_m:.3f} m. "
-                f"Measured RMSE ({1.004:.3f} m) is larger, suggesting either "
-                f"(1) our error model is underestimating, or (2) additional sources like "
-                f"centroid approximation (bin != point), dynamic motion, or detector bias."
+                "This is a heuristic model only, not measured accuracy."
             ),
         },
         "next_steps": [
@@ -167,7 +168,7 @@ def localization_confidence_analysis(calib_path: str = "calib.json") -> Dict[str
         ],
     }
 
-    output_path = "results/localization_error_budget.json"
+    output_path = "results/localization_sensitivity.json"
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(result, f, indent=2)

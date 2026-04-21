@@ -44,7 +44,6 @@ def build_run_manifest(
             "output_csv": file_record(output_path),
             "trajectory_png": file_record("trajectory.png"),
             "trajectory_raw_vs_filtered_png": file_record("trajectory_raw_vs_filtered.png"),
-            "trajectory_strict_png": file_record("trajectory_strict.png"),
             "observer_overlay_video": file_record(summary.get("observer", {}).get("video", "results/observer_overlay.mp4")),
             "observer_events_json": file_record(summary.get("observer", {}).get("events_json", "results/observer_events.json")),
             "summary_json": file_record("results/summary.json"),
@@ -55,8 +54,7 @@ def build_run_manifest(
             "tracker_output_rate": summary.get("tracker_output_rate"),
             "occluded_frames": summary.get("occluded_frames"),
             "p95_processing_ms_per_frame": summary.get("p95_processing_ms_per_frame"),
-            "rmse_xy_m": summary.get("metrics", {}).get("rmse_xy_m"),
-            "strict_rmse_xy_m": summary.get("strict_metrics", {}).get("rmse_xy_m"),
+            "waypoint_proxy_residual_xy_m": summary.get("metrics", {}).get("waypoint_proxy_residual_xy_m"),
         },
     }
 
@@ -97,10 +95,8 @@ def git_info() -> Dict[str, Any]:
         "results/",
         "trajectory.png",
         "trajectory_raw_vs_filtered.png",
-        "trajectory_strict.png",
         "trajectory_stress.png",
         "trajectory_stress_raw_vs_filtered.png",
-        "trajectory_stress_strict.png",
         "trajectory_waypoint_calibrated.png",
     )
     code_dirty_files = [
@@ -116,7 +112,7 @@ def git_info() -> Dict[str, Any]:
         "remote": run_git(["remote", "get-url", "origin"]),
         "note": (
             "code_commit_at_run is the source commit used to generate the artifacts. "
-            "The artifact commit itself can be later because generated outputs are committed after the run."
+            "Generated artifacts are reproducible outputs and may be committed after the run."
         ),
     }
 

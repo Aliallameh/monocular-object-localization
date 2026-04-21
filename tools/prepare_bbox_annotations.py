@@ -33,6 +33,11 @@ def parse_args() -> argparse.Namespace:
         default="45,195,345",
         help="Comma-separated must-include frame IDs such as waypoint/occlusion frames",
     )
+    parser.add_argument(
+        "--include-ranges",
+        default="",
+        help="Comma-separated inclusive frame ranges, e.g. 420:470,610:650, for real occlusion review",
+    )
     return parser.parse_args()
 
 
@@ -45,7 +50,12 @@ def main() -> None:
     rows = read_tracks(args.tracks)
     if not rows:
         raise RuntimeError(f"No tracked bbox rows found in {args.tracks}")
-    sample_ids = choose_samples(rows, args.samples, parse_frame_list(args.include_frames))
+    sample_ids = choose_samples(
+        rows,
+        args.samples,
+        parse_frame_list(args.include_frames),
+        parse_frame_ranges(args.include_ranges),
+    )
 
     cap = cv2.VideoCapture(args.video)
     if not cap.isOpened():
@@ -74,6 +84,9 @@ def main() -> None:
                 "x2": f"{x2:.2f}",
                 "y2": f"{y2:.2f}",
                 "review_status": "draft",
+                "occluded": "",
+                "visibility": "",
+                "bbox_type": "amodal_full_bin",
                 "notes": "",
             }
         )
@@ -107,7 +120,12 @@ def read_tracks(path: str) -> Dict[int, Dict[str, str]]:
     return rows
 
 
-def choose_samples(rows: Dict[int, Dict[str, str]], samples: int, include_frames: List[int]) -> List[int]:
+def choose_samples(
+    rows: Dict[int, Dict[str, str]],
+    samples: int,
+    include_frames: List[int],
+    include_ranges: List[tuple[int, int]],
+) -> List[int]:
     frame_ids = np.asarray(sorted(rows), dtype=int)
     if len(frame_ids) == 0:
         return []
@@ -137,6 +155,8 @@ def choose_samples(rows: Dict[int, Dict[str, str]], samples: int, include_frames
     hard.sort(reverse=True)
     selected.update(frame_id for _, frame_id in hard[: max(10, samples // 3)])
     selected.update(frame_id for frame_id in include_frames if frame_id in rows)
+    for start, end in include_ranges:
+        selected.update(frame_id for frame_id in range(start, end + 1) if frame_id in rows)
     return sorted(selected)
 
 
@@ -147,6 +167,24 @@ def parse_frame_list(value: str) -> List[int]:
         if not part:
             continue
         out.append(int(part))
+    return out
+
+
+def parse_frame_ranges(value: str) -> List[tuple[int, int]]:
+    out: List[tuple[int, int]] = []
+    for part in value.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if ":" not in part:
+            frame = int(part)
+            out.append((frame, frame))
+            continue
+        a, b = part.split(":", 1)
+        start, end = int(a), int(b)
+        if end < start:
+            start, end = end, start
+        out.append((start, end))
     return out
 
 
@@ -163,7 +201,20 @@ def write_template(path: Path, rows: List[Dict[str, object]]) -> None:
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
-            fieldnames=["frame_id", "image", "draft_image", "x1", "y1", "x2", "y2", "review_status", "notes"],
+            fieldnames=[
+                "frame_id",
+                "image",
+                "draft_image",
+                "x1",
+                "y1",
+                "x2",
+                "y2",
+                "review_status",
+                "occluded",
+                "visibility",
+                "bbox_type",
+                "notes",
+            ],
         )
         writer.writeheader()
         writer.writerows(rows)
@@ -179,9 +230,10 @@ def write_manifest(path: Path, args: argparse.Namespace, rows: List[Dict[str, ob
                 "html_tool": "bbox_annotator.html",
                 "frames": len(rows),
                 "instructions": (
-                    "Correct x1,y1,x2,y2 around the visible object extent. "
-                    "Set review_status=ok for usable GT, skip for frames that are too ambiguous."
-                ),
+                "Correct x1,y1,x2,y2 around the amodal/full bin extent when inferable. "
+                "For real occlusion evidence, set occluded=1 and visibility to an estimated fraction. "
+                "Set review_status=ok for usable GT, skip for frames that are too ambiguous."
+            ),
             },
             indent=2,
         ),
@@ -202,6 +254,9 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
             <label>x2 <input value="{row['x2']}" data-field="x2"></label>
             <label>y2 <input value="{row['y2']}" data-field="y2"></label>
             <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
             <label>notes <input value="" data-field="notes"></label>
           </div>
         </section>
@@ -224,7 +279,7 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
 </head>
 <body>
   <h1>BBox Annotation Review</h1>
-  <p>Correct draft boxes, mark usable rows as <strong>ok</strong>, then download CSV and run with <code>--bbox-gt</code>.</p>
+  <p>Correct draft boxes, mark usable rows as <strong>ok</strong>, mark real occlusion rows with <strong>occluded=1</strong>, then download CSV and run with <code>--bbox-gt</code>. For continuity evidence, use amodal/full-bin boxes when the bin extent is inferable; skip fully ambiguous frames.</p>
   <button onclick="downloadCsv()">Download corrected CSV</button>
   {rows_html}
   <script>
@@ -238,7 +293,7 @@ def write_html(path: Path, rows: List[Dict[str, object]]) -> None:
       }});
     }}
     function downloadCsv() {{
-      const cols = ['frame_id','image','draft_image','x1','y1','x2','y2','review_status','notes'];
+      const cols = ['frame_id','image','draft_image','x1','y1','x2','y2','review_status','occluded','visibility','bbox_type','notes'];
       const lines = [cols.join(',')];
       for (const row of collectRows()) {{
         lines.push(cols.map(c => `"${{String(row[c] ?? '').replaceAll('"', '""')}}"`).join(','));

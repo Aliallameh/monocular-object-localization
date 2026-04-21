@@ -15,7 +15,7 @@ from typing import Any, Dict, Iterable, List
 import cv2
 import numpy as np
 
-from localizer import BIN_HEIGHT_M, CameraGeometry
+from localizer import BIN_HEIGHT_M, CameraGeometry, synthetic_geometry_validation
 
 
 REQUIRED_OUTPUT_COLUMNS = [
@@ -65,9 +65,18 @@ def write_diagnostics_csv(path: str | Path, rows: Iterable[Dict[str, Any]]) -> N
         "height_x_cam",
         "height_y_cam",
         "height_z_cam",
-        "ground_x_world",
-        "ground_y_world",
-        "ground_z_world",
+        "height_x_world",
+        "height_y_world",
+        "height_z_world",
+        "ground_model_centroid_x_cam",
+        "ground_model_centroid_y_cam",
+        "ground_model_centroid_z_cam",
+        "ground_model_centroid_x_world",
+        "ground_model_centroid_y_world",
+        "ground_model_centroid_z_world",
+        "ground_contact_x_world",
+        "ground_contact_y_world",
+        "ground_contact_z_world",
         "strict_raw_x_world",
         "strict_raw_y_world",
         "strict_raw_z_world",
@@ -75,6 +84,7 @@ def write_diagnostics_csv(path: str | Path, rows: Iterable[Dict[str, Any]]) -> N
         "strict_filtered_y_world",
         "strict_filtered_z_world",
         "height_ground_depth_delta_m",
+        "height_ground_world_xy_delta_m",
         "used_height_fallback",
         "blur_laplacian_var",
         "brightness_mean",
@@ -96,6 +106,9 @@ def write_diagnostics_csv(path: str | Path, rows: Iterable[Dict[str, Any]]) -> N
             strict_raw_world = np.asarray(row.get("strict_raw_world", row["raw_world"]), dtype=np.float64)
             strict_filt_world = np.asarray(row.get("strict_filtered_world", row["filtered_world"]), dtype=np.float64)
             height_cam = np.asarray(row["height_cam"], dtype=np.float64)
+            height_world = np.asarray(row["height_world"], dtype=np.float64)
+            ground_contact_cam = np.asarray(row["ground_contact_cam"], dtype=np.float64)
+            ground_contact_world = np.asarray(row["ground_contact_world"], dtype=np.float64)
             ground_world = np.asarray(row["ground_world"], dtype=np.float64)
             writer.writerow(
                 {
@@ -125,9 +138,18 @@ def write_diagnostics_csv(path: str | Path, rows: Iterable[Dict[str, Any]]) -> N
                     "height_x_cam": f"{height_cam[0]:.4f}",
                     "height_y_cam": f"{height_cam[1]:.4f}",
                     "height_z_cam": f"{height_cam[2]:.4f}",
-                    "ground_x_world": f"{ground_world[0]:.4f}",
-                    "ground_y_world": f"{ground_world[1]:.4f}",
-                    "ground_z_world": f"{ground_world[2]:.4f}",
+                    "height_x_world": f"{height_world[0]:.4f}",
+                    "height_y_world": f"{height_world[1]:.4f}",
+                    "height_z_world": f"{height_world[2]:.4f}",
+                    "ground_model_centroid_x_cam": f"{ground_contact_cam[0]:.4f}",
+                    "ground_model_centroid_y_cam": f"{ground_contact_cam[1]:.4f}",
+                    "ground_model_centroid_z_cam": f"{ground_contact_cam[2]:.4f}",
+                    "ground_model_centroid_x_world": f"{ground_contact_world[0]:.4f}",
+                    "ground_model_centroid_y_world": f"{ground_contact_world[1]:.4f}",
+                    "ground_model_centroid_z_world": f"{ground_contact_world[2]:.4f}",
+                    "ground_contact_x_world": f"{ground_world[0]:.4f}",
+                    "ground_contact_y_world": f"{ground_world[1]:.4f}",
+                    "ground_contact_z_world": f"{ground_world[2]:.4f}",
                     "strict_raw_x_world": f"{strict_raw_world[0]:.4f}",
                     "strict_raw_y_world": f"{strict_raw_world[1]:.4f}",
                     "strict_raw_z_world": f"{strict_raw_world[2]:.4f}",
@@ -135,6 +157,7 @@ def write_diagnostics_csv(path: str | Path, rows: Iterable[Dict[str, Any]]) -> N
                     "strict_filtered_y_world": f"{strict_filt_world[1]:.4f}",
                     "strict_filtered_z_world": f"{strict_filt_world[2]:.4f}",
                     "height_ground_depth_delta_m": f"{float(row['height_depth_delta_m']):.4f}",
+                    "height_ground_world_xy_delta_m": f"{float(row['height_ground_world_xy_delta_m']):.4f}",
                     "used_height_fallback": int(bool(row["fallback"])),
                     "blur_laplacian_var": f"{float(row.get('blur_laplacian_var', float('nan'))):.4f}",
                     "brightness_mean": f"{float(row.get('brightness_mean', float('nan'))):.4f}",
@@ -164,6 +187,7 @@ def build_qa_report(
     frame_count_video = _video_frame_count(video_path)
     bbox_valid = _bbox_valid_count(rows)
     deltas = np.asarray([float(r["height_depth_delta_m"]) for r in rows], dtype=np.float64)
+    xy_deltas = np.asarray([float(r["height_ground_world_xy_delta_m"]) for r in rows], dtype=np.float64)
     confs = np.asarray([float(r["conf"]) for r in rows], dtype=np.float64)
 
     contract_checks = {
@@ -207,20 +231,24 @@ def build_qa_report(
         "height_vs_ground_depth_delta_median_m": _safe_float(np.median(deltas)) if len(deltas) else None,
         "height_vs_ground_depth_delta_p95_m": _safe_float(np.percentile(deltas, 95)) if len(deltas) else None,
         "height_vs_ground_depth_delta_max_m": _safe_float(np.max(deltas)) if len(deltas) else None,
+        "height_vs_ground_xy_delta_median_m": _safe_float(np.median(xy_deltas)) if len(xy_deltas) else None,
+        "height_vs_ground_xy_delta_p95_m": _safe_float(np.percentile(xy_deltas, 95)) if len(xy_deltas) else None,
+        "height_vs_ground_xy_delta_max_m": _safe_float(np.max(xy_deltas)) if len(xy_deltas) else None,
         "centroid_z_expected_m": BIN_HEIGHT_M * 0.5,
         "centroid_z_min_max_m": _z_min_max(rows),
+        "synthetic_geometry_validation": synthetic_geometry_validation(camera),
     }
 
     waypoint_checks = _waypoint_consistency_checks(rows, projected_waypoints, camera)
     pixel_probes = _probe_waypoint_pixels(video_path, waypoint_data)
 
-    rmse_xy = float(summary.get("metrics", {}).get("rmse_xy_m", float("nan")))
-    strict_rmse_xy = float(summary.get("strict_metrics", {}).get("rmse_xy_m", float("nan")))
+    proxy_xy = float(summary.get("metrics", {}).get("waypoint_proxy_residual_xy_m", float("nan")))
+    strict_proxy_xy = float(summary.get("strict_metrics", {}).get("waypoint_proxy_residual_xy_m", float("nan")))
     asset_alignment = {
         "canonical_input_used": Path(video_path).name == "input.mp4",
-        "waypoint_rmse_xy_m": rmse_xy,
-        "strict_waypoint_rmse_xy_m": strict_rmse_xy,
-        "waypoint_rmse_status": "large_residual" if np.isfinite(rmse_xy) and rmse_xy > 1.0 else "within_1m",
+        "waypoint_proxy_residual_xy_m": proxy_xy,
+        "strict_waypoint_proxy_residual_xy_m": strict_proxy_xy,
+        "waypoint_proxy_status": "large_residual" if np.isfinite(proxy_xy) and proxy_xy > 1.0 else "within_1m",
         "waypoint_contract_assessment": _waypoint_contract_assessment(waypoint_checks),
         "interpretation": _asset_alignment_interpretation(),
     }
@@ -328,7 +356,7 @@ def _annotate_frame(
         wp = waypoints.get(marker)
         if stop and wp:
             lines.append(f"{marker} projected wp=({wp['world_ground'][0]:.2f},{wp['world_ground'][1]:.2f}) m")
-            lines.append(f"{marker} stop error={float(stop['error_xy_m']):.2f} m")
+            lines.append(f"{marker} proxy residual={float(stop['error_xy_m']):.2f} m")
 
     y = 34
     for line in lines:
@@ -532,8 +560,8 @@ def _bgr_for_marker(name: str) -> tuple[int, int, int]:
 
 def _asset_alignment_interpretation() -> str:
     return (
-        "The output stream uses strict camera/bin geometry. Waypoint residual is an external consistency check "
-        "only and is not used to correct the answer stream."
+        "The output stream uses camera/bin geometry only. Waypoint proxy residual is an external consistency "
+        "check, not independent ground truth, and is not used to correct the answer stream."
     )
 
 

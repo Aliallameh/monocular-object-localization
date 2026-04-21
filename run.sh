@@ -11,6 +11,7 @@ CONF_FLAG=()
 IMGSZ_FLAG=()
 NO_KALMAN_FLAG=""
 BBOX_GT_FLAG=()
+CONTACT_GT_FLAG=()
 OBSERVER_VIDEO_FLAG=()
 OBSERVER_JSON_FLAG=()
 NO_OBSERVER_FLAG=""
@@ -58,6 +59,10 @@ while [[ $# -gt 0 ]]; do
       BBOX_GT_FLAG=(--bbox-gt "$2")
       shift 2
       ;;
+    --contact-gt)
+      CONTACT_GT_FLAG=(--contact-gt "$2")
+      shift 2
+      ;;
     --observer-video)
       OBSERVER_VIDEO_FLAG=(--observer-video "$2")
       shift 2
@@ -82,7 +87,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$VIDEO" || -z "$CALIB" ]]; then
-  echo "Usage: bash run.sh --video <path> --calib <path> [--config <path>] [--backend hybrid|auto|yolo_world] [--device cpu|cuda:0|mps|auto] [--conf <float>] [--imgsz <int>] [--gpu] [--no-kalman] [--bbox-gt <path>] [--observer-video <path>] [--observer-json <path>] [--no-observer] [--display]" >&2
+  echo "Usage: bash run.sh --video <path> --calib <path> [--config <path>] [--backend hybrid|auto|yolo_world] [--device cpu|cuda:0|mps|auto] [--conf <float>] [--imgsz <int>] [--gpu] [--no-kalman] [--bbox-gt <path>] [--contact-gt <path>] [--observer-video <path>] [--observer-json <path>] [--no-observer] [--display]" >&2
   exit 1
 fi
 
@@ -157,6 +162,9 @@ if [[ -n "$NO_KALMAN_FLAG" ]]; then
 fi
 if [[ ${#BBOX_GT_FLAG[@]} -gt 0 ]]; then
   CMD+=("${BBOX_GT_FLAG[@]}")
+fi
+if [[ ${#CONTACT_GT_FLAG[@]} -gt 0 ]]; then
+  CMD+=("${CONTACT_GT_FLAG[@]}")
 fi
 if [[ ${#OBSERVER_VIDEO_FLAG[@]} -gt 0 ]]; then
   CMD+=("${OBSERVER_VIDEO_FLAG[@]}")

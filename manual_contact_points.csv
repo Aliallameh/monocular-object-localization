@@ -1,0 +1,4 @@
+frame_id,x_contact_px,y_contact_px,review_status,occluded,visibility,source,notes
+50,922,885,ok,0,1.0,user_manual,"Manual floor-contact point supplied by reviewer; validates contact geometry only"
+200,576,694,ok,0,1.0,user_manual,"Manual floor-contact point supplied by reviewer; person visible but not blocking the bin"
+500,462,760,ok,0,1.0,user_manual,"Manual floor-contact point supplied by reviewer; validates bottom-contact estimate"

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 import cv2
 import numpy as np
@@ -18,8 +18,12 @@ class Localization:
     xyz_cam: np.ndarray
     xyz_world: np.ndarray
     xyz_cam_height: np.ndarray
-    xyz_world_ground: np.ndarray
+    xyz_world_height: np.ndarray
+    xyz_cam_ground_model: np.ndarray
+    xyz_world_ground_model: np.ndarray
+    xyz_world_ground_contact: np.ndarray
     depth_delta_m: float
+    world_xy_delta_m: float
     used_fallback: bool
 
 
@@ -117,7 +121,18 @@ def build_camera_to_world(camera_height_m: float, tilt_rad: float) -> tuple[np.n
     return R_cw, t_cw
 
 
-def estimate_height_based_centroid(bbox: tuple[float, float, float, float], camera: CameraGeometry) -> np.ndarray:
+def height_based_centroid(bbox: tuple[float, float, float, float], camera: CameraGeometry) -> np.ndarray:
+    """Estimate centroid in camera frame from known bin height and bbox height.
+
+    This is the direct pinhole-distance estimator required by the assessment:
+      Z = fy * H / h_px
+      X = x_norm * Z
+      Y = y_norm * Z
+    It is logged for every frame. The default output uses the ground-contact
+    model below because a fixed, calibrated camera over a flat floor gives a
+    stronger world-frame constraint than bbox height alone.
+    """
+
     x1, y1, x2, y2 = bbox
     uc = 0.5 * (x1 + x2)
     vc = 0.5 * (y1 + y2)
@@ -132,38 +147,147 @@ def estimate_height_based_centroid(bbox: tuple[float, float, float, float], came
     return np.array([x, y, z], dtype=np.float64)
 
 
-def localize_bbox(bbox: tuple[float, float, float, float], camera: CameraGeometry) -> Localization:
-    x1, y1, x2, y2 = bbox
+def estimate_height_based_centroid(bbox: tuple[float, float, float, float], camera: CameraGeometry) -> np.ndarray:
+    """Backward-compatible alias for the explicit height-based estimator."""
+
+    return height_based_centroid(bbox, camera)
+
+
+def ground_contact_centroid(
+    bbox: tuple[float, float, float, float],
+    camera: CameraGeometry,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Estimate centroid using bottom-center ray intersection with ground.
+
+    Returns (centroid_cam, centroid_world, ground_contact_world). The centroid
+    is lifted by half the known bin height from the ground contact point.
+    """
+
+    x1, _, x2, y2 = bbox
     bottom_u = 0.5 * (x1 + x2)
-    bottom_v = y2
-    height_cam = estimate_height_based_centroid(bbox, camera)
+    ground = camera.ground_intersection_from_pixel(bottom_u, y2)
+    world = ground + np.array([0.0, 0.0, BIN_HEIGHT_M * 0.5], dtype=np.float64)
+    cam = camera.world_to_cam(world)
+    return cam, world, ground
+
+
+def localize_bbox(bbox: tuple[float, float, float, float], camera: CameraGeometry) -> Localization:
+    height_cam = height_based_centroid(bbox, camera)
+    height_world = camera.cam_to_world(height_cam)
 
     used_fallback = False
     try:
-        ground = camera.ground_intersection_from_pixel(bottom_u, bottom_v)
-        world = ground + np.array([0.0, 0.0, BIN_HEIGHT_M * 0.5], dtype=np.float64)
-        cam = camera.world_to_cam(world)
+        cam, world, ground = ground_contact_centroid(bbox, camera)
     except ValueError:
         used_fallback = True
         cam = height_cam
-        world = camera.cam_to_world(cam)
+        world = height_world
         ground = np.array([world[0], world[1], 0.0], dtype=np.float64)
 
     depth_delta = float(abs(cam[2] - height_cam[2]))
+    world_xy_delta = float(np.linalg.norm(world[:2] - height_world[:2]))
     if not np.isfinite(cam).all() or cam[2] <= 0.0:
         used_fallback = True
         cam = height_cam
-        world = camera.cam_to_world(cam)
+        world = height_world
         ground = np.array([world[0], world[1], 0.0], dtype=np.float64)
+        depth_delta = 0.0
+        world_xy_delta = 0.0
 
     return Localization(
         xyz_cam=cam,
         xyz_world=world,
         xyz_cam_height=height_cam,
-        xyz_world_ground=ground,
+        xyz_world_height=height_world,
+        xyz_cam_ground_model=cam,
+        xyz_world_ground_model=world,
+        xyz_world_ground_contact=ground,
         depth_delta_m=depth_delta,
+        world_xy_delta_m=world_xy_delta,
         used_fallback=used_fallback,
     )
+
+
+def synthetic_geometry_validation(camera: CameraGeometry) -> Dict[str, Any]:
+    """Validate localization math on synthetic projected bins.
+
+    This is not video ground truth. It projects virtual bins through the supplied
+    calibration, reconstructs them through both estimators, and reports numerical
+    consistency only for the camera model and implementation.
+    """
+
+    cases = [
+        (3.0, 0.0),
+        (5.0, 0.0),
+        (7.0, 0.0),
+        (7.0, 1.0),
+        (9.0, -1.0),
+    ]
+    records: List[Dict[str, Any]] = []
+    for world_x, world_y in cases:
+        bottom_world = np.array([world_x, world_y, 0.0], dtype=np.float64)
+        top_world = np.array([world_x, world_y, BIN_HEIGHT_M], dtype=np.float64)
+        centroid_world = np.array([world_x, world_y, BIN_HEIGHT_M * 0.5], dtype=np.float64)
+        bottom_cam = camera.world_to_cam(bottom_world)
+        top_cam = camera.world_to_cam(top_world)
+        centroid_cam = camera.world_to_cam(centroid_world)
+        if bottom_cam[2] <= 0.0 or top_cam[2] <= 0.0 or centroid_cam[2] <= 0.0:
+            continue
+
+        bottom_px = _project_cam_point(camera, bottom_cam)
+        top_px = _project_cam_point(camera, top_cam)
+        width_px = max(8.0, float(camera.K[0, 0] * BIN_DIAMETER_M / max(centroid_cam[2], 1e-6)))
+        u = 0.5 * (bottom_px[0] + top_px[0])
+        bbox = (
+            float(u - 0.5 * width_px),
+            float(min(top_px[1], bottom_px[1])),
+            float(u + 0.5 * width_px),
+            float(max(top_px[1], bottom_px[1])),
+        )
+
+        loc = localize_bbox(bbox, camera)
+        height_world = loc.xyz_world_height
+        ground_world = loc.xyz_world
+        records.append(
+            {
+                "world_centroid_true": centroid_world.tolist(),
+                "bbox_px": [float(v) for v in bbox],
+                "ground_contact_est_world": ground_world.tolist(),
+                "height_based_est_world": height_world.tolist(),
+                "ground_contact_error_m": float(np.linalg.norm(ground_world - centroid_world)),
+                "height_based_error_m": float(np.linalg.norm(height_world - centroid_world)),
+                "height_based_depth_error_m": float(abs(loc.xyz_cam_height[2] - centroid_cam[2])),
+            }
+        )
+
+    ground_errors = np.asarray([r["ground_contact_error_m"] for r in records], dtype=np.float64)
+    height_errors = np.asarray([r["height_based_error_m"] for r in records], dtype=np.float64)
+    return {
+        "type": "synthetic_camera_model_check_not_video_gt",
+        "case_count": len(records),
+        "ground_contact_rmse_m": _rmse(ground_errors),
+        "height_based_rmse_m": _rmse(height_errors),
+        "max_ground_contact_error_m": float(np.max(ground_errors)) if len(ground_errors) else None,
+        "max_height_based_error_m": float(np.max(height_errors)) if len(height_errors) else None,
+        "cases": records,
+    }
+
+
+def _project_cam_point(camera: CameraGeometry, xyz_cam: np.ndarray) -> np.ndarray:
+    pts, _ = cv2.projectPoints(
+        np.asarray(xyz_cam, dtype=np.float64).reshape(1, 1, 3),
+        np.zeros(3, dtype=np.float64),
+        np.zeros(3, dtype=np.float64),
+        camera.K,
+        camera.D,
+    )
+    return np.array([pts[0, 0, 0], pts[0, 0, 1]], dtype=np.float64)
+
+
+def _rmse(errors: np.ndarray) -> float | None:
+    if len(errors) == 0:
+        return None
+    return float(np.sqrt(np.mean(errors * errors)))
 
 
 class PositionKalman:

@@ -116,6 +116,7 @@ def read_cvat_xml(path: Path, label_filter: Optional[str], track_id: Optional[in
         for box in track.findall("box"):
             if box.attrib.get("outside", "0") == "1":
                 continue
+            attrs = read_box_attributes(box)
             rows.append(
                 {
                     "frame_id": int(box.attrib["frame"]),
@@ -127,6 +128,8 @@ def read_cvat_xml(path: Path, label_filter: Optional[str], track_id: Optional[in
                     "source": "cvat_track",
                     "track_id": tid,
                     "occluded": int(box.attrib.get("occluded", "0")),
+                    "visibility": attrs.get("visibility", attrs.get("visible_fraction", "")),
+                    "bbox_type": attrs.get("bbox_type", attrs.get("box_type", "amodal_full_bin")),
                 }
             )
 
@@ -137,6 +140,7 @@ def read_cvat_xml(path: Path, label_filter: Optional[str], track_id: Optional[in
             label = box.attrib.get("label", "")
             if label_filter is not None and label != label_filter:
                 continue
+            attrs = read_box_attributes(box)
             rows.append(
                 {
                     "frame_id": frame_id,
@@ -148,6 +152,8 @@ def read_cvat_xml(path: Path, label_filter: Optional[str], track_id: Optional[in
                     "source": "cvat_image",
                     "track_id": "",
                     "occluded": int(box.attrib.get("occluded", "0")),
+                    "visibility": attrs.get("visibility", attrs.get("visible_fraction", "")),
+                    "bbox_type": attrs.get("bbox_type", attrs.get("box_type", "amodal_full_bin")),
                 }
             )
     return rows
@@ -177,10 +183,21 @@ def read_coco_json(path: Path, label_filter: Optional[str]) -> List[Dict[str, ob
                 "label": label,
                 "source": "coco",
                 "track_id": "",
-                "occluded": int(ann.get("iscrowd", 0)),
+                "occluded": int(ann.get("occluded", 0)),
+                "visibility": ann.get("visibility", ann.get("visible_fraction", "")),
+                "bbox_type": ann.get("bbox_type", "amodal_full_bin"),
             }
         )
     return rows
+
+
+def read_box_attributes(box: ET.Element) -> Dict[str, str]:
+    attrs: Dict[str, str] = {}
+    for attr in box.findall("attribute"):
+        name = str(attr.attrib.get("name", "")).strip()
+        if name:
+            attrs[name] = (attr.text or "").strip()
+    return attrs
 
 
 def frame_id_from_image(name: str, fallback: int) -> int:
@@ -230,6 +247,8 @@ def write_csv(path: Path, rows: Iterable[Dict[str, object]]) -> None:
                 "source",
                 "track_id",
                 "occluded",
+                "visibility",
+                "bbox_type",
             ],
         )
         writer.writeheader()
@@ -246,6 +265,8 @@ def write_csv(path: Path, rows: Iterable[Dict[str, object]]) -> None:
                     "source": row.get("source", ""),
                     "track_id": row.get("track_id", ""),
                     "occluded": row.get("occluded", 0),
+                    "visibility": row.get("visibility", ""),
+                    "bbox_type": row.get("bbox_type", "amodal_full_bin"),
                 }
             )
 

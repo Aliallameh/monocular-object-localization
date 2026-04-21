@@ -44,7 +44,10 @@ def estimate_stops(
     errors_3d: List[float] = []
 
     if len(frame_ids) < 2:
-        return stops, {"rmse_xy_m": float("nan"), "rmse_3d_centroid_m": float("nan")}
+        return stops, {
+            "waypoint_proxy_residual_xy_m": float("nan"),
+            "waypoint_proxy_residual_3d_m": float("nan"),
+        }
 
     vel = np.zeros(len(frame_ids), dtype=np.float64)
     diffs = np.linalg.norm(np.diff(raw_world[:, :2], axis=0), axis=1)
@@ -113,8 +116,11 @@ def estimate_stops(
     reduction = float(100.0 * (1.0 - filt_jitter / raw_jitter)) if raw_jitter > 0 else float("nan")
 
     metrics = {
-        "rmse_xy_m": rmse_xy,
-        "rmse_3d_centroid_m": rmse_3d,
+        "waypoint_proxy_residual_xy_m": rmse_xy,
+        "waypoint_proxy_residual_3d_m": rmse_3d,
+        "waypoint_metric_interpretation": (
+            "Weak proxy residual against pixel-projected waypoints; not independent localization ground truth."
+        ),
         "raw_jitter_std_m": raw_jitter,
         "filtered_jitter_std_m": filt_jitter,
         "jitter_reduction_pct": reduction,

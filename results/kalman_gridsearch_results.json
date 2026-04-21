@@ -1,6 +1,7 @@
 {
   "method": "offline_kalman_replay_over_cached_raw_track",
   "note": "No independent positional GT for the bin in this clip. We report smoothing strength only (frame-step and 2nd-difference std reduction), not position RMSE.",
+  "low_motion_jitter_note": "Low-motion jitter is computed from the lowest-velocity quartile of the raw replayed track. It is not surveyed stop-position accuracy.",
   "raw_track_frames": 875,
   "dt_s": 0.03336666666666667,
   "pipeline_default": {
@@ -30,7 +31,11 @@
       "frame_step_reduction_pct": 60.48636419297904,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.005472814062712461,
-      "second_diff_reduction_pct": 84.6947982817886
+      "second_diff_reduction_pct": 84.6947982817886,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12416589652422853,
+      "low_motion_jitter_reduction_pct": -1.9601453648829148
     },
     {
       "process_var": 0.3,
@@ -41,7 +46,11 @@
       "frame_step_reduction_pct": 70.08345560752606,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.00312838228903722,
-      "second_diff_reduction_pct": 91.25120615523637
+      "second_diff_reduction_pct": 91.25120615523637,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.13663761474493136,
+      "low_motion_jitter_reduction_pct": -12.201429311031431
     },
     {
       "process_var": 0.3,
@@ -52,7 +61,11 @@
       "frame_step_reduction_pct": 73.2811114954874,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0021012583674765344,
-      "second_diff_reduction_pct": 94.12364776003945
+      "second_diff_reduction_pct": 94.12364776003945,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.15482107209579896,
+      "low_motion_jitter_reduction_pct": -27.132968539025825
     },
     {
       "process_var": 0.3,
@@ -63,7 +76,11 @@
       "frame_step_reduction_pct": 74.1412118438265,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0017718945488659637,
-      "second_diff_reduction_pct": 95.04474239704905
+      "second_diff_reduction_pct": 95.04474239704905,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.1631965494924656,
+      "low_motion_jitter_reduction_pct": -34.010580804305015
     },
     {
       "process_var": 0.5,
@@ -74,7 +91,11 @@
       "frame_step_reduction_pct": 57.65154524995608,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.006173984615444862,
-      "second_diff_reduction_pct": 82.73391369381113
+      "second_diff_reduction_pct": 82.73391369381113,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12345940902149315,
+      "low_motion_jitter_reduction_pct": -1.3800056446070075
     },
     {
       "process_var": 0.5,
@@ -85,7 +106,11 @@
       "frame_step_reduction_pct": 68.50758062468718,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.003547042237895868,
-      "second_diff_reduction_pct": 90.08038710397815
+      "second_diff_reduction_pct": 90.08038710397815,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.1320179699092321,
+      "low_motion_jitter_reduction_pct": -8.407958864095
     },
     {
       "process_var": 0.5,
@@ -96,7 +121,11 @@
       "frame_step_reduction_pct": 72.5079489471663,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0023840946197865517,
-      "second_diff_reduction_pct": 93.3326715190739
+      "second_diff_reduction_pct": 93.3326715190739,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.14887215104526935,
+      "low_motion_jitter_reduction_pct": -22.24794880288712
     },
     {
       "process_var": 0.5,
@@ -107,7 +136,11 @@
       "frame_step_reduction_pct": 73.5182386653744,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0020089279112215025,
-      "second_diff_reduction_pct": 94.38185793153893
+      "second_diff_reduction_pct": 94.38185793153893,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.15700340003898955,
+      "low_motion_jitter_reduction_pct": -28.92501031982302
     },
     {
       "process_var": 1.0,
@@ -118,7 +151,11 @@
       "frame_step_reduction_pct": 53.46611202158507,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.007253268517267974,
-      "second_diff_reduction_pct": 79.71560215621179
+      "second_diff_reduction_pct": 79.71560215621179,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12292302840420759,
+      "low_motion_jitter_reduction_pct": -0.9395510009386543
     },
     {
       "process_var": 1.0,
@@ -129,7 +166,11 @@
       "frame_step_reduction_pct": 65.85009897563675,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.004201074665819115,
-      "second_diff_reduction_pct": 88.25132839215054
+      "second_diff_reduction_pct": 88.25132839215054,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.127566612618455,
+      "low_motion_jitter_reduction_pct": -4.752679522958836
     },
     {
       "process_var": 1.0,
@@ -140,7 +181,11 @@
       "frame_step_reduction_pct": 71.12141500391388,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0028300902376562267,
-      "second_diff_reduction_pct": 92.08540588594354
+      "second_diff_reduction_pct": 92.08540588594354,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.14095050107078141,
+      "low_motion_jitter_reduction_pct": -15.743001747872665
     },
     {
       "process_var": 1.0,
@@ -151,7 +196,11 @@
       "frame_step_reduction_pct": 72.50554335660485,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.002384369361414746,
-      "second_diff_reduction_pct": 93.33190318015507
+      "second_diff_reduction_pct": 93.33190318015507,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.14890729044683235,
+      "low_motion_jitter_reduction_pct": -22.276803895885223
     },
     {
       "process_var": 2.0,
@@ -162,7 +211,11 @@
       "frame_step_reduction_pct": 48.87113966929687,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.008494853280378824,
-      "second_diff_reduction_pct": 76.24340210849977
+      "second_diff_reduction_pct": 76.24340210849977,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12269020169237035,
+      "low_motion_jitter_reduction_pct": -0.7483628724083813
     },
     {
       "process_var": 2.0,
@@ -173,7 +226,11 @@
       "frame_step_reduction_pct": 62.59319666519405,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.004967462960900913,
-      "second_diff_reduction_pct": 86.10805670115333
+      "second_diff_reduction_pct": 86.10805670115333,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12503639191376345,
+      "low_motion_jitter_reduction_pct": -2.6749619042144124
     },
     {
       "process_var": 2.0,
@@ -184,7 +241,11 @@
       "frame_step_reduction_pct": 69.2281559147874,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0033575654346474373,
-      "second_diff_reduction_pct": 90.61027550533959
+      "second_diff_reduction_pct": 90.61027550533959,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.1339307104121374,
+      "low_motion_jitter_reduction_pct": -9.978626053563321
     },
     {
       "process_var": 2.0,
@@ -195,7 +256,11 @@
       "frame_step_reduction_pct": 71.11857825670394,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0028306093659487765,
-      "second_diff_reduction_pct": 92.08395409840901
+      "second_diff_reduction_pct": 92.08395409840901,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.1409809694774441,
+      "low_motion_jitter_reduction_pct": -15.768021203772587
     },
     {
       "process_var": 3.0,
@@ -206,7 +271,11 @@
       "frame_step_reduction_pct": 46.0584598180087,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.009302017027495214,
-      "second_diff_reduction_pct": 73.98609831054816
+      "second_diff_reduction_pct": 73.98609831054816,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.1226360885822165,
+      "low_motion_jitter_reduction_pct": -0.7039273169790583
     },
     {
       "process_var": 3.0,
@@ -217,7 +286,11 @@
       "frame_step_reduction_pct": 60.48304637679445,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.005473437952029928,
-      "second_diff_reduction_pct": 84.69305352091342
+      "second_diff_reduction_pct": 84.69305352091342,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12416854164541717,
+      "low_motion_jitter_reduction_pct": -1.9623174342550342
     },
     {
       "process_var": 3.0,
@@ -228,7 +301,11 @@
       "frame_step_reduction_pct": 67.86606605530623,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.003708667720421194,
-      "second_diff_reduction_pct": 89.62838734946294
+      "second_diff_reduction_pct": 89.62838734946294,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.13065768890760496,
+      "low_motion_jitter_reduction_pct": -7.290949664745905
     },
     {
       "process_var": 3.0,
@@ -239,7 +316,11 @@
       "frame_step_reduction_pct": 70.07557510132874,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.003128618331974567,
-      "second_diff_reduction_pct": 91.25054604058076
+      "second_diff_reduction_pct": 91.25054604058076,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.13668994123759903,
+      "low_motion_jitter_reduction_pct": -12.244397766526705
     },
     {
       "process_var": 5.0,
@@ -250,7 +331,11 @@
       "frame_step_reduction_pct": 42.39774056786069,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.01041260135147281,
-      "second_diff_reduction_pct": 70.88025241321174
+      "second_diff_reduction_pct": 70.88025241321174,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12259870894701447,
+      "low_motion_jitter_reduction_pct": -0.6732326323227067
     },
     {
       "process_var": 5.0,
@@ -261,7 +346,11 @@
       "frame_step_reduction_pct": 57.64837644840135,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.0061746618062109545,
-      "second_diff_reduction_pct": 82.73201987078738
+      "second_diff_reduction_pct": 82.73201987078738,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12346094204361176,
+      "low_motion_jitter_reduction_pct": -1.3812645020101932
     },
     {
       "process_var": 5.0,
@@ -272,7 +361,11 @@
       "frame_step_reduction_pct": 65.84493835620646,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.004200780032593363,
-      "second_diff_reduction_pct": 88.25215235965635
+      "second_diff_reduction_pct": 88.25215235965635,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.12758433547547338,
+      "low_motion_jitter_reduction_pct": -4.767232835329294
     },
     {
       "process_var": 5.0,
@@ -283,7 +376,11 @@
       "frame_step_reduction_pct": 68.4992936733859,
       "raw_second_diff_std_m": 0.03575786953660631,
       "filt_second_diff_std_m": 0.003547426841197196,
-      "second_diff_reduction_pct": 90.07931152731122
+      "second_diff_reduction_pct": 90.07931152731122,
+      "low_motion_window_frames": 219,
+      "raw_low_motion_radial_std_m": 0.12177885396286783,
+      "filt_low_motion_radial_std_m": 0.13206365201984296,
+      "low_motion_jitter_reduction_pct": -8.445471214658596
     }
   ]
 }

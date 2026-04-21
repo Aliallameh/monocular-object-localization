@@ -10,7 +10,7 @@ import subprocess
 import numpy as np
 
 from config_utils import load_runtime_config
-from eval_utils import asset_alignment_diagnostics, evaluate_bbox_annotations
+from eval_utils import asset_alignment_diagnostics, evaluate_bbox_annotations, evaluate_contact_points
 from localizer import BIN_HEIGHT_M, CameraGeometry, build_camera_to_world, localize_bbox
 from observer import MotionStateEstimator
 from tracker_utils import bbox_iou
@@ -83,20 +83,24 @@ class EvaluationTests(unittest.TestCase):
 
     def test_bbox_annotation_evaluator_csv(self) -> None:
         rows = [
-            {"frame_id": 1, "bbox": [0.0, 0.0, 10.0, 10.0]},
-            {"frame_id": 2, "bbox": [10.0, 10.0, 20.0, 20.0]},
+            {"frame_id": 1, "bbox": [0.0, 0.0, 10.0, 10.0], "status": "detected", "detector_source": "blue"},
+            {"frame_id": 2, "bbox": [10.0, 10.0, 20.0, 20.0], "status": "occluded", "detector_source": "lk_optical_flow"},
         ]
         with tempfile.TemporaryDirectory() as tmp:
             gt_path = Path(tmp) / "gt.csv"
             with gt_path.open("w", newline="", encoding="utf-8") as f:
                 writer = csv.writer(f)
-                writer.writerow(["frame_id", "x1", "y1", "x2", "y2", "review_status"])
-                writer.writerow([1, 0, 0, 10, 10, "ok"])
-                writer.writerow([2, 12, 12, 22, 22, "ok"])
+                writer.writerow(["frame_id", "x1", "y1", "x2", "y2", "review_status", "occluded", "visibility"])
+                writer.writerow([1, 0, 0, 10, 10, "ok", 0, 1.0])
+                writer.writerow([2, 12, 12, 22, 22, "ok", 1, 0.5])
+                writer.writerow([3, 0, 0, 1, 1, "skip", 1, 0.1])
             report = evaluate_bbox_annotations(gt_path, rows)
         self.assertTrue(report["enabled"])
         self.assertEqual(report["gt_frames"], 2)
+        self.assertEqual(report["gt_occluded_frames"], 1)
         self.assertEqual(report["matched_frames"], 2)
+        self.assertEqual(report["occluded_frames"]["matched_frames"], 1)
+        self.assertEqual(report["detector_source_counts_on_gt_occluded"]["lk_optical_flow"], 1)
         self.assertGreater(report["mean_iou"], 0.5)
 
     def test_bbox_annotation_evaluator_json(self) -> None:
@@ -106,6 +110,44 @@ class EvaluationTests(unittest.TestCase):
             gt_path.write_text(json.dumps({"frames": [{"frame_id": 7, "x1": 1, "y1": 2, "x2": 11, "y2": 12}]}))
             report = evaluate_bbox_annotations(gt_path, rows)
         self.assertTrue(report["passes_hidden_contract_proxy"])
+
+    def test_contact_point_evaluator_is_validation_only(self) -> None:
+        calib = {
+            "K": [[1402.5, 0.0, 960.0], [0.0, 1402.5, 540.0], [0.0, 0.0, 1.0]],
+            "dist_coeffs": [0.0, 0.0, 0.0, 0.0, 0.0],
+            "camera_height_m": 1.35,
+            "camera_tilt_deg": -15.0,
+            "fps": 30.0,
+            "image_width_px": 1920,
+            "image_height_px": 1080,
+        }
+        camera = CameraGeometry.from_json_dict(calib)
+        ground = camera.ground_intersection_from_pixel(960.0, 900.0)
+        centroid = ground + np.array([0.0, 0.0, BIN_HEIGHT_M / 2.0])
+        rows = [
+            {
+                "frame_id": 10,
+                "bbox": [900.0, 700.0, 1020.0, 900.0],
+                "ground_world": ground.tolist(),
+                "raw_world": centroid.tolist(),
+                "filtered_world": centroid.tolist(),
+                "detector_source": "unit_test",
+                "track_state": "CONFIRMED",
+            }
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            gt_path = Path(tmp) / "contact.csv"
+            gt_path.write_text(
+                "frame_id,x_contact_px,y_contact_px,review_status,occluded,visibility\n"
+                "10,960,900,ok,0,1.0\n",
+                encoding="utf-8",
+            )
+            report = evaluate_contact_points(gt_path, rows, camera)
+        self.assertTrue(report["enabled"])
+        self.assertEqual(report["matched_frames"], 1)
+        self.assertAlmostEqual(report["mean_pixel_error"], 0.0)
+        self.assertAlmostEqual(report["mean_ground_xy_error_m"], 0.0)
+        self.assertIn("not used to calibrate", report["interpretation"])
 
     def test_import_cvat_xml(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -142,6 +184,8 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(len(imported), 1)
         self.assertEqual(imported[0]["frame_id"], "5")
         self.assertEqual(imported[0]["x2"], "11.00")
+        self.assertEqual(imported[0]["occluded"], "0")
+        self.assertEqual(imported[0]["bbox_type"], "amodal_full_bin")
 
     def test_import_coco_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

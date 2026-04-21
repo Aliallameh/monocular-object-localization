@@ -37,6 +37,7 @@ results/occlusion_stress_suite.json
 results/asset_alignment_report.json
 results/bbox_annotation_template.csv
 results/bbox_eval.json
+results/contact_point_eval.json
 results/robustness_report.json
 results/review_readiness.json
 results/review_readiness.md

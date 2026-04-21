@@ -1,14 +1,15 @@
 """
-Automated centroid-approximation validation.
+Automated centroid-approximation proxy analysis.
 
 The pipeline localizes the bin using the bottom-center pixel of the detected
 bbox projected onto the ground plane. For a cylindrical bin the visual bottom
 edge is the near-side rim, not the true floor contact centre. This script
 quantifies that systematic offset without any manual frame annotation by
 comparing measured positions (in stationary windows) to waypoint references
-stored in results/summary.json.
+stored in results/summary.json. These waypoint references are only a weak proxy
+unless QA says their pixels and object scale are geometrically consistent.
 
-Output: results/centroid_validation.json
+Output: results/waypoint_proxy_analysis.json
 """
 
 from __future__ import annotations
@@ -74,7 +75,7 @@ def run_centroid_validation(
     output_csv: str = "results/output.csv",
     summary_json: str = "results/summary.json",
     calib_json: str = "calib.json",
-    out_path: str = "results/centroid_validation.json",
+    out_path: str = "results/waypoint_proxy_analysis.json",
 ) -> Dict[str, Any]:
 
     calib = json.loads(Path(calib_json).read_text())
@@ -86,7 +87,7 @@ def run_centroid_validation(
     frame_rows = _load_stationary_frames(Path(output_csv))
 
     # -----------------------------------------------------------------------
-    # Part A: Waypoint residuals
+    # Part A: Waypoint proxy residuals
     #   For each waypoint, take measured position in the stationary window
     #   and compute XY distance to the waypoint's expected world position.
     # -----------------------------------------------------------------------
@@ -198,8 +199,9 @@ def run_centroid_validation(
 
     result: Dict[str, Any] = {
         "summary": {
-            "mean_waypoint_residual_m": round(mean_residual, 4),
-            "std_waypoint_residual_m":  round(std_residual, 4),
+            "mean_waypoint_proxy_residual_m": round(mean_residual, 4),
+            "std_waypoint_proxy_residual_m":  round(std_residual, 4),
+            "gt_status": "weak_proxy_not_independent_ground_truth",
             "centroid_hypothesis": hypothesis,
             "expected_centroid_offset_m": bin_radius_m,
             "measurement_noise_rms_m": round(noise_rms, 4),

@@ -1,9 +1,10 @@
 """
-YOLO v8 baseline comparison: run off-the-shelf model on assessment video.
+YOLOv8 sanity baseline: run off-the-shelf model on the assessment video.
 
-Purpose: Establish quantitative justification for hybrid detector choice.
-This script uses YOLO v8 (no fine-tuning) as a baseline, measures mAP against
-ground truth (if available), and reports per-frame latency.
+This is not a valid bin-class detector comparison unless external bbox/class
+ground truth is supplied. COCO YOLOv8 has no dedicated garbage-bin class, so the
+default report counts any detected object only as a weak coverage/speed sanity
+check.
 """
 
 from __future__ import annotations
@@ -22,12 +23,12 @@ def run_yolo_baseline(
     video_path: str,
     output_path: str = "results/detector_baseline.json",
 ) -> Dict[str, Any]:
-    """Run YOLOv8 (trash_can class if available, else person fallback) on video.
+    """Run YOLOv8 on video and report weak any-object coverage/latency.
 
     Returns: {
         'backend': 'yolov8n',
         'model_name': str,
-        'detection_rate': float [0, 1],
+        'any_object_frame_rate': float [0, 1],
         'mean_latency_ms': float,
         'p95_latency_ms': float,
         'frames_processed': int,
@@ -87,22 +88,24 @@ def run_yolo_baseline(
 
     cap.release()
 
-    # Compute statistics
+    # Compute statistics. This is deliberately named "any_object" because it is
+    # not a garbage-bin detection rate without external class/bbox labels.
     latencies_arr = np.array(latencies)
     result = {
         "backend": "yolov8n",
+        "comparison_status": "invalid_as_bin_detector_without_external_gt",
         "model": "yolov8n.pt",
         "frames_processed": frame_id,
         "fps": fps,
-        "detection_rate": float(detected_frames / max(1, frame_id)),
+        "any_object_frame_rate": float(detected_frames / max(1, frame_id)),
         "mean_latency_ms": float(np.mean(latencies_arr)),
         "p95_latency_ms": float(np.percentile(latencies_arr, 95)),
         "max_latency_ms": float(np.max(latencies_arr)),
         "detections_per_frame_mean": float(np.mean(frame_detection_counts)),
         "notes": (
             "Off-the-shelf YOLOv8n (no fine-tuning). "
-            "Detections counted as any objects found (not filtered by class). "
-            "Nano model chosen for speed. Larger models (s, m, l) would have higher accuracy."
+            "Detections counted as any objects found, not bin-class hits. "
+            "This file is a weak sanity baseline, not a quantitative detector justification."
         ),
     }
 

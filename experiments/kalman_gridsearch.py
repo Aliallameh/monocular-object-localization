@@ -104,6 +104,7 @@ def _replay_kalman(
     flt_step = np.linalg.norm(np.diff(flt, axis=0), axis=1)
     raw_d2 = np.linalg.norm(np.diff(raw, n=2, axis=0), axis=1)
     flt_d2 = np.linalg.norm(np.diff(flt, n=2, axis=0), axis=1)
+    raw_low_motion_std, flt_low_motion_std, low_motion_count = _low_motion_radial_jitter(raw, flt)
 
     raw_step_std = float(np.std(raw_step))
     flt_step_std = float(np.std(flt_step))
@@ -118,7 +119,37 @@ def _replay_kalman(
         "raw_second_diff_std_m": raw_d2_std,
         "filt_second_diff_std_m": flt_d2_std,
         "second_diff_reduction_pct": 100.0 * (1.0 - flt_d2_std / max(raw_d2_std, 1e-9)),
+        "low_motion_window_frames": int(low_motion_count),
+        "raw_low_motion_radial_std_m": raw_low_motion_std,
+        "filt_low_motion_radial_std_m": flt_low_motion_std,
+        "low_motion_jitter_reduction_pct": (
+            100.0 * (1.0 - flt_low_motion_std / max(raw_low_motion_std, 1e-9))
+            if np.isfinite(raw_low_motion_std) and np.isfinite(flt_low_motion_std)
+            else float("nan")
+        ),
     }
+
+
+def _low_motion_radial_jitter(raw: np.ndarray, flt: np.ndarray) -> tuple[float, float, int]:
+    """Proxy stationary jitter on the slowest contiguous part of the track.
+
+    No surveyed stop intervals exist for this clip. This uses the lowest-velocity
+    quartile of the raw signal as a low-motion proxy and reports variance about
+    each selected sample set's own centroid. It is smoothing evidence only.
+    """
+
+    if len(raw) < 12:
+        return float("nan"), float("nan"), 0
+    speed = np.linalg.norm(np.diff(raw, axis=0), axis=1)
+    threshold = float(np.quantile(speed, 0.25))
+    mask = np.concatenate([[False], speed <= threshold])
+    if int(np.count_nonzero(mask)) < 6:
+        return float("nan"), float("nan"), int(np.count_nonzero(mask))
+    raw_sel = raw[mask]
+    flt_sel = flt[mask]
+    raw_radial = np.linalg.norm(raw_sel - np.mean(raw_sel, axis=0), axis=1)
+    flt_radial = np.linalg.norm(flt_sel - np.mean(flt_sel, axis=0), axis=1)
+    return float(np.std(raw_radial)), float(np.std(flt_radial)), int(len(raw_sel))
 
 
 def kalman_replay_gridsearch(
@@ -152,6 +183,10 @@ def kalman_replay_gridsearch(
             "No independent positional GT for the bin in this clip. We report "
             "smoothing strength only (frame-step and 2nd-difference std "
             "reduction), not position RMSE."
+        ),
+        "low_motion_jitter_note": (
+            "Low-motion jitter is computed from the lowest-velocity quartile of "
+            "the raw replayed track. It is not surveyed stop-position accuracy."
         ),
         "raw_track_frames": len(raw_xy),
         "dt_s": dt,
