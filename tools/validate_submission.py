@@ -151,6 +151,9 @@ def validate_summary(summary: Dict[str, Any], args: argparse.Namespace, failures
                 f"bbox GT has {bbox_eval.get('gt_frames')} usable frames < required {args.min_gt_frames}"
             )
         else:
+            independence = bbox_eval.get("annotation_independence_check", {})
+            if independence.get("likely_draft_boxes_not_independent"):
+                failures.append("bbox GT appears identical to tracker output; not independent reviewed GT")
             rate = bbox_eval.get("iou_over_0_6_rate")
             if rate is None or float(rate) < args.min_gt_iou_rate:
                 failures.append(f"bbox GT IoU>0.6 rate {rate} < {args.min_gt_iou_rate}")

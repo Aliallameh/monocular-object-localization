@@ -137,6 +137,11 @@ GT results are written to `results/bbox_eval.json` and embedded in
 | `occluded_frames.continuity_rate` | Tracker produced a row on occluded GT frames |
 | `occluded_frames.iou_over_0_6_rate` | Box accuracy on occluded GT rows |
 | `detector_source_counts_on_gt_occluded` | Whether occluded GT was handled by detector, LK flow, or prediction |
+| `annotation_independence_check.*` | Detects whether reviewed boxes are just unchanged tracker draft boxes |
+
+If `annotation_independence_check.likely_draft_boxes_not_independent=true`, the
+IoU numbers are not valid independent evidence even if they are numerically
+high. Strict validation rejects that case.
 
 ### Manual Floor-Contact Validation
 

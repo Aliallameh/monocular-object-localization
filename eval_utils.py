@@ -45,8 +45,14 @@ def evaluate_bbox_annotations(gt_path: str | Path | None, rows: List[Dict[str, A
         frame_id = int(rec["frame_id"])
         row = by_frame.get(frame_id)
         iou = None
+        bbox_delta_mean_px = None
+        bbox_near_identical_to_prediction = False
         if row is not None:
-            iou = bbox_iou(tuple(float(v) for v in row["bbox"]), tuple(float(v) for v in rec["bbox"]))
+            pred_bbox = tuple(float(v) for v in row["bbox"])
+            gt_bbox = tuple(float(v) for v in rec["bbox"])
+            iou = bbox_iou(pred_bbox, gt_bbox)
+            bbox_delta_mean_px = float(np.mean(np.abs(np.asarray(pred_bbox) - np.asarray(gt_bbox))))
+            bbox_near_identical_to_prediction = bool(bbox_delta_mean_px < 0.05)
         per_frame.append(
             {
                 "frame_id": frame_id,
@@ -57,6 +63,8 @@ def evaluate_bbox_annotations(gt_path: str | Path | None, rows: List[Dict[str, A
                 "bbox_type": rec.get("bbox_type", ""),
                 "matched": row is not None,
                 "iou": iou,
+                "bbox_delta_mean_px": bbox_delta_mean_px,
+                "bbox_near_identical_to_prediction": bbox_near_identical_to_prediction,
                 "pred_status": None if row is None else row.get("status", ""),
                 "pred_track_state": None if row is None else row.get("track_state", ""),
                 "pred_detector_source": None if row is None else row.get("detector_source", ""),
@@ -81,6 +89,8 @@ def evaluate_bbox_annotations(gt_path: str | Path | None, rows: List[Dict[str, A
     passes_iou = bool(iou_rate is not None and mean_iou is not None and iou_rate >= 0.90 and mean_iou >= 0.60)
     occl_continuity = occluded_stats["continuity_rate"]
     passes_occl = bool(gt_occluded_frames > 0 and occl_continuity is not None and occl_continuity >= 0.90)
+    independence = _annotation_independence_check(per_frame)
+    independent_enough = not independence["likely_draft_boxes_not_independent"]
     return {
         "enabled": True,
         "gt_file": str(path),
@@ -102,11 +112,12 @@ def evaluate_bbox_annotations(gt_path: str | Path | None, rows: List[Dict[str, A
         "detector_source_counts_on_gt": dict(detector_sources),
         "detector_source_counts_on_gt_occluded": dict(occluded_detector_sources),
         "pred_status_counts_on_gt_occluded": dict(pred_status_on_occluded),
+        "annotation_independence_check": independence,
         "worst_iou_frames": _worst_iou_frames(per_frame, n=10),
         "passes_iou_contract_on_supplied_gt": passes_iou,
-        "passes_hidden_contract_proxy": passes_iou,
+        "passes_hidden_contract_proxy": bool(passes_iou and independent_enough),
         "passes_occlusion_continuity_on_supplied_gt": passes_occl,
-        "interpretation": _gt_interpretation(len(gt), gt_occluded_frames, passes_iou, passes_occl),
+        "interpretation": _gt_interpretation(len(gt), gt_occluded_frames, passes_iou, passes_occl, independence),
     }
 
 
@@ -296,6 +307,7 @@ def _read_gt_records(path: Path) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
     skipped = 0
     invalid = 0
     duplicate_frames = 0
+    blank_occluded_assumed_visible = 0
     seen: set[int] = set()
     for item in raw_items:
         status = str(item.get("review_status", "ok")).strip().lower()
@@ -319,12 +331,16 @@ def _read_gt_records(path: Path) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
         if frame_id in seen:
             duplicate_frames += 1
         seen.add(frame_id)
+        occluded = _parse_optional_bool(item)
+        if occluded is None:
+            occluded = False
+            blank_occluded_assumed_visible += 1
         records.append(
             {
                 "frame_id": frame_id,
                 "bbox": bbox,
                 "review_status": status or "ok",
-                "occluded": _parse_optional_bool(item),
+                "occluded": occluded,
                 "visibility": _parse_optional_float(item, ("visibility", "visible_fraction", "visibility_fraction")),
                 "bbox_type": str(item.get("bbox_type", item.get("box_type", ""))),
             }
@@ -341,6 +357,7 @@ def _read_gt_records(path: Path) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
         "skipped_rows": skipped,
         "invalid_rows": invalid,
         "duplicate_frames_collapsed": duplicate_frames,
+        "blank_occluded_assumed_visible": blank_occluded_assumed_visible,
     }
 
 
@@ -446,6 +463,36 @@ def _worst_iou_frames(items: List[Dict[str, Any]], n: int) -> List[Dict[str, Any
     ]
 
 
+def _annotation_independence_check(items: List[Dict[str, Any]]) -> Dict[str, Any]:
+    matched = [r for r in items if r.get("matched") and r.get("bbox_delta_mean_px") is not None]
+    if not matched:
+        return {
+            "enabled": False,
+            "reason": "no_matched_gt_frames",
+            "likely_draft_boxes_not_independent": False,
+        }
+    deltas = np.asarray([float(r["bbox_delta_mean_px"]) for r in matched], dtype=np.float64)
+    near_identical = np.asarray([bool(r["bbox_near_identical_to_prediction"]) for r in matched], dtype=bool)
+    near_rate = float(np.mean(near_identical))
+    mean_delta = float(np.mean(deltas))
+    max_delta = float(np.max(deltas))
+    likely_draft = bool(len(matched) >= 10 and near_rate > 0.80 and mean_delta < 0.10)
+    return {
+        "enabled": True,
+        "matched_frames": len(matched),
+        "near_identical_box_rate": near_rate,
+        "mean_abs_bbox_delta_px": mean_delta,
+        "max_abs_bbox_delta_px": max_delta,
+        "near_identical_threshold_px": 0.05,
+        "likely_draft_boxes_not_independent": likely_draft,
+        "interpretation": (
+            "GT boxes are numerically identical to the tracker output; this is not independent IoU evidence."
+            if likely_draft
+            else "GT boxes differ from tracker output enough to be treated as independently reviewed annotations."
+        ),
+    }
+
+
 def _parse_optional_bool(row: Dict[str, Any]) -> bool | None:
     for key in ("occluded", "is_occluded", "gt_occluded", "occlusion"):
         if key not in row:
@@ -480,10 +527,20 @@ def _parse_optional_float(row: Dict[str, Any], keys: tuple[str, ...]) -> float |
     return None
 
 
-def _gt_interpretation(gt_frames: int, gt_occluded_frames: int, passes_iou: bool, passes_occl: bool) -> str:
+def _gt_interpretation(
+    gt_frames: int,
+    gt_occluded_frames: int,
+    passes_iou: bool,
+    passes_occl: bool,
+    independence: Dict[str, Any] | None = None,
+) -> str:
     if gt_frames == 0:
         return "No usable GT rows after filtering draft/skip/invalid annotations."
     parts = ["Evaluation uses externally supplied reviewed bbox annotations."]
+    if independence and independence.get("likely_draft_boxes_not_independent"):
+        parts.append(
+            "However, the GT boxes are numerically identical to tracker predictions, so IoU is not independent evidence."
+        )
     if passes_iou:
         parts.append("IoU contract passes on supplied GT.")
     else:

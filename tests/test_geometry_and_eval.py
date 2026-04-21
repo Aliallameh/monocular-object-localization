@@ -93,23 +93,50 @@ class EvaluationTests(unittest.TestCase):
                 writer.writerow(["frame_id", "x1", "y1", "x2", "y2", "review_status", "occluded", "visibility"])
                 writer.writerow([1, 0, 0, 10, 10, "ok", 0, 1.0])
                 writer.writerow([2, 12, 12, 22, 22, "ok", 1, 0.5])
+                writer.writerow([4, 20, 20, 30, 30, "ok", "", ""])
                 writer.writerow([3, 0, 0, 1, 1, "skip", 1, 0.1])
             report = evaluate_bbox_annotations(gt_path, rows)
         self.assertTrue(report["enabled"])
-        self.assertEqual(report["gt_frames"], 2)
+        self.assertEqual(report["gt_frames"], 3)
         self.assertEqual(report["gt_occluded_frames"], 1)
+        self.assertEqual(report["gt_visible_frames"], 2)
         self.assertEqual(report["matched_frames"], 2)
         self.assertEqual(report["occluded_frames"]["matched_frames"], 1)
         self.assertEqual(report["detector_source_counts_on_gt_occluded"]["lk_optical_flow"], 1)
+        self.assertEqual(report["parse_report"]["blank_occluded_assumed_visible"], 1)
         self.assertGreater(report["mean_iou"], 0.5)
 
     def test_bbox_annotation_evaluator_json(self) -> None:
-        rows = [{"frame_id": 7, "bbox": [1.0, 2.0, 11.0, 12.0]}]
+        rows = [{"frame_id": i, "bbox": [1.0, 2.0, 11.0, 12.0]} for i in range(12)]
         with tempfile.TemporaryDirectory() as tmp:
             gt_path = Path(tmp) / "gt.json"
-            gt_path.write_text(json.dumps({"frames": [{"frame_id": 7, "x1": 1, "y1": 2, "x2": 11, "y2": 12}]}))
+            gt_path.write_text(
+                json.dumps(
+                    {
+                        "frames": [
+                            {"frame_id": i, "x1": 1, "y1": 2, "x2": 11, "y2": 12}
+                            for i in range(12)
+                        ]
+                    }
+                )
+            )
+            report = evaluate_bbox_annotations(gt_path, rows)
+        self.assertTrue(report["passes_iou_contract_on_supplied_gt"])
+        self.assertFalse(report["passes_hidden_contract_proxy"])
+        self.assertTrue(report["annotation_independence_check"]["likely_draft_boxes_not_independent"])
+
+    def test_bbox_annotation_evaluator_accepts_independent_boxes(self) -> None:
+        rows = [{"frame_id": i, "bbox": [0.0, 0.0, 100.0, 100.0]} for i in range(12)]
+        frames = [
+            {"frame_id": i, "x1": 2.0, "y1": 2.0, "x2": 98.0, "y2": 98.0, "review_status": "ok"}
+            for i in range(12)
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            gt_path = Path(tmp) / "gt.json"
+            gt_path.write_text(json.dumps({"frames": frames}), encoding="utf-8")
             report = evaluate_bbox_annotations(gt_path, rows)
         self.assertTrue(report["passes_hidden_contract_proxy"])
+        self.assertFalse(report["annotation_independence_check"]["likely_draft_boxes_not_independent"])
 
     def test_contact_point_evaluator_is_validation_only(self) -> None:
         calib = {
