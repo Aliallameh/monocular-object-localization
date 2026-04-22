@@ -1,0 +1,2508 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>BBox Annotation Review</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f5f6f7; color: #111; }
+    header { position: sticky; top: 0; z-index: 3; background: #fff; border-bottom: 1px solid #cfd5dc; padding: 14px 22px; }
+    main { margin: 22px; }
+    button { border-radius: 6px; border: 1px solid #333; padding: 9px 14px; background: #111; color: white; cursor: pointer; }
+    .card { background: white; border: 1px solid #d0d4d8; border-radius: 8px; padding: 14px; margin: 16px 0; }
+    .card-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .pill { border: 1px solid #a9b2bc; border-radius: 999px; padding: 4px 8px; color: #303942; font-size: 12px; }
+    .images { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    figure { margin: 0; }
+    figcaption { font-size: 13px; font-weight: 700; margin: 0 0 6px; color: #29313a; }
+    img { width: 100%; height: auto; display: block; border: 1px solid #999; background: #ddd; }
+    .canvas-wrap { position: relative; }
+    .canvas-wrap img { position: relative; z-index: 1; }
+    .canvas-wrap canvas { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; cursor: crosshair; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+    input, select { width: 100%; box-sizing: border-box; padding: 6px; }
+    input[readonly] { background: #eef1f4; color: #222; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .warn { color: #8a3000; font-weight: 700; }
+    @media (max-width: 900px) { .images { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>BBox Annotation Review</h1>
+    <p>Drag on the clean frame to draw the GT box. Mark usable rows as <strong>ok</strong>, mark real occlusion rows with <strong>occluded=1</strong>, then download CSV and run with <code>--bbox-gt</code>. For continuity evidence, use amodal/full-bin boxes when the bin extent is inferable; skip fully ambiguous frames.</p>
+    <p class="warn">Draft rows are ignored by evaluation. Nothing counts until you set review_status=ok.</p>
+    <button onclick="downloadCsv()">Download corrected CSV</button>
+  </header>
+  <main>
+    
+        <section class="card" data-frame="0">
+          <div class="card-title">
+            <h2>Frame 0</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00000.jpg" alt="clean frame 0">
+                <canvas data-frame="0"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00000_draft.jpg" alt="draft frame 0">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="764.00" data-field="x1" readonly></label>
+            <label>y1 <input value="482.00" data-field="y1" readonly></label>
+            <label>x2 <input value="1116.00" data-field="x2" readonly></label>
+            <label>y2 <input value="790.00" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="46">
+          <div class="card-title">
+            <h2>Frame 46</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00046.jpg" alt="clean frame 46">
+                <canvas data-frame="46"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00046_draft.jpg" alt="draft frame 46">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="721.05" data-field="x1" readonly></label>
+            <label>y1 <input value="477.93" data-field="y1" readonly></label>
+            <label>x2 <input value="1222.23" data-field="x2" readonly></label>
+            <label>y2 <input value="883.65" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="50">
+          <div class="card-title">
+            <h2>Frame 50</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00050.jpg" alt="clean frame 50">
+                <canvas data-frame="50"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00050_draft.jpg" alt="draft frame 50">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="707.61" data-field="x1" readonly></label>
+            <label>y1 <input value="477.82" data-field="y1" readonly></label>
+            <label>x2 <input value="1246.50" data-field="x2" readonly></label>
+            <label>y2 <input value="879.79" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="92">
+          <div class="card-title">
+            <h2>Frame 92</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00092.jpg" alt="clean frame 92">
+                <canvas data-frame="92"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00092_draft.jpg" alt="draft frame 92">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="636.68" data-field="x1" readonly></label>
+            <label>y1 <input value="479.76" data-field="y1" readonly></label>
+            <label>x2 <input value="1190.84" data-field="x2" readonly></label>
+            <label>y2 <input value="845.19" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="138">
+          <div class="card-title">
+            <h2>Frame 138</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00138.jpg" alt="clean frame 138">
+                <canvas data-frame="138"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00138_draft.jpg" alt="draft frame 138">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="507.62" data-field="x1" readonly></label>
+            <label>y1 <input value="475.35" data-field="y1" readonly></label>
+            <label>x2 <input value="832.64" data-field="x2" readonly></label>
+            <label>y2 <input value="736.36" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="184">
+          <div class="card-title">
+            <h2>Frame 184</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00184.jpg" alt="clean frame 184">
+                <canvas data-frame="184"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00184_draft.jpg" alt="draft frame 184">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="449.00" data-field="x1" readonly></label>
+            <label>y1 <input value="480.19" data-field="y1" readonly></label>
+            <label>x2 <input value="725.07" data-field="x2" readonly></label>
+            <label>y2 <input value="696.92" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="200">
+          <div class="card-title">
+            <h2>Frame 200</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00200.jpg" alt="clean frame 200">
+                <canvas data-frame="200"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00200_draft.jpg" alt="draft frame 200">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="449.00" data-field="x1" readonly></label>
+            <label>y1 <input value="461.57" data-field="y1" readonly></label>
+            <label>x2 <input value="725.00" data-field="x2" readonly></label>
+            <label>y2 <input value="695.81" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="230">
+          <div class="card-title">
+            <h2>Frame 230</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00230.jpg" alt="clean frame 230">
+                <canvas data-frame="230"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00230_draft.jpg" alt="draft frame 230">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="448.32" data-field="x1" readonly></label>
+            <label>y1 <input value="466.07" data-field="y1" readonly></label>
+            <label>x2 <input value="723.65" data-field="x2" readonly></label>
+            <label>y2 <input value="687.79" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="276">
+          <div class="card-title">
+            <h2>Frame 276</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00276.jpg" alt="clean frame 276">
+                <canvas data-frame="276"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00276_draft.jpg" alt="draft frame 276">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="478.18" data-field="x1" readonly></label>
+            <label>y1 <input value="427.98" data-field="y1" readonly></label>
+            <label>x2 <input value="781.39" data-field="x2" readonly></label>
+            <label>y2 <input value="698.71" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="304">
+          <div class="card-title">
+            <h2>Frame 304</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00304.jpg" alt="clean frame 304">
+                <canvas data-frame="304"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00304_draft.jpg" alt="draft frame 304">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="574.83" data-field="x1" readonly></label>
+            <label>y1 <input value="445.12" data-field="y1" readonly></label>
+            <label>x2 <input value="901.05" data-field="x2" readonly></label>
+            <label>y2 <input value="709.70" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="322">
+          <div class="card-title">
+            <h2>Frame 322</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00322.jpg" alt="clean frame 322">
+                <canvas data-frame="322"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00322_draft.jpg" alt="draft frame 322">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="753.88" data-field="x1" readonly></label>
+            <label>y1 <input value="482.18" data-field="y1" readonly></label>
+            <label>x2 <input value="1004.18" data-field="x2" readonly></label>
+            <label>y2 <input value="709.60" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="368">
+          <div class="card-title">
+            <h2>Frame 368</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00368.jpg" alt="clean frame 368">
+                <canvas data-frame="368"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00368_draft.jpg" alt="draft frame 368">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="964.38" data-field="x1" readonly></label>
+            <label>y1 <input value="439.63" data-field="y1" readonly></label>
+            <label>x2 <input value="1240.01" data-field="x2" readonly></label>
+            <label>y2 <input value="742.44" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="414">
+          <div class="card-title">
+            <h2>Frame 414</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00414.jpg" alt="clean frame 414">
+                <canvas data-frame="414"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00414_draft.jpg" alt="draft frame 414">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="926.47" data-field="x1" readonly></label>
+            <label>y1 <input value="441.90" data-field="y1" readonly></label>
+            <label>x2 <input value="1271.39" data-field="x2" readonly></label>
+            <label>y2 <input value="775.97" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="443">
+          <div class="card-title">
+            <h2>Frame 443</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00443.jpg" alt="clean frame 443">
+                <canvas data-frame="443"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00443_draft.jpg" alt="draft frame 443">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="712.18" data-field="x1" readonly></label>
+            <label>y1 <input value="477.14" data-field="y1" readonly></label>
+            <label>x2 <input value="1152.41" data-field="x2" readonly></label>
+            <label>y2 <input value="817.52" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="460">
+          <div class="card-title">
+            <h2>Frame 460</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00460.jpg" alt="clean frame 460">
+                <canvas data-frame="460"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00460_draft.jpg" alt="draft frame 460">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="593.95" data-field="x1" readonly></label>
+            <label>y1 <input value="472.22" data-field="y1" readonly></label>
+            <label>x2 <input value="938.27" data-field="x2" readonly></label>
+            <label>y2 <input value="788.91" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="500">
+          <div class="card-title">
+            <h2>Frame 500</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00500.jpg" alt="clean frame 500">
+                <canvas data-frame="500"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00500_draft.jpg" alt="draft frame 500">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="278.59" data-field="x1" readonly></label>
+            <label>y1 <input value="410.94" data-field="y1" readonly></label>
+            <label>x2 <input value="660.61" data-field="x2" readonly></label>
+            <label>y2 <input value="826.99" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="506">
+          <div class="card-title">
+            <h2>Frame 506</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00506.jpg" alt="clean frame 506">
+                <canvas data-frame="506"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00506_draft.jpg" alt="draft frame 506">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="275.41" data-field="x1" readonly></label>
+            <label>y1 <input value="404.37" data-field="y1" readonly></label>
+            <label>x2 <input value="660.71" data-field="x2" readonly></label>
+            <label>y2 <input value="826.90" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="552">
+          <div class="card-title">
+            <h2>Frame 552</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00552.jpg" alt="clean frame 552">
+                <canvas data-frame="552"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00552_draft.jpg" alt="draft frame 552">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="482.19" data-field="x1" readonly></label>
+            <label>y1 <input value="412.88" data-field="y1" readonly></label>
+            <label>x2 <input value="819.66" data-field="x2" readonly></label>
+            <label>y2 <input value="784.54" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="598">
+          <div class="card-title">
+            <h2>Frame 598</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00598.jpg" alt="clean frame 598">
+                <canvas data-frame="598"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00598_draft.jpg" alt="draft frame 598">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="810.14" data-field="x1" readonly></label>
+            <label>y1 <input value="473.79" data-field="y1" readonly></label>
+            <label>x2 <input value="1173.98" data-field="x2" readonly></label>
+            <label>y2 <input value="778.69" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="604">
+          <div class="card-title">
+            <h2>Frame 604</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00604.jpg" alt="clean frame 604">
+                <canvas data-frame="604"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00604_draft.jpg" alt="draft frame 604">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="847.77" data-field="x1" readonly></label>
+            <label>y1 <input value="475.25" data-field="y1" readonly></label>
+            <label>x2 <input value="1204.34" data-field="x2" readonly></label>
+            <label>y2 <input value="805.09" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="605">
+          <div class="card-title">
+            <h2>Frame 605</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00605.jpg" alt="clean frame 605">
+                <canvas data-frame="605"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00605_draft.jpg" alt="draft frame 605">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="855.58" data-field="x1" readonly></label>
+            <label>y1 <input value="475.93" data-field="y1" readonly></label>
+            <label>x2 <input value="1214.16" data-field="x2" readonly></label>
+            <label>y2 <input value="823.93" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="610">
+          <div class="card-title">
+            <h2>Frame 610</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00610.jpg" alt="clean frame 610">
+                <canvas data-frame="610"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00610_draft.jpg" alt="draft frame 610">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="878.75" data-field="x1" readonly></label>
+            <label>y1 <input value="469.31" data-field="y1" readonly></label>
+            <label>x2 <input value="1276.93" data-field="x2" readonly></label>
+            <label>y2 <input value="816.69" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="611">
+          <div class="card-title">
+            <h2>Frame 611</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00611.jpg" alt="clean frame 611">
+                <canvas data-frame="611"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00611_draft.jpg" alt="draft frame 611">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="880.96" data-field="x1" readonly></label>
+            <label>y1 <input value="468.63" data-field="y1" readonly></label>
+            <label>x2 <input value="1278.29" data-field="x2" readonly></label>
+            <label>y2 <input value="797.24" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="612">
+          <div class="card-title">
+            <h2>Frame 612</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00612.jpg" alt="clean frame 612">
+                <canvas data-frame="612"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00612_draft.jpg" alt="draft frame 612">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="884.57" data-field="x1" readonly></label>
+            <label>y1 <input value="468.75" data-field="y1" readonly></label>
+            <label>x2 <input value="1277.91" data-field="x2" readonly></label>
+            <label>y2 <input value="779.95" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="644">
+          <div class="card-title">
+            <h2>Frame 644</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00644.jpg" alt="clean frame 644">
+                <canvas data-frame="644"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00644_draft.jpg" alt="draft frame 644">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="979.98" data-field="x1" readonly></label>
+            <label>y1 <input value="473.67" data-field="y1" readonly></label>
+            <label>x2 <input value="1249.99" data-field="x2" readonly></label>
+            <label>y2 <input value="734.22" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="676">
+          <div class="card-title">
+            <h2>Frame 676</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00676.jpg" alt="clean frame 676">
+                <canvas data-frame="676"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00676_draft.jpg" alt="draft frame 676">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="985.71" data-field="x1" readonly></label>
+            <label>y1 <input value="475.67" data-field="y1" readonly></label>
+            <label>x2 <input value="1267.90" data-field="x2" readonly></label>
+            <label>y2 <input value="752.62" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="690">
+          <div class="card-title">
+            <h2>Frame 690</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00690.jpg" alt="clean frame 690">
+                <canvas data-frame="690"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00690_draft.jpg" alt="draft frame 690">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="964.36" data-field="x1" readonly></label>
+            <label>y1 <input value="460.69" data-field="y1" readonly></label>
+            <label>x2 <input value="1269.81" data-field="x2" readonly></label>
+            <label>y2 <input value="733.45" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="696">
+          <div class="card-title">
+            <h2>Frame 696</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00696.jpg" alt="clean frame 696">
+                <canvas data-frame="696"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00696_draft.jpg" alt="draft frame 696">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="963.96" data-field="x1" readonly></label>
+            <label>y1 <input value="450.22" data-field="y1" readonly></label>
+            <label>x2 <input value="1356.87" data-field="x2" readonly></label>
+            <label>y2 <input value="754.97" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="736">
+          <div class="card-title">
+            <h2>Frame 736</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00736.jpg" alt="clean frame 736">
+                <canvas data-frame="736"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00736_draft.jpg" alt="draft frame 736">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="868.94" data-field="x1" readonly></label>
+            <label>y1 <input value="431.06" data-field="y1" readonly></label>
+            <label>x2 <input value="1294.72" data-field="x2" readonly></label>
+            <label>y2 <input value="786.60" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="782">
+          <div class="card-title">
+            <h2>Frame 782</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00782.jpg" alt="clean frame 782">
+                <canvas data-frame="782"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00782_draft.jpg" alt="draft frame 782">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="815.19" data-field="x1" readonly></label>
+            <label>y1 <input value="432.30" data-field="y1" readonly></label>
+            <label>x2 <input value="1141.15" data-field="x2" readonly></label>
+            <label>y2 <input value="804.07" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="800">
+          <div class="card-title">
+            <h2>Frame 800</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00800.jpg" alt="clean frame 800">
+                <canvas data-frame="800"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00800_draft.jpg" alt="draft frame 800">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="852.87" data-field="x1" readonly></label>
+            <label>y1 <input value="440.72" data-field="y1" readonly></label>
+            <label>x2 <input value="1133.40" data-field="x2" readonly></label>
+            <label>y2 <input value="749.78" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="801">
+          <div class="card-title">
+            <h2>Frame 801</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00801.jpg" alt="clean frame 801">
+                <canvas data-frame="801"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00801_draft.jpg" alt="draft frame 801">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="855.18" data-field="x1" readonly></label>
+            <label>y1 <input value="440.71" data-field="y1" readonly></label>
+            <label>x2 <input value="1131.85" data-field="x2" readonly></label>
+            <label>y2 <input value="721.42" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="802">
+          <div class="card-title">
+            <h2>Frame 802</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00802.jpg" alt="clean frame 802">
+                <canvas data-frame="802"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00802_draft.jpg" alt="draft frame 802">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="857.78" data-field="x1" readonly></label>
+            <label>y1 <input value="443.86" data-field="y1" readonly></label>
+            <label>x2 <input value="1130.51" data-field="x2" readonly></label>
+            <label>y2 <input value="742.76" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="803">
+          <div class="card-title">
+            <h2>Frame 803</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00803.jpg" alt="clean frame 803">
+                <canvas data-frame="803"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00803_draft.jpg" alt="draft frame 803">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="859.32" data-field="x1" readonly></label>
+            <label>y1 <input value="446.45" data-field="y1" readonly></label>
+            <label>x2 <input value="1129.62" data-field="x2" readonly></label>
+            <label>y2 <input value="760.66" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="804">
+          <div class="card-title">
+            <h2>Frame 804</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00804.jpg" alt="clean frame 804">
+                <canvas data-frame="804"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00804_draft.jpg" alt="draft frame 804">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="860.92" data-field="x1" readonly></label>
+            <label>y1 <input value="447.62" data-field="y1" readonly></label>
+            <label>x2 <input value="1128.29" data-field="x2" readonly></label>
+            <label>y2 <input value="773.50" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="805">
+          <div class="card-title">
+            <h2>Frame 805</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00805.jpg" alt="clean frame 805">
+                <canvas data-frame="805"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00805_draft.jpg" alt="draft frame 805">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="864.26" data-field="x1" readonly></label>
+            <label>y1 <input value="448.67" data-field="y1" readonly></label>
+            <label>x2 <input value="1126.77" data-field="x2" readonly></label>
+            <label>y2 <input value="782.55" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="806">
+          <div class="card-title">
+            <h2>Frame 806</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00806.jpg" alt="clean frame 806">
+                <canvas data-frame="806"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00806_draft.jpg" alt="draft frame 806">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="868.20" data-field="x1" readonly></label>
+            <label>y1 <input value="446.84" data-field="y1" readonly></label>
+            <label>x2 <input value="1124.93" data-field="x2" readonly></label>
+            <label>y2 <input value="744.62" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="807">
+          <div class="card-title">
+            <h2>Frame 807</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00807.jpg" alt="clean frame 807">
+                <canvas data-frame="807"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00807_draft.jpg" alt="draft frame 807">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="871.38" data-field="x1" readonly></label>
+            <label>y1 <input value="446.30" data-field="y1" readonly></label>
+            <label>x2 <input value="1122.91" data-field="x2" readonly></label>
+            <label>y2 <input value="720.78" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="808">
+          <div class="card-title">
+            <h2>Frame 808</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00808.jpg" alt="clean frame 808">
+                <canvas data-frame="808"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00808_draft.jpg" alt="draft frame 808">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="873.23" data-field="x1" readonly></label>
+            <label>y1 <input value="446.63" data-field="y1" readonly></label>
+            <label>x2 <input value="1121.62" data-field="x2" readonly></label>
+            <label>y2 <input value="705.64" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="809">
+          <div class="card-title">
+            <h2>Frame 809</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00809.jpg" alt="clean frame 809">
+                <canvas data-frame="809"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00809_draft.jpg" alt="draft frame 809">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="875.07" data-field="x1" readonly></label>
+            <label>y1 <input value="447.30" data-field="y1" readonly></label>
+            <label>x2 <input value="1120.94" data-field="x2" readonly></label>
+            <label>y2 <input value="696.19" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="810">
+          <div class="card-title">
+            <h2>Frame 810</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00810.jpg" alt="clean frame 810">
+                <canvas data-frame="810"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00810_draft.jpg" alt="draft frame 810">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="875.96" data-field="x1" readonly></label>
+            <label>y1 <input value="448.06" data-field="y1" readonly></label>
+            <label>x2 <input value="1119.70" data-field="x2" readonly></label>
+            <label>y2 <input value="691.11" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="811">
+          <div class="card-title">
+            <h2>Frame 811</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00811.jpg" alt="clean frame 811">
+                <canvas data-frame="811"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00811_draft.jpg" alt="draft frame 811">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="877.12" data-field="x1" readonly></label>
+            <label>y1 <input value="448.21" data-field="y1" readonly></label>
+            <label>x2 <input value="1118.17" data-field="x2" readonly></label>
+            <label>y2 <input value="688.06" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="812">
+          <div class="card-title">
+            <h2>Frame 812</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00812.jpg" alt="clean frame 812">
+                <canvas data-frame="812"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00812_draft.jpg" alt="draft frame 812">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="877.63" data-field="x1" readonly></label>
+            <label>y1 <input value="448.80" data-field="y1" readonly></label>
+            <label>x2 <input value="1116.36" data-field="x2" readonly></label>
+            <label>y2 <input value="687.20" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="813">
+          <div class="card-title">
+            <h2>Frame 813</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00813.jpg" alt="clean frame 813">
+                <canvas data-frame="813"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00813_draft.jpg" alt="draft frame 813">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="877.79" data-field="x1" readonly></label>
+            <label>y1 <input value="449.18" data-field="y1" readonly></label>
+            <label>x2 <input value="1115.29" data-field="x2" readonly></label>
+            <label>y2 <input value="687.62" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="814">
+          <div class="card-title">
+            <h2>Frame 814</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00814.jpg" alt="clean frame 814">
+                <canvas data-frame="814"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00814_draft.jpg" alt="draft frame 814">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="878.64" data-field="x1" readonly></label>
+            <label>y1 <input value="448.88" data-field="y1" readonly></label>
+            <label>x2 <input value="1114.80" data-field="x2" readonly></label>
+            <label>y2 <input value="688.19" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="815">
+          <div class="card-title">
+            <h2>Frame 815</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00815.jpg" alt="clean frame 815">
+                <canvas data-frame="815"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00815_draft.jpg" alt="draft frame 815">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="880.85" data-field="x1" readonly></label>
+            <label>y1 <input value="449.47" data-field="y1" readonly></label>
+            <label>x2 <input value="1114.74" data-field="x2" readonly></label>
+            <label>y2 <input value="689.25" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="816">
+          <div class="card-title">
+            <h2>Frame 816</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00816.jpg" alt="clean frame 816">
+                <canvas data-frame="816"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00816_draft.jpg" alt="draft frame 816">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="882.21" data-field="x1" readonly></label>
+            <label>y1 <input value="449.37" data-field="y1" readonly></label>
+            <label>x2 <input value="1114.78" data-field="x2" readonly></label>
+            <label>y2 <input value="690.80" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="817">
+          <div class="card-title">
+            <h2>Frame 817</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00817.jpg" alt="clean frame 817">
+                <canvas data-frame="817"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00817_draft.jpg" alt="draft frame 817">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="882.96" data-field="x1" readonly></label>
+            <label>y1 <input value="449.20" data-field="y1" readonly></label>
+            <label>x2 <input value="1114.88" data-field="x2" readonly></label>
+            <label>y2 <input value="692.19" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="818">
+          <div class="card-title">
+            <h2>Frame 818</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00818.jpg" alt="clean frame 818">
+                <canvas data-frame="818"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00818_draft.jpg" alt="draft frame 818">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="883.29" data-field="x1" readonly></label>
+            <label>y1 <input value="448.97" data-field="y1" readonly></label>
+            <label>x2 <input value="1115.02" data-field="x2" readonly></label>
+            <label>y2 <input value="693.34" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="819">
+          <div class="card-title">
+            <h2>Frame 819</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00819.jpg" alt="clean frame 819">
+                <canvas data-frame="819"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00819_draft.jpg" alt="draft frame 819">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="884.30" data-field="x1" readonly></label>
+            <label>y1 <input value="450.53" data-field="y1" readonly></label>
+            <label>x2 <input value="1116.13" data-field="x2" readonly></label>
+            <label>y2 <input value="694.38" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="820">
+          <div class="card-title">
+            <h2>Frame 820</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00820.jpg" alt="clean frame 820">
+                <canvas data-frame="820"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00820_draft.jpg" alt="draft frame 820">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="885.76" data-field="x1" readonly></label>
+            <label>y1 <input value="451.05" data-field="y1" readonly></label>
+            <label>x2 <input value="1117.84" data-field="x2" readonly></label>
+            <label>y2 <input value="694.62" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="821">
+          <div class="card-title">
+            <h2>Frame 821</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00821.jpg" alt="clean frame 821">
+                <canvas data-frame="821"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00821_draft.jpg" alt="draft frame 821">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="886.64" data-field="x1" readonly></label>
+            <label>y1 <input value="452.16" data-field="y1" readonly></label>
+            <label>x2 <input value="1119.88" data-field="x2" readonly></label>
+            <label>y2 <input value="693.94" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="822">
+          <div class="card-title">
+            <h2>Frame 822</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00822.jpg" alt="clean frame 822">
+                <canvas data-frame="822"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00822_draft.jpg" alt="draft frame 822">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="887.97" data-field="x1" readonly></label>
+            <label>y1 <input value="456.05" data-field="y1" readonly></label>
+            <label>x2 <input value="1122.16" data-field="x2" readonly></label>
+            <label>y2 <input value="693.65" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="823">
+          <div class="card-title">
+            <h2>Frame 823</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00823.jpg" alt="clean frame 823">
+                <canvas data-frame="823"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00823_draft.jpg" alt="draft frame 823">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="888.66" data-field="x1" readonly></label>
+            <label>y1 <input value="458.58" data-field="y1" readonly></label>
+            <label>x2 <input value="1123.56" data-field="x2" readonly></label>
+            <label>y2 <input value="693.36" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="824">
+          <div class="card-title">
+            <h2>Frame 824</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00824.jpg" alt="clean frame 824">
+                <canvas data-frame="824"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00824_draft.jpg" alt="draft frame 824">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="889.06" data-field="x1" readonly></label>
+            <label>y1 <input value="459.20" data-field="y1" readonly></label>
+            <label>x2 <input value="1126.14" data-field="x2" readonly></label>
+            <label>y2 <input value="692.59" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="825">
+          <div class="card-title">
+            <h2>Frame 825</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00825.jpg" alt="clean frame 825">
+                <canvas data-frame="825"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00825_draft.jpg" alt="draft frame 825">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="889.11" data-field="x1" readonly></label>
+            <label>y1 <input value="461.20" data-field="y1" readonly></label>
+            <label>x2 <input value="1127.73" data-field="x2" readonly></label>
+            <label>y2 <input value="691.74" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="826">
+          <div class="card-title">
+            <h2>Frame 826</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00826.jpg" alt="clean frame 826">
+                <canvas data-frame="826"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00826_draft.jpg" alt="draft frame 826">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="889.49" data-field="x1" readonly></label>
+            <label>y1 <input value="462.88" data-field="y1" readonly></label>
+            <label>x2 <input value="1129.55" data-field="x2" readonly></label>
+            <label>y2 <input value="691.63" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="827">
+          <div class="card-title">
+            <h2>Frame 827</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00827.jpg" alt="clean frame 827">
+                <canvas data-frame="827"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00827_draft.jpg" alt="draft frame 827">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="889.24" data-field="x1" readonly></label>
+            <label>y1 <input value="457.40" data-field="y1" readonly></label>
+            <label>x2 <input value="1131.43" data-field="x2" readonly></label>
+            <label>y2 <input value="691.94" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="828">
+          <div class="card-title">
+            <h2>Frame 828</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00828.jpg" alt="clean frame 828">
+                <canvas data-frame="828"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00828_draft.jpg" alt="draft frame 828">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="889.35" data-field="x1" readonly></label>
+            <label>y1 <input value="453.32" data-field="y1" readonly></label>
+            <label>x2 <input value="1132.58" data-field="x2" readonly></label>
+            <label>y2 <input value="692.40" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="829">
+          <div class="card-title">
+            <h2>Frame 829</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00829.jpg" alt="clean frame 829">
+                <canvas data-frame="829"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00829_draft.jpg" alt="draft frame 829">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="888.87" data-field="x1" readonly></label>
+            <label>y1 <input value="456.75" data-field="y1" readonly></label>
+            <label>x2 <input value="1133.08" data-field="x2" readonly></label>
+            <label>y2 <input value="692.44" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="830">
+          <div class="card-title">
+            <h2>Frame 830</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00830.jpg" alt="clean frame 830">
+                <canvas data-frame="830"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00830_draft.jpg" alt="draft frame 830">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="888.49" data-field="x1" readonly></label>
+            <label>y1 <input value="458.71" data-field="y1" readonly></label>
+            <label>x2 <input value="1133.26" data-field="x2" readonly></label>
+            <label>y2 <input value="692.79" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+
+        <section class="card" data-frame="874">
+          <div class="card-title">
+            <h2>Frame 874</h2>
+            <span class="pill">draft box is only a starting point</span>
+          </div>
+          <div class="images">
+            <figure>
+              <figcaption>Draw / adjust GT box here</figcaption>
+              <div class="canvas-wrap">
+                <img src="frames/frame_00874.jpg" alt="clean frame 874">
+                <canvas data-frame="874"></canvas>
+              </div>
+            </figure>
+            <figure>
+              <figcaption>Draft tracker box</figcaption>
+              <img src="frames/frame_00874_draft.jpg" alt="draft frame 874">
+            </figure>
+          </div>
+          <div class="grid">
+            <label>x1 <input value="891.37" data-field="x1" readonly></label>
+            <label>y1 <input value="467.76" data-field="y1" readonly></label>
+            <label>x2 <input value="1114.00" data-field="x2" readonly></label>
+            <label>y2 <input value="692.94" data-field="y2" readonly></label>
+            <label>status <select data-field="review_status"><option>ok</option><option selected>draft</option><option>skip</option></select></label>
+            <label>occluded <select data-field="occluded"><option value=""></option><option value="0">0</option><option value="1">1</option></select></label>
+            <label>visibility <input value="" data-field="visibility" placeholder="0.0-1.0"></label>
+            <label>bbox type <select data-field="bbox_type"><option selected>amodal_full_bin</option><option>visible_extent</option></select></label>
+            <label>notes <input value="" data-field="notes"></label>
+          </div>
+          <div class="actions">
+            <button type="button" onclick="markOk(this)">OK</button>
+            <button type="button" onclick="markOccluded(this)">Occluded OK</button>
+            <button type="button" onclick="markSkip(this)">Skip</button>
+            <button type="button" onclick="resetDraft(this)">Reset Draft</button>
+          </div>
+        </section>
+        
+  </main>
+  <script>
+    const initialRows = JSON.parse(b64decode('W3siZnJhbWVfaWQiOiAwLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMDAwLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDAwMDBfZHJhZnQuanBnIiwgIngxIjogIjc2NC4wMCIsICJ5MSI6ICI0ODIuMDAiLCAieDIiOiAiMTExNi4wMCIsICJ5MiI6ICI3OTAuMDAiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDQ2LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMDQ2LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDAwNDZfZHJhZnQuanBnIiwgIngxIjogIjcyMS4wNSIsICJ5MSI6ICI0NzcuOTMiLCAieDIiOiAiMTIyMi4yMyIsICJ5MiI6ICI4ODMuNjUiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDUwLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMDUwLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDAwNTBfZHJhZnQuanBnIiwgIngxIjogIjcwNy42MSIsICJ5MSI6ICI0NzcuODIiLCAieDIiOiAiMTI0Ni41MCIsICJ5MiI6ICI4NzkuNzkiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDkyLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMDkyLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDAwOTJfZHJhZnQuanBnIiwgIngxIjogIjYzNi42OCIsICJ5MSI6ICI0NzkuNzYiLCAieDIiOiAiMTE5MC44NCIsICJ5MiI6ICI4NDUuMTkiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDEzOCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDEzOC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMTM4X2RyYWZ0LmpwZyIsICJ4MSI6ICI1MDcuNjIiLCAieTEiOiAiNDc1LjM1IiwgIngyIjogIjgzMi42NCIsICJ5MiI6ICI3MzYuMzYiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDE4NCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDE4NC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMTg0X2RyYWZ0LmpwZyIsICJ4MSI6ICI0NDkuMDAiLCAieTEiOiAiNDgwLjE5IiwgIngyIjogIjcyNS4wNyIsICJ5MiI6ICI2OTYuOTIiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDIwMCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDIwMC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMjAwX2RyYWZ0LmpwZyIsICJ4MSI6ICI0NDkuMDAiLCAieTEiOiAiNDYxLjU3IiwgIngyIjogIjcyNS4wMCIsICJ5MiI6ICI2OTUuODEiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDIzMCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDIzMC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMjMwX2RyYWZ0LmpwZyIsICJ4MSI6ICI0NDguMzIiLCAieTEiOiAiNDY2LjA3IiwgIngyIjogIjcyMy42NSIsICJ5MiI6ICI2ODcuNzkiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDI3NiwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDI3Ni5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMjc2X2RyYWZ0LmpwZyIsICJ4MSI6ICI0NzguMTgiLCAieTEiOiAiNDI3Ljk4IiwgIngyIjogIjc4MS4zOSIsICJ5MiI6ICI2OTguNzEiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDMwNCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDMwNC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMzA0X2RyYWZ0LmpwZyIsICJ4MSI6ICI1NzQuODMiLCAieTEiOiAiNDQ1LjEyIiwgIngyIjogIjkwMS4wNSIsICJ5MiI6ICI3MDkuNzAiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDMyMiwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDMyMi5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwMzIyX2RyYWZ0LmpwZyIsICJ4MSI6ICI3NTMuODgiLCAieTEiOiAiNDgyLjE4IiwgIngyIjogIjEwMDQuMTgiLCAieTIiOiAiNzA5LjYwIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiAzNjgsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDAzNjguanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDM2OF9kcmFmdC5qcGciLCAieDEiOiAiOTY0LjM4IiwgInkxIjogIjQzOS42MyIsICJ4MiI6ICIxMjQwLjAxIiwgInkyIjogIjc0Mi40NCIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogNDE0LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNDE0LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA0MTRfZHJhZnQuanBnIiwgIngxIjogIjkyNi40NyIsICJ5MSI6ICI0NDEuOTAiLCAieDIiOiAiMTI3MS4zOSIsICJ5MiI6ICI3NzUuOTciLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDQ0MywgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDQ0My5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNDQzX2RyYWZ0LmpwZyIsICJ4MSI6ICI3MTIuMTgiLCAieTEiOiAiNDc3LjE0IiwgIngyIjogIjExNTIuNDEiLCAieTIiOiAiODE3LjUyIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA0NjAsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA0NjAuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDQ2MF9kcmFmdC5qcGciLCAieDEiOiAiNTkzLjk1IiwgInkxIjogIjQ3Mi4yMiIsICJ4MiI6ICI5MzguMjciLCAieTIiOiAiNzg4LjkxIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA1MDAsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA1MDAuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDUwMF9kcmFmdC5qcGciLCAieDEiOiAiMjc4LjU5IiwgInkxIjogIjQxMC45NCIsICJ4MiI6ICI2NjAuNjEiLCAieTIiOiAiODI2Ljk5IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA1MDYsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA1MDYuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDUwNl9kcmFmdC5qcGciLCAieDEiOiAiMjc1LjQxIiwgInkxIjogIjQwNC4zNyIsICJ4MiI6ICI2NjAuNzEiLCAieTIiOiAiODI2LjkwIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA1NTIsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA1NTIuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDU1Ml9kcmFmdC5qcGciLCAieDEiOiAiNDgyLjE5IiwgInkxIjogIjQxMi44OCIsICJ4MiI6ICI4MTkuNjYiLCAieTIiOiAiNzg0LjU0IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA1OTgsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA1OTguanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDU5OF9kcmFmdC5qcGciLCAieDEiOiAiODEwLjE0IiwgInkxIjogIjQ3My43OSIsICJ4MiI6ICIxMTczLjk4IiwgInkyIjogIjc3OC42OSIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogNjA0LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNjA0LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA2MDRfZHJhZnQuanBnIiwgIngxIjogIjg0Ny43NyIsICJ5MSI6ICI0NzUuMjUiLCAieDIiOiAiMTIwNC4zNCIsICJ5MiI6ICI4MDUuMDkiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDYwNSwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDYwNS5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNjA1X2RyYWZ0LmpwZyIsICJ4MSI6ICI4NTUuNTgiLCAieTEiOiAiNDc1LjkzIiwgIngyIjogIjEyMTQuMTYiLCAieTIiOiAiODIzLjkzIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA2MTAsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA2MTAuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDYxMF9kcmFmdC5qcGciLCAieDEiOiAiODc4Ljc1IiwgInkxIjogIjQ2OS4zMSIsICJ4MiI6ICIxMjc2LjkzIiwgInkyIjogIjgxNi42OSIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogNjExLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNjExLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA2MTFfZHJhZnQuanBnIiwgIngxIjogIjg4MC45NiIsICJ5MSI6ICI0NjguNjMiLCAieDIiOiAiMTI3OC4yOSIsICJ5MiI6ICI3OTcuMjQiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDYxMiwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDYxMi5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNjEyX2RyYWZ0LmpwZyIsICJ4MSI6ICI4ODQuNTciLCAieTEiOiAiNDY4Ljc1IiwgIngyIjogIjEyNzcuOTEiLCAieTIiOiAiNzc5Ljk1IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA2NDQsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA2NDQuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDY0NF9kcmFmdC5qcGciLCAieDEiOiAiOTc5Ljk4IiwgInkxIjogIjQ3My42NyIsICJ4MiI6ICIxMjQ5Ljk5IiwgInkyIjogIjczNC4yMiIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogNjc2LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNjc2LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA2NzZfZHJhZnQuanBnIiwgIngxIjogIjk4NS43MSIsICJ5MSI6ICI0NzUuNjciLCAieDIiOiAiMTI2Ny45MCIsICJ5MiI6ICI3NTIuNjIiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDY5MCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDY5MC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNjkwX2RyYWZ0LmpwZyIsICJ4MSI6ICI5NjQuMzYiLCAieTEiOiAiNDYwLjY5IiwgIngyIjogIjEyNjkuODEiLCAieTIiOiAiNzMzLjQ1IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA2OTYsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA2OTYuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDY5Nl9kcmFmdC5qcGciLCAieDEiOiAiOTYzLjk2IiwgInkxIjogIjQ1MC4yMiIsICJ4MiI6ICIxMzU2Ljg3IiwgInkyIjogIjc1NC45NyIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogNzM2LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNzM2LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA3MzZfZHJhZnQuanBnIiwgIngxIjogIjg2OC45NCIsICJ5MSI6ICI0MzEuMDYiLCAieDIiOiAiMTI5NC43MiIsICJ5MiI6ICI3ODYuNjAiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDc4MiwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDc4Mi5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwNzgyX2RyYWZ0LmpwZyIsICJ4MSI6ICI4MTUuMTkiLCAieTEiOiAiNDMyLjMwIiwgIngyIjogIjExNDEuMTUiLCAieTIiOiAiODA0LjA3IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MDAsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDAuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwMF9kcmFmdC5qcGciLCAieDEiOiAiODUyLjg3IiwgInkxIjogIjQ0MC43MiIsICJ4MiI6ICIxMTMzLjQwIiwgInkyIjogIjc0OS43OCIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODAxLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODAxLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDFfZHJhZnQuanBnIiwgIngxIjogIjg1NS4xOCIsICJ5MSI6ICI0NDAuNzEiLCAieDIiOiAiMTEzMS44NSIsICJ5MiI6ICI3MjEuNDIiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgwMiwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwMi5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODAyX2RyYWZ0LmpwZyIsICJ4MSI6ICI4NTcuNzgiLCAieTEiOiAiNDQzLjg2IiwgIngyIjogIjExMzAuNTEiLCAieTIiOiAiNzQyLjc2IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MDMsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDMuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwM19kcmFmdC5qcGciLCAieDEiOiAiODU5LjMyIiwgInkxIjogIjQ0Ni40NSIsICJ4MiI6ICIxMTI5LjYyIiwgInkyIjogIjc2MC42NiIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODA0LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODA0LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDRfZHJhZnQuanBnIiwgIngxIjogIjg2MC45MiIsICJ5MSI6ICI0NDcuNjIiLCAieDIiOiAiMTEyOC4yOSIsICJ5MiI6ICI3NzMuNTAiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgwNSwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwNS5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODA1X2RyYWZ0LmpwZyIsICJ4MSI6ICI4NjQuMjYiLCAieTEiOiAiNDQ4LjY3IiwgIngyIjogIjExMjYuNzciLCAieTIiOiAiNzgyLjU1IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MDYsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDYuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwNl9kcmFmdC5qcGciLCAieDEiOiAiODY4LjIwIiwgInkxIjogIjQ0Ni44NCIsICJ4MiI6ICIxMTI0LjkzIiwgInkyIjogIjc0NC42MiIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODA3LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODA3LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDdfZHJhZnQuanBnIiwgIngxIjogIjg3MS4zOCIsICJ5MSI6ICI0NDYuMzAiLCAieDIiOiAiMTEyMi45MSIsICJ5MiI6ICI3MjAuNzgiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgwOCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwOC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODA4X2RyYWZ0LmpwZyIsICJ4MSI6ICI4NzMuMjMiLCAieTEiOiAiNDQ2LjYzIiwgIngyIjogIjExMjEuNjIiLCAieTIiOiAiNzA1LjY0IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MDksICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MDkuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgwOV9kcmFmdC5qcGciLCAieDEiOiAiODc1LjA3IiwgInkxIjogIjQ0Ny4zMCIsICJ4MiI6ICIxMTIwLjk0IiwgInkyIjogIjY5Ni4xOSIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODEwLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODEwLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTBfZHJhZnQuanBnIiwgIngxIjogIjg3NS45NiIsICJ5MSI6ICI0NDguMDYiLCAieDIiOiAiMTExOS43MCIsICJ5MiI6ICI2OTEuMTEiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgxMSwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgxMS5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODExX2RyYWZ0LmpwZyIsICJ4MSI6ICI4NzcuMTIiLCAieTEiOiAiNDQ4LjIxIiwgIngyIjogIjExMTguMTciLCAieTIiOiAiNjg4LjA2IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MTIsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTIuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgxMl9kcmFmdC5qcGciLCAieDEiOiAiODc3LjYzIiwgInkxIjogIjQ0OC44MCIsICJ4MiI6ICIxMTE2LjM2IiwgInkyIjogIjY4Ny4yMCIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODEzLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODEzLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTNfZHJhZnQuanBnIiwgIngxIjogIjg3Ny43OSIsICJ5MSI6ICI0NDkuMTgiLCAieDIiOiAiMTExNS4yOSIsICJ5MiI6ICI2ODcuNjIiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgxNCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgxNC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODE0X2RyYWZ0LmpwZyIsICJ4MSI6ICI4NzguNjQiLCAieTEiOiAiNDQ4Ljg4IiwgIngyIjogIjExMTQuODAiLCAieTIiOiAiNjg4LjE5IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MTUsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTUuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgxNV9kcmFmdC5qcGciLCAieDEiOiAiODgwLjg1IiwgInkxIjogIjQ0OS40NyIsICJ4MiI6ICIxMTE0Ljc0IiwgInkyIjogIjY4OS4yNSIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODE2LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODE2LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTZfZHJhZnQuanBnIiwgIngxIjogIjg4Mi4yMSIsICJ5MSI6ICI0NDkuMzciLCAieDIiOiAiMTExNC43OCIsICJ5MiI6ICI2OTAuODAiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgxNywgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgxNy5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODE3X2RyYWZ0LmpwZyIsICJ4MSI6ICI4ODIuOTYiLCAieTEiOiAiNDQ5LjIwIiwgIngyIjogIjExMTQuODgiLCAieTIiOiAiNjkyLjE5IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MTgsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTguanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgxOF9kcmFmdC5qcGciLCAieDEiOiAiODgzLjI5IiwgInkxIjogIjQ0OC45NyIsICJ4MiI6ICIxMTE1LjAyIiwgInkyIjogIjY5My4zNCIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODE5LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODE5LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MTlfZHJhZnQuanBnIiwgIngxIjogIjg4NC4zMCIsICJ5MSI6ICI0NTAuNTMiLCAieDIiOiAiMTExNi4xMyIsICJ5MiI6ICI2OTQuMzgiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgyMCwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyMC5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODIwX2RyYWZ0LmpwZyIsICJ4MSI6ICI4ODUuNzYiLCAieTEiOiAiNDUxLjA1IiwgIngyIjogIjExMTcuODQiLCAieTIiOiAiNjk0LjYyIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MjEsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MjEuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyMV9kcmFmdC5qcGciLCAieDEiOiAiODg2LjY0IiwgInkxIjogIjQ1Mi4xNiIsICJ4MiI6ICIxMTE5Ljg4IiwgInkyIjogIjY5My45NCIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODIyLCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODIyLmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MjJfZHJhZnQuanBnIiwgIngxIjogIjg4Ny45NyIsICJ5MSI6ICI0NTYuMDUiLCAieDIiOiAiMTEyMi4xNiIsICJ5MiI6ICI2OTMuNjUiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgyMywgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyMy5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODIzX2RyYWZ0LmpwZyIsICJ4MSI6ICI4ODguNjYiLCAieTEiOiAiNDU4LjU4IiwgIngyIjogIjExMjMuNTYiLCAieTIiOiAiNjkzLjM2IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MjQsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MjQuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyNF9kcmFmdC5qcGciLCAieDEiOiAiODg5LjA2IiwgInkxIjogIjQ1OS4yMCIsICJ4MiI6ICIxMTI2LjE0IiwgInkyIjogIjY5Mi41OSIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODI1LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODI1LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MjVfZHJhZnQuanBnIiwgIngxIjogIjg4OS4xMSIsICJ5MSI6ICI0NjEuMjAiLCAieDIiOiAiMTEyNy43MyIsICJ5MiI6ICI2OTEuNzQiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgyNiwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyNi5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODI2X2RyYWZ0LmpwZyIsICJ4MSI6ICI4ODkuNDkiLCAieTEiOiAiNDYyLjg4IiwgIngyIjogIjExMjkuNTUiLCAieTIiOiAiNjkxLjYzIiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MjcsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MjcuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyN19kcmFmdC5qcGciLCAieDEiOiAiODg5LjI0IiwgInkxIjogIjQ1Ny40MCIsICJ4MiI6ICIxMTMxLjQzIiwgInkyIjogIjY5MS45NCIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODI4LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODI4LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MjhfZHJhZnQuanBnIiwgIngxIjogIjg4OS4zNSIsICJ5MSI6ICI0NTMuMzIiLCAieDIiOiAiMTEzMi41OCIsICJ5MiI6ICI2OTIuNDAiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifSwgeyJmcmFtZV9pZCI6IDgyOSwgImltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgyOS5qcGciLCAiZHJhZnRfaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODI5X2RyYWZ0LmpwZyIsICJ4MSI6ICI4ODguODciLCAieTEiOiAiNDU2Ljc1IiwgIngyIjogIjExMzMuMDgiLCAieTIiOiAiNjkyLjQ0IiwgInJldmlld19zdGF0dXMiOiAiZHJhZnQiLCAib2NjbHVkZWQiOiAiIiwgInZpc2liaWxpdHkiOiAiIiwgImJib3hfdHlwZSI6ICJhbW9kYWxfZnVsbF9iaW4iLCAibm90ZXMiOiAiIn0sIHsiZnJhbWVfaWQiOiA4MzAsICJpbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4MzAuanBnIiwgImRyYWZ0X2ltYWdlIjogImZyYW1lcy9mcmFtZV8wMDgzMF9kcmFmdC5qcGciLCAieDEiOiAiODg4LjQ5IiwgInkxIjogIjQ1OC43MSIsICJ4MiI6ICIxMTMzLjI2IiwgInkyIjogIjY5Mi43OSIsICJyZXZpZXdfc3RhdHVzIjogImRyYWZ0IiwgIm9jY2x1ZGVkIjogIiIsICJ2aXNpYmlsaXR5IjogIiIsICJiYm94X3R5cGUiOiAiYW1vZGFsX2Z1bGxfYmluIiwgIm5vdGVzIjogIiJ9LCB7ImZyYW1lX2lkIjogODc0LCAiaW1hZ2UiOiAiZnJhbWVzL2ZyYW1lXzAwODc0LmpwZyIsICJkcmFmdF9pbWFnZSI6ICJmcmFtZXMvZnJhbWVfMDA4NzRfZHJhZnQuanBnIiwgIngxIjogIjg5MS4zNyIsICJ5MSI6ICI0NjcuNzYiLCAieDIiOiAiMTExNC4wMCIsICJ5MiI6ICI2OTIuOTQiLCAicmV2aWV3X3N0YXR1cyI6ICJkcmFmdCIsICJvY2NsdWRlZCI6ICIiLCAidmlzaWJpbGl0eSI6ICIiLCAiYmJveF90eXBlIjogImFtb2RhbF9mdWxsX2JpbiIsICJub3RlcyI6ICIifV0='));
+    function b64decode(s) { return decodeURIComponent(Array.prototype.map.call(atob(s), c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
+    const rowByFrame = new Map(initialRows.map(r => [String(r.frame_id), r]));
+    function fields(card) {
+      const out = {};
+      card.querySelectorAll('[data-field]').forEach(el => out[el.dataset.field] = el);
+      return out;
+    }
+    function setBox(card, box) {
+      const f = fields(card);
+      f.x1.value = box.x1.toFixed(2);
+      f.y1.value = box.y1.toFixed(2);
+      f.x2.value = box.x2.toFixed(2);
+      f.y2.value = box.y2.toFixed(2);
+      drawCanvas(card);
+    }
+    function getBox(card) {
+      const f = fields(card);
+      return {x1:+f.x1.value, y1:+f.y1.value, x2:+f.x2.value, y2:+f.y2.value};
+    }
+    function drawCanvas(card) {
+      const img = card.querySelector('.canvas-wrap img');
+      const canvas = card.querySelector('canvas');
+      const ctx = canvas.getContext('2d');
+      const w = img.naturalWidth || 1366;
+      const h = img.naturalHeight || 768;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.clearRect(0, 0, w, h);
+      const b = getBox(card);
+      ctx.lineWidth = Math.max(3, w / 450);
+      ctx.strokeStyle = '#ff00cc';
+      ctx.fillStyle = 'rgba(255,0,204,0.10)';
+      ctx.fillRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+      ctx.strokeRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+    }
+    function pointerToImage(e, canvas) {
+      const r = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - r.left) * canvas.width / r.width,
+        y: (e.clientY - r.top) * canvas.height / r.height,
+      };
+    }
+    document.querySelectorAll('.card').forEach(card => {
+      const canvas = card.querySelector('canvas');
+      const img = card.querySelector('.canvas-wrap img');
+      let start = null;
+      img.addEventListener('load', () => drawCanvas(card));
+      canvas.addEventListener('pointerdown', e => {
+        start = pointerToImage(e, canvas);
+        canvas.setPointerCapture(e.pointerId);
+      });
+      canvas.addEventListener('pointermove', e => {
+        if (!start) return;
+        const p = pointerToImage(e, canvas);
+        setBox(card, {
+          x1: Math.min(start.x, p.x),
+          y1: Math.min(start.y, p.y),
+          x2: Math.max(start.x, p.x),
+          y2: Math.max(start.y, p.y),
+        });
+      });
+      canvas.addEventListener('pointerup', e => {
+        if (!start) return;
+        const f = fields(card);
+        if (f.review_status.value === 'draft') f.review_status.value = 'ok';
+        start = null;
+        drawCanvas(card);
+      });
+      drawCanvas(card);
+    });
+    function cardFromButton(btn) { return btn.closest('.card'); }
+    function markOk(btn) {
+      const f = fields(cardFromButton(btn));
+      f.review_status.value = 'ok';
+      if (!f.occluded.value) f.occluded.value = '0';
+    }
+    function markOccluded(btn) {
+      const f = fields(cardFromButton(btn));
+      f.review_status.value = 'ok';
+      f.occluded.value = '1';
+      if (!f.visibility.value) f.visibility.value = '0.7';
+    }
+    function markSkip(btn) {
+      fields(cardFromButton(btn)).review_status.value = 'skip';
+    }
+    function resetDraft(btn) {
+      const card = cardFromButton(btn);
+      const r = rowByFrame.get(card.dataset.frame);
+      setBox(card, {x1:+r.x1, y1:+r.y1, x2:+r.x2, y2:+r.y2});
+      fields(card).review_status.value = 'draft';
+    }
+    function collectRows() {
+      return Array.from(document.querySelectorAll('.card')).map(card => {
+        const row = {frame_id: card.dataset.frame, image: `frames/frame_${String(card.dataset.frame).padStart(5, '0')}.jpg`, draft_image: `frames/frame_${String(card.dataset.frame).padStart(5, '0')}_draft.jpg`};
+        card.querySelectorAll('[data-field]').forEach(el => row[el.dataset.field] = el.value);
+        return row;
+      });
+    }
+    function downloadCsv() {
+      const cols = ['frame_id','image','draft_image','x1','y1','x2','y2','review_status','occluded','visibility','bbox_type','notes'];
+      const lines = [cols.join(',')];
+      for (const row of collectRows()) {
+        lines.push(cols.map(c => `"${String(row[c] ?? '').replaceAll('"', '""')}"`).join(','));
+      }
+      const blob = new Blob([lines.join('\n') + '\n'], {type: 'text/csv'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'bbox_gt_corrected.csv';
+      a.click();
+    }
+  </script>
+</body>
+</html>
