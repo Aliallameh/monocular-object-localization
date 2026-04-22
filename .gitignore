@@ -64,6 +64,8 @@ tools/review_readiness.py
 # ── Scratch / internal ──────────────────────────────────────────────
 annotations/*
 !annotations/bbox_gt.csv
+!annotations/contact_point_validation/
+!annotations/contact_point_validation/**
 .audit_frames/
 .audit_sample/
 .qa_frames/
